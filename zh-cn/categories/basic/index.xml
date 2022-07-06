@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Basic on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/categories/basic/</link><description>Recent content in Basic on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Mon, 09 May 2022 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/categories/basic/index.xml" rel="self" type="application/rss+xml"/><item><title>contrastive learning</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/contrastive_learning/contrastive_learning/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/contrastive_learning/contrastive_learning/</guid><description>从2019年中~2020年中，对比学习火了一段时间，到ViT出来后，大量的研究这才投身于ViT。
+一、简介 什么是对比学习？
+简单来说就是，只要模型把相似的数据跟其他不相似的数据区分开就可以。比如：$A_1, A_2, &amp;hellip;$ 是狗，$B_1, B_2, &amp;hellip;$ 是猫，只要模型能把这两批数据区分开就行。
+所以，训练集中不需要明确的标签，只要能区分出那些数据之间是相似的，那些是与它们不相似的。
+所以，训练集中不必人为标注，只需要设计一些规则生产出这种类型的训练集就行。
+看下Hinton老爷子的《Self-organizing neural network that discovers surfaces in random-dot stereograms》 和 LeCun的《Dimensionality reduction by learning an invariant mapping》 对比学习为啥在cv领域被认为是无监督呢？：
+通过设计一些巧妙的代理任务，就是pretext task：人为的定义一些规则，这些规则可以用来定义那些图片是相似的，那些图片是不相似的。
+例如：instance discrimination：如果有N张图片的数据集，随机一张图片$x_i$，对这个图片随机裁剪+数据增广，从同一张图片中通过裁剪+增广产生的数据，虽然有差异但是语义信息是一样的，所以是正样本(它们之间是相似的)，负样本就是除了图$x_i$之外的所有样本。 1、代理任务 代理任务(pretext task)的目的: 生成一个自监督的信号，从而充当ground truth这个标签信息
+有监督学习：训练时比较输出 $\hat{Y}$ 和 groud truth $Y$；
+自监督学习：因为缺少groud truth，所以需要代理任务自己创建类似groud truth的信号。
+2、对比学习的loss 1)、InfoNCE loss noise contrastive estimation loss：其实就是一个交叉熵 $$ L_q = -log\frac{exp(q\cdot k_+ / \tau)}{\sum_{i=0}^{K} exp(q\cdot k_i / \tau)} $$ 分母：一个正样本，K个负样本；$\tau$：温度超参数，值越大分布就越平缓，表示对每种的关注度越相似；值越小分布就越陡峭，表示比较关注比较困难的case，不容易收敛。</description></item><item><title>vision transformer</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/vision_transformer/vision_transformer/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/vision_transformer/vision_transformer/</guid><description>一、简介 1、Transformer用在CV领域 在NLP中，Transformer的输入是一个时间步长为T的序列，比如：basic版bert，T=512，每个token embeding为768维特征。如何把二维图片转化为一维呢？
+$\bf \color{red} \times$ 如果把每个像素点看做是一个样本，铺平后是一维序列。但是，图片大小 224*224=50176，远远大于Transformer的最大序列长度。 $\bf \color{red} \times$ 卷积和Transformer一起用：《Non-local Neural Networks》(2018)、《End-to-End Object Detection with Transformers》(2020) 为了减小序列的长度，不直接使用输入图片，而是使用feature map 转换为序列。比如：ResNet50在最后的阶段的输出尺寸为 14x14，拉平后序列长度只有196。 $\bf \color{red} \times$ 抛弃卷积使用定制化的自注意力机制：《Stand-Alone Self-Attention in Vision Models》(2019) 采用的是 孤立自注意力。用一个局部的小窗口做自注意力； 《Stand-alone axial-attention for panoptic segmentation》(2020) 采用的是轴注意力。在高度的方向上做自注意力、在宽度方向做自注意力。由于这些自注意力机制比较定制化，还没有在硬件上大规模加速计算，所以网络做不大。 $\color{green} \checkmark$ 对图片做些预处理，直接使用Transformer：将图片切分成一个个patch，然后每个patch作为一个token输入到Transformer中。 $224 \times 224$ 的图片，切分成一个个 $16 \times 16$ 的patch，最终切分出196个patch；每个patch的大小是：$16 \times 16 \times 3=768$，刚好是basic版bert每个token的维度。 多头注意力机制，12个头，每个头的k、q、v对应的维度是64维 二、网络 1、ViT ViT(2021) 直接把Transformer应用到图像处理，尽量改动最少，所以只对图像做预处理，让其符合NLP的输入形式， 思路：
+图片尺寸 224x224，将图片切分成一个个patch，patch的大小16x16，每个patch作为一个token，即：14x14=196个patch，每个patch长16x16x3=768 学习一个线性矩阵$E$，尺寸为768x768，对每个patch做线性变换。多头注意力的话，basic版本12个头，所以12个196x64拼接起来，还是196x768。 位置编码：可学习的位置向量，尺寸为196x768 cls的输出作为提取的图片特征，用于后续的分类操作 实验结论：</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/video/vidio_summary/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/video/vidio_summary/</guid><description>一、简介 It is coming soon.
+二、网络 1、 2、 3、 4、</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/vlp/vlp_summary/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/vlp/vlp_summary/</guid><description>一、简介 多模态学习，英文全程MultiModal Machine Learning(MMML)，从1970年 起步，已经经历了多个发展阶段，在2010年后，全面进入深度学习的阶段。多模态机器学习，以机器学习实现处理和理解多源模态信息的能力。图像、视频、音频、语义之间的多模态学习比较热门。比如互联网大型视频平台，都会将多模态技术用于视频理解业务，可以加视频封面、视频抽帧、文本信息融合。当计算机能够看懂视频，就可以做很多事儿了，比如：视频分类、审核、推荐、搜索、特效。
+多模态学习有5个研究方向：
+多模态表示学习（Multimodal Representation） 模态转化（Translation） 对齐（Alignment） 多模态融合（Multimodal Fusion） 协同学习（Co-learning） 实际应用，比如：
+视频网站上进度条，会显示那个时间段是高光时刻 自动驾驶领域，雷达、视觉与多传感器信息融合 视频的分类、审核、推荐、搜索、特效等等 1、VLP 微软发表的一篇文章《An Empirical Study of Training End-to-End Vision-and-Language Transformers》进行了大量的实验，对不同VLP模型、各个模块不同配置的效果。
+VLP通常都会遵循同一个框架，包含5大模块：
+Vision Encoder：主要有3中类型 使用object detection模型，比如：Faster R-CNN，识别图像中的目标区域，并生成每个目标区域的特征表示，输入到后续模型中 利用CNN模型提取grid feature作为图像输入 ViT采用的将图像分解成patch，每个patch生成embeding输入到模型。 随着Vision Transformer的发展，ViT的方式逐渐成为主流方式。 Text Encoder：包括BERT、RoBERTa、ELECTRA、ALBERT、DeBERTa等经典预训练语言模型结构。 Multimodel Fusion：主要指如何融合图像、文本，主要有2中： co-attention：图像、文本分别使用Transformer编码，在每个Transformer模块中加入图像、文本的cross attention merged attention model，图像、文本在开始就拼接在一起，输入到Transformer 模型结构：主要有2中： Encoder-only：这种比较常见 Encoder-Decoder 预训练任务：主要有3中： Masked Language Modeling（MLM）类似BERT，随机mask掉部分token，用剩余的预测出被mask掉的token Masked Image Modeling，对输入的部分图像patch进行mask，然后预测被mask的patchs Image-Text Matching（ITM），预测image和text的pair对是否匹配，对比学习的预训练方法可以属于这类。 二、网络 Open AI 在2021年1月份发布的DALL-E和CLIP，属于结合图像和文本的多模态模型，其中DALL-E是基于文本来生成模型的模型；CLIP是用文本作为监督信号来训练可迁移的视觉模型，这两个工作带动了一波新的研究高潮。</description></item><item><title>CLIP</title><link>https://biubiobiu.github.io/zh-cn/posts/vlp/clip/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/vlp/clip/</guid><description>一、 参考， 论文， Gitlab</description></item><item><title>模型训练</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/train_model/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/train_model/</guid><description>一、</description></item><item><title>Tensor</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/tensor/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/tensor/</guid><description>一、</description></item><item><title>基础操作</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/basic/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/basic/</guid><description>一、</description></item><item><title>数学计算</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/mathematical/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/mathematical/</guid><description>一、</description></item><item><title>importlib包</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/python/sdk_lib/importlib/</link><pubDate>Wed, 08 Dec 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/python/sdk_lib/importlib/</guid><description>import_module()函数 背景：一个函数运行，需要根据不同项目的配置，动态导入对应的配置文件。 例如：如下路径，向a模块中导入c.py中的对象 a
+├── a.py
+├── __init__.py
+b
+├── b.py
+├── c │　├── c.py　# 该文件中，有变量args=[]，class C
+│　├── __init__.py
+方案：
+import importlib # 导入 params = importlib.import_module(&amp;#34;b.c.c&amp;#34;) # 对象中取出需要的对象 params.args # 取出变量 params.C # 取出类C</description></item><item><title>animal matting</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/image-matting/image-matting-animal/</link><pubDate>Thu, 09 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/image-matting/image-matting-animal/</guid><description>It&amp;rsquo;s coming soon.</description></item><item><title>backbone net</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/backbone_net/</link><pubDate>Thu, 09 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/backbone_net/</guid><description>卷积神经网络的发展历程：
+一、Backbone 1. LeNet 论文
+LeNet：名字来源于第一作者Yann LeCun。是一个奠基性的网络，第一次将卷积神经网络推上舞台。
+卷积层+最大池化：卷积层用来识别图像里的空间模式；最大池化用来降低卷积层对位置的敏感度。卷积层块由两个这样的基本单位重复堆叠构成。 LeNet可以在早起的小数据集上取得较好的效果，但是在更大的真实数据集上表现并不如人意。一方面：神经网络计算复杂，在GPU没有大量普及的20世纪90年代，训练一个多通道、多层、含有大量参数的卷积神经网络是很难完成的；另一方面：当年并没有深入研究参数初始化和非凸优化算法，导致复杂的神经网络的训练通常比较困难。 特征本身是由学习得来的，为了表征足够复杂的输入，特征本身应该分级表示。想要学习到复杂的多级特征，需要大量的带有标签的数据，这样才能表现得比其他经典方法要好。早期研究只基于小的公开数据集，自2009年ImageNet数据集创建以来，传统方法不再有优势。 输入：32*32 C1-卷积层：卷积层尺寸：6 * 28 * 28；卷积核尺寸：6 * 1 * 5 * 5；可训练参数：(5 * 5 + 1) * 6 S2-池化层：池化尺寸：2 * 2；步幅：2；方式：4个输入相加，然后乘以个可训练参数，加上个可训练参数，最后通过sigmoid；输出尺寸：6 * 14 * 14；可训练 参数：2 * 6 C3-卷积层：输出尺寸：16 * 10 * 10；卷积核尺寸: 16 * 6 * 5 * 5;
+组合方式：前6个map - 以S2中3个相邻的feature map
+再6个map - 以S2中4个相邻的feature map
+再3个map - 以S2中不相邻的4个feature map
+再1个map - 以S2中所有feature map S4-池化层：输出尺寸：16 * 5 * 5；池化尺寸：2 * 2；步幅：2</description></item><item><title>CNN</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/backbone_cnn/</link><pubDate>Thu, 09 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/backbone_cnn/</guid><description>一、卷积 实际上，卷积操作需要对卷积核进行上下/左右翻转，然后用卷积核对输入进行滑动计算。由于网络学习目的是要&amp;quot;学习&amp;quot;出一个近最优解的权重，即：近最优解情况下卷积核的值，所以在卷积操作时，也就没必要在做翻转操作，反正卷积核的值是要被&amp;quot;调教&amp;quot;的，最终的卷积核的状态：可以看成是已经被上下/左右翻转过了。卷积操作也就变成互相关运算。
+卷积层解决的问题：
+卷积层保留输入图片的形状，使图像的像素在高/宽两个方向上的相关性均可能被有效识别。 卷积层通过滑动窗口，将同一卷积核与不同位置的输入重复计算，参数共享，避免参数尺寸过大。 在卷积操作时，会有两个超参数：填充(padding)和步幅(stride)，根据输入尺寸和卷积核改变输出形状：
+假设：输入尺寸：nh * nw，卷积核尺寸：kh * kw
+填充(padding)：在输入高和宽的两侧填充元素(通常是0)，一般来说：在高的两侧一共填充ph行；在宽的两侧一同填充pw列，一般填充的是偶数，即：nn.Conv2D(padding=(ph/2, pw/2)) 步幅(stride)：在滑动计算时，每次滑动的步长，假设：在高上步幅为sh，在宽上步幅为sw 则：输出尺寸： $$ \tag{公式1} o_h = \frac{n_h-k_h+p_h+s_h} {s_h }, o_w = \frac{n_w-k_w+p_w+s_w} {s_w } $$
+1. 1*1卷积层 1*1卷积层：被看作是卷积操作的全连接层。这是为什么呢？
+1*1卷积的计算发生在通道维度上：输出的每个元素，来自输入中相同位置的元素在不同通道之间按权重叠加。假设我们将通道维度当作特征维度，将宽高维度上的元素看作数据样本，那么1*1卷积层的作用与全连接等价。 二、池化层 池化层(pooling)：缓解卷积层对位置的过渡敏感性。
+浅层网络获取的是图像的细节信息，比如：纹理特征、边缘；高层网络获取的是图像的整体特征。池化层把感受野扩大，把图像的整体特征传递下去，网络越深感受野越大 池化层一般是最大池化或者平均池化，类比生物学的神经细胞：只有电解质信号超过一定阈值，才能激活下一个神经元，才能把信号传递下去。 三、批量归一化 batch normalization：在一个batch内，算出平均值a, 方差：b^2；然后对每个样本做归一化：c*(x-a)/b+d。其中c、d是需要训练的。
+$$ x_{i+1} = \gamma \frac{x_i - \mu}{\sigma} + \beta $$ 由于数据的差异性，在卷积后可能会存在较大的波动。$\frac{x_i - \mu}{\sigma}$ 的作用就是把数据统一拉回N(0,1)的标准正态分布；但是每个特征的分布不一定是标准正态分布，所以添加了可学习的参数：$\gamma, \beta$。 通过训练来调节实际的均值 $\beta$ 和标准差 $\gamma$ ，不过 $\beta$ 和 $\gamma$ 是在一定的范围内，不能波动太大。</description></item><item><title>optimizer</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/optimizer/</link><pubDate>Thu, 09 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/backbone/optimizer/</guid><description>在深度学习中，通过最小化损失函数使得训练误差最小化，由于损失函数一般都会比较复杂，很难直接求解析解，而是需要基于数值方法的优化算法找到近似解，即：数值解。在局域数值方法的优化算法中，损失函数就是目标函数(Objective Function)，
+1. 梯度下降法 梯度下降(gradient descent)的工作原理，以一维为例： 假设连续可导的函数 $f:\Reals \to \Reals$ 的输入和输出都是标量，给定绝对值足够小的数 $\epsilon$ ，根据泰勒展开式，近似： $$ f(x+\epsilon) \approx f(x) + \epsilon f'(x) $$ 其中 $f'(x)$ 表示函数在x处的梯度。找到一个常数 $\eta &amp;gt; 0$，使得 $\lvert \eta f'(x) \rvert$ 足够小，那么可以将 $\epsilon$ 提换为 $-\eta f'(x)$，得到： $$ f(x-\eta f'(x)) \approx f(x) - \eta f'(x)^{2} $$ 所以 $$ f(x-\eta f'(x)) \lesssim f(x) $$ 这就意味着，可以通过 $x \gets x-\eta f'(x)$ 来迭代x，函数 $f(x)$ 的值可能会降低。在梯度下降中，先取一个初始值 $x_0$ 和学习率 $\eta&amp;gt;0$，然后不断通过上式迭代x，直到停止条件。学习率 $\eta$ 是一个超参数，需要人工设定，如果学习率过小：会导致x更新缓慢从而需要更多的迭代次数；如果学习率过大，泰勒展开式不再成立，可能会出现振荡，无法保证会迭代出近似最优解。
+在每次迭代中，由于训练集较大，不可能把所有样本都加载到内存中，通常是随机均匀采样多个样本组成一个小批量，然后使用这个小批量来计算梯度，完成一次迭代，即：小批量随机梯度下降(batch gradient descent)。
+设：目标函数 $f(x): \Reals^{d} \to \Reals$ 小批量数据集 $\text{\ss}$ 梯度计算： $$ g_t \gets \nabla f_{\text{\ss}_{t}}=\frac {1} {\lvert \text{\ss} \rvert} \displaystyle\sum_{i \in \text{\ss}_{t}} \nabla f_i(x_{t-1}) $$</description></item><item><title>神经网络画图篇</title><link>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/draw_map_for_dl/</link><pubDate>Thu, 09 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/draw_map_for_dl/</guid><description>一、简介 一图抵万言！本篇介绍神经网络的可视化工具和绘图软件。
+二、示意图 1、NN SVG 提供三种典型的神经网络绘图风格，个性化参数多；交互式绘图。 NN-SVG是由麻省理工学院弗兰克尔生物工程实验室开发的。可以绘制的图包括以节点形式展示的FCNN style，这个特别适合传统的全连接神经网络的绘制。
+Github
+Demo
+2、PlotNeuralNet 底层基于latex的宏指令绘制，上层提供基于python的描述框架，绘制脚本简单。可以绘制复杂的网络结构。
+PlotNeuralNet 是由萨尔大学计算机科学专业的一个学生开发的，目前主要支持的是卷积神经网络，其中卷积层、池化层、bottleneck、skip-connection、up-conv、Softmax等常规的层在代码中都有定义，但缺少RNN相关的可视化层展示。
+Github
+三、计算图 1、Netron Netron是一个神经网络可视化包，支持绝大多数神经网络操作。该功能包可以为不同节点显示不同的颜色，卷积层用蓝色显示，池化层和归一化层用绿色显示，数学操作用黑色显示。在使用方面，可以直接访问网页端，上传模型文件，就可以看到网络结构图，并可以进一步利用pip安装并引入到程序中通过浏览器查看模型的变化。
+Github
+Demo</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/semantic_segmentation/object_detection_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/semantic_segmentation/object_detection_summary/</guid><description>一、简介 It&amp;rsquo;s coming soon.
+二、网络-基于编码器-解码器 1、FCN 《Fully Convolutional Networks for Semantic Segmentation》(2015) 要说语义分割整体实现精度大的跨越还是在FCN（全卷积神经网络）提出之后。它完全改变了之前需要一个窗口来将语义分割任务转变为图片分类任务的观念，FCN完全丢弃了图片分类任务中全连接层，从头到尾都只使用到了卷积层。从FCN后，基于编码器解码器结构的经典网络结构如同雨后春笋般冒了出来
+2、U-Net 《U-Net: Convolutional Networks for Biomedical Image Segmentation》(2015) Unet网络是在医学影像分割中最常用的模型。它的典型特点是，它是U型对称结构，左侧是卷积层，右侧是上采样层（典型的编码器解码器结构）。
+另一个特点是，Unet网络的每个卷积层得到的特征图都会concatenate到对应的上采样层，从而实现对每层特征图都有效使用到后续计算中。也就是文中所说的skip-connection。这样，同其他的一些网络结构比如FCN比较，Unet避免了直接在高级feature map中进行监督和loss计算，而是结合了低级feature map中的特征，从而可以使得最终所得到的feature map中既包含了high-level 的feature，也包含很多的low-level的feature，实现了不同scale下feature的融合，提高模型的结果精确度。
+3、SegNet 《SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation》(2015) 是一个由剑桥大学团队开发的图像分割的开源项目，该项目可以对图像中的物体所在区域进行分割，例如车，马路，行人等，并且精确到像素级别
+4、Deeplab V1 《Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs》(2015) 2015 年的ICLR上提出DeepLab V1是结合了深度卷积神经网络（DCNNs）和概率图模型（DenseCRFs）的方法。它将DenseCRFs作为网络的后处理方法。采用DenseCRFs作为后处理的方法，简单来说，就是对一个像素进行分类的时候，不仅考虑DCNN的输出，而且考虑该像素点周围像素点的值，这样语义分割结果边界清楚。
+5、Deeplab V2 《DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs》(2017) 在实验中发现 DCNNs 做语义分割时精准度不够的问题，根本原因是重复的池化和下采样降低了分辨率。但是另一方面，重复的池化和下采样扩大了感受野，而感受野的扩大对语义分割任务来说也是至关重要的。针对这一问题，DeepLab v2采用的空洞卷积算法扩展感受野，与此同时不会降低特征图的分辨率。此外，deeplab v2基于空洞卷积，设计了ASPP模块。它组合了不同dilation rate的空洞卷积所产生的特征图。这样，不同空洞卷积产生的不同感受野的特征图被组合在了一起，从而获取了更加丰富的上下文信息。</description></item><item><title>GRU网络</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/gru/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/gru/</guid><description>一、简介 RNNs中，需要的信息都放在隐藏层，当序列太长时，隐藏层累积了太多的信息，对前面太久的信息，就不容易获取到了。
+另外，有些信息不太重要，有些词比较重要，所以，设计了：
+更新门： $Z_t$ 有助于捕获序列中的长期依赖关系。当$Z_t = 0$时，并不是就没有$H_{t-1}$的信息了，而是$H_{t-1}$的信息通过正常的计算$H_t$的途径进来；而当$Z_t &amp;gt; 0$时，$H_{t-1}$的信息可以绕过正常的计算途径，直接添加到$H_t$中。
+重置门： $R_t$ 有助于捕获序列中的短期依赖关系。$\tilde{H_t}$ 的计算跟RNNs计算相似，就是加了 $R_t$ 来限制 $H_{t-1}$，本来RNNs对太久的信息就不容易获取，所以 $R_t$ 的作用：是否忘掉历史没用的信息。
+$$R_t = sigmoid(X_tW_{xr}+H_{t-1}W_{hr}+b_r)$$ $$Z_t = sigmoid(X_tW_{xz}+H_{t-1}W_{hz}+b_z)$$ $$\tilde{H_t} = tanh(X_tW_{xh} + (R_t \odot H_{t-1})W_{hh} + b_h)$$ $$H_t = Z_t \odot H_{t-1} + (1-Z_t)\odot \tilde{H_t}$$
+其中，$R_t$ ：表示在更新候选隐状态时，需要多少历史隐状态信息，$Z_t$ ：表示在算真正的隐状态时，需要多少新输入的$X_t$的信息，这两个的维度与隐状态是一致的。</description></item><item><title>LSTM网络</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/lstm/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/lstm/</guid><description>一、简介 长短期记忆网络(LSTM)
+忘记门：$F_t = sigmoid(X_tW_{xf}+H_{t-1}W_{hf}+b_f)$ 输入门：$I_t = sigmoid(X_tW_{xi}+H_{t-1}W_{hi}+b_i)$ 输出门：$O_t = sigmoid(X_tW_{xo}+H_{t-1}W_{ho}+b_o)$ 候选记忆单元：$\tilde{C_t} = tanh(X_tW_{xc} + (R_t \odot H_{t-1})W_{hc} + b_c)$ 记忆单元：$C_t = F_t \odot C_{t-1} + I_t\odot \tilde{C_t}$ 隐状态：$H_t = O_t \odot tanh(C_t)$ 其中，$F_t, I_t, O_t, C_t, H_t, \in \R^{n \times d}$</description></item><item><title>RNN综述</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/rnn_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/rnn_summary/</guid><description>一、文本预处理 1、词元-token 英文：在训练文本模型时，模型输入最小单元：可以是词元维度，也可以是字符维度(这样的话，模型还得学习怎么用字符组合成单词)
+中文：一般是字符维度；如果是词元维度，在模型之前需要进行分词，如果要使用词元维度，需要先分词，用空格间隔开。
+特殊词元：未知词元 &amp;lt;unk&amp;gt;，填充词元&amp;lt;pad&amp;gt;，序列开始词元 &amp;lt;bos&amp;gt;，序列结束词元 &amp;lt;eos&amp;gt;
+2、词表-vocabulary 把token映射到：一个从0开始的数字索引，也就是：
+token &amp;ndash;&amp;gt; idx：token_to_idx {0:then, 1:token, &amp;hellip;.}
+idx &amp;ndash;&amp;gt; token：idx_to_token: [the, token, &amp;hellip;.] 例如：
+tokens: 例如：一篇文章
+例如：[[一句话按照空格split后], [], [], ....]
+vocab：词表，代码里可以写成一个类，其元素有：
+self.idx_to_token ：['&amp;lt;unk&amp;gt;', &amp;lsquo;the&amp;rsquo;, &amp;hellip;] token的列表，按照token的个数降序排列
+self.token_to_idx ：{'&amp;lt;unk&amp;gt;': 0, &amp;lsquo;the&amp;rsquo;: 1, &amp;hellip;.} token&amp;ndash;&amp;gt;idx 的映射
+corpus：语料库，先将训练集中的所有文档合并在一起，对它们的唯一词元进行统计， 得到的统计结果称之为语料
+例如：[('&amp;lt;unk&amp;gt;', 1000), ('the', 900), ....]
+二、深度循环神经网络 循环神经网络(Recurrent Netural Networks)：是具有隐状态的神经网络。
+类似于MLP多层感知机，RNNs只是添加了时间轴信息。比如，MLP的表示如下：
+$$ H = \phi(XW_{xh} + b_h) $$ $$O = HW_{hq} + b_q $$</description></item><item><title>Transformer</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/transformer/transformer_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/transformer/transformer_summary/</guid><description>一、简介 谷歌大脑、谷歌研究院等团队于2017年联合发表文章《Attention Is All You Need》，提出了一种新的注意力 Seq2Deq 模型，以取代之前以RNN作为编/解码器实现的 Seq2Seq 模型。模型采用的也是编码器-解码器架构，但是在该模型中，编码器和解码器不再是 RNN结构，取而代之的是编码器栈（encoder stack）和解码器栈（decoder stack）（注：所谓的“栈”就是将同一结构重复多次，“stack”翻译为“堆叠”更为合适）。编码器栈和解码器栈中分别为连续N个具有相同结构的编码器和解码器。
+编码器：由两部分组成（自注意力模块 + 前馈神经网络）
+自注意力模块：具体来说是“Multi-Head Attention”，即“多头注意力”模块
+全连接前馈网络 每个子网络都具有残差连接，其输出形式为 $LayerNorm(Sublayer(x)+x)$ ，其中 $Sublayer(x)$ 表示子网络对输入特征x进行的具体映射操作；$LayerNorm()$ 表示归一化操作。
+解码器：由三部分组成（自注意力模块 + 编码-解码注意力模块 + 前馈神经网络）
+解码器中多了一个编码-解码注意力模块，用来利用当前已有的输出，来匹配输入特征（即：attention操作），然后拿计算出的新特征来计算当前时间步的输出。解码器中的自注意力模块与编码器不同是：这里只能看到当前时间步之前的输入，而不是全部的输入，所以需要有mask的操作。
+论文中图： 二、Transformer 输入：序列的embeding表示 + 位置编码
+编码器：
+多头注意力 + 残差连接(residual connection) &amp;ndash;&amp;gt; 层归一化(layer normalization) 基于位置的前馈网络(positionwise feed-forward network) + 残差连接(residual connection) &amp;ndash;&amp;gt; 层归一化(layer normalization) class PositionWiseFFN(nn.Module): &amp;#34;&amp;#34;&amp;#34;基于位置的前馈网络&amp;#34;&amp;#34;&amp;#34; def __init__(self, ffn_num_input, ffn_num_hiddens, ffn_num_outputs, **kwargs): super(PositionWiseFFN, self).</description></item><item><title>Word Embedding综述</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/word_embedding/word_embedding_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/word_embedding/word_embedding_summary/</guid><description>一、简介 Word Embedding is coming soon.</description></item><item><title>抠图综述</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/image-matting/image-matting-summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/image-matting/image-matting-summary/</guid><description>It&amp;rsquo;s coming soon.</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/cv/detect_object/object_detection_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/cv/detect_object/object_detection_summary/</guid><description>一、简介 It&amp;rsquo;s coming soon.
+二、网络 1、R-CNN 《Rich feature hierarchies for accurate object detection and semantic segmentation》(2013)
+2、SPPNet 《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》(2014)
+3、Fast R-CNN 《Fast R-CNN》(2015)
+4、Faster R-CNN 《Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks》(2016)
+5、FPN 《Feature Pyramid Networks for Object Detection》(2017)
+4、YOLO 《You Only Look Once: Unified, Real-Time Object Detection》(2016)
+5、YOLO V2 《YOLO9000: Better, Faster, Stronger》(2016)
+6、YOLO V3 《YOLOv3: An Incremental Improvement》(2018)</description></item><item><title>Attention</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/transformer/attention/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/transformer/attention/</guid><description>一、Attention机制 如何有选择地引导注意力：
+非自主性提示： 基于环境中物体的突出性和易见性。比如 《辛德勒的名单》中的镜头：黑白镜头中的穿红衣服的小女孩。
+自主性提示： 选择受到 认知、意识的控制。
+在不受自我意识控制的情况下，与环境差别最大的事物，就越显眼、易见。
+在受到自我意识控制的情况下，意识偏向那个，就选择那个
+查询(query)：自主性提示，类似于自我意识。
+键(key)：非自主提示，类似于事物的突出性、易见性。
+值(value)：感官输入，类似于具体的事物-值。
+attention机制可以认为是一个这样的函数：
+$$ f(\bold{q_j}) = \sum_{i=1}^m \alpha(\bold{q}_j, \bold{k}_i) \bold{v}_i$$ 由$ \bold{V}$ 的各个向量的加权平均，组成一个新的向量 $f(q_j)$。其中，权重的计算是通过 query向量和每个key向量 计算出来的，这个计算方式可以有多种，比如：加性注意力、缩放点积注意力
+$\bold{Q} \in \R^{n \times q}$: 查询矩阵，是由N个向量组成，每个向量有q个元素
+K-V: M个键值对集合。
+$\bold{K} \in \R^{m \times k}$: M个键向量组成的矩阵，每个键向量(k维)：就是每个字的标签信息
+$\bold{V} \in \R^{m \times v}$: M个值向量组成的矩阵，每个值向量(v维)：就是每个字的embeding
+1、加性注意力 $$\alpha(\bold{q}_j, \bold{k}_i) = \bold{w}_v^T tanh(\bold{W}_q \bold{q}_j + \bold{W}_k \bold{k}_i)$$ 其中，$\bold{w}_v^T \in \R^h, \bold{W}_q \in \R^{h \times q}, \bold{W}_k \in \R^{h \times k}$ 是需要训练的。</description></item><item><title>编解码架构</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/encode_decode/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/encode_decode/</guid><description>一、编码器-解码器 架构 机器翻译：是把一个序列转换为另一个序列。为处理这种类型的输入和输出，设计这样的架构：
+编码器：接受一个长度可变的序列作为输入，并将其转换为具有固定形状的编码状态。
+解码器：将固定形状的编码状态映射到长度可变的序列。
+二、seq2seq Ilya Sutskever 等人设计的seq2seq：将编码器最后一时间步的state，作为解码器第一时间步的state使用。
+Kyunghyun Cho 等人设计的seq2seq，将编码器最后一时间步的state，作为解码器每一个时间步的输入序列的一部分。</description></item><item><title>Katex公式</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/latax_formula/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/latax_formula/</guid><description>官方文档
+线上工具
+一、基础篇 1. 输入公式 行内公式： 格式：$数学公式$ 例如：$x^2=1$ : $x^2=1$
+行间公式：
+$$
+数学公式
+$$
+例如: $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$ $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$
+二、进阶篇 1. 声调/变音符号 \dot{a}, \ddot{a}, \acute{a}, \grave{a}
+$\dot{a}, \ddot{a}, \acute{a}, \grave{a}$
+\check{a}, \breve{a}, \tilde{a}, \bar{a}
+$\check{a}, \breve{a}, \tilde{a}, \bar{a}$
+\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}
+$\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}$
+a', a''
+$a', a''$
+2. 标准函数 指数/上下标</description></item><item><title>MarkDown入门</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/markdown-tutorial/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/markdown-tutorial/</guid><description>一、小技巧 可以使用html的标签
+markdown中常用的html标签： 操作 标签 换行 测试&amp;lt;br&amp;gt;一下 标记 &amp;lt;mark&amp;gt;测试一下&amp;lt;/mark&amp;gt; 引用 &amp;lt;cite&amp;gt;引用[^1]&amp;lt;/cite&amp;gt; 空格 &amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;测试一下 删除线 &amp;lt;s&amp;gt;测试一下&amp;lt;/s&amp;gt; 下划线 &amp;lt;u&amp;gt;测试一下&amp;lt;/u&amp;gt; 字体增大 &amp;lt;big&amp;gt;测试一下&amp;lt;/big&amp;gt; 字体减小 &amp;lt;small&amp;gt;测试一下&amp;lt;/small&amp;gt; 文字上标 测试&amp;lt;sup&amp;gt;一下&amp;lt;/sup&amp;gt; 文字下标 测试&amp;lt;sub&amp;gt;一下&amp;lt;/sub&amp;gt; 右对齐 &amp;lt;p align=right&amp;gt;测试一下&amp;lt;/p&amp;gt; 文字居中 &amp;lt;center&amp;gt;测试一下&amp;lt;/center&amp;gt; 图片居中 &amp;lt;p align=&amp;quot;center&amp;quot;&amp;gt;&amp;lt;img src=&amp;quot;***.jpg&amp;quot; width=&amp;quot;60%&amp;quot;&amp;gt;&amp;lt;/p&amp;gt; 超链接 &amp;lt;a href=&amp;quot;center&amp;quot; target=&amp;quot;blank&amp;quot;&amp;gt;文本&amp;lt;/a&amp;gt; href指定跳转的目标路径；</description></item><item><title>区域块-实例</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/shortcodes_samples/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/shortcodes_samples/</guid><description>🤑
+This is a sample post intended to test the followings:
+Default hero image. Different shortcodes. 一、报警(Alert) The following alerts are available in this theme.
+这是 type=&amp;quot;success&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;success&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;danger&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;danger&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;warning&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;warning&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;info&amp;quot;的报警样例.</description></item><item><title>深度学习开篇</title><link>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/deeplearning_start/</link><pubDate>Fri, 01 Jan 2021 08:06:25 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/deeplearning_start/</guid><description>一、开篇 在描述深度学习之前，先回顾下机器学习和深度学习的关系。
+机器学习：研究如何使用计算机系统利用经验改善性能。在机器学习的众多研究方向中，表征学习关注如何自动找出表示数据的合适方式，以便更好地将输入变换为正确的输出。
+深度学习：是具有多级表示的表征学习方法。在每一级，深度学习通过简单的函数将该级的表示变换为更高级的表示。因此，深度学习模型也可以看作是由许多简单函数复合而成的函数。当这些复合函数足够多时，就可以表达非常复杂的变换。 作为表征学习的一种，深度学习将自动找出每一级表示数据的合适方式。 逐级表示越来越抽象的概念或模式。以图像为例，它的输入是一堆原始像素值，模型中逐级表示为：特定位置和角度的边缘 &amp;mdash;&amp;gt; 由边缘组合得出的花纹 &amp;mdash;&amp;gt; 由多种花纹进一步汇合得到的特定部位 &amp;mdash;&amp;gt; 由特定部位组合得到的整个目标。
+二、简介 It&amp;rsquo;s coming soon.
+三、欠/过拟合 1. 误差 训练误差(training error): 训练模型在训练数据集(training set)上表现出的误差。 泛化误差(generalization error)：模型在任意一个测试数据集(test set)上表现出的误差的期望。
+训练集(training set)：用来产出模型参数。
+验证集(validation set)：由于无法从训练误差评估泛化误差，因此从训练集中预留一部分数据作为验证集，主要用来选择模型。 测试集(test set)：在模型参数选定后，实际使用。
+2. 欠/过拟合 欠拟合(underfitting)：模型的表现能力不足。
+训练样本足够，模型参数不足 过拟合(overfitting)：模型的表现能力过剩。
+训练样本不足，模型参数足够：样本不足导致特征较少，相当于模型足够表征数据的特征，产生过拟合现象。 3. 优化过拟合 增大训练集可能会减轻过拟合，但是获取训练数据往往代价很高。可以在模型方面优化一下，减轻过拟合现象。
+权重衰减(weight decay)： 对模型参数计算L2范数正则化。即：在原Loss中添加对模型参数的惩罚。使得模型学到的权重参数较接近于0。权重衰减通过惩罚绝对值较大的模型参数，为需要学习的模型增加了限制。这可能对过拟合有效。
+丢弃法(dropout)：针对隐藏层中的各个神经元，以概率p随机丢弃，有可能该成神经元被全部清零。这样，下一层的计算无法过渡依赖该层的任意一个神经元，从而在训练中可以用来对付过拟合。在测试中，就不需要丢弃了。
+例如：对隐藏层使用丢弃法，丢弃概率: p，那么hi 有p的概率被清零；不丢弃概率: 1-p，为了保证隐藏层的期望值不变E(p')=E(p)，需要对不丢弃的神经元做拉伸，即：$$h'_i = \frac{\xi_i} {1-p} h_i$$ 其中：随机变量ξi 为0和1的概率分别为p和1-p</description></item><item><title>Toha的配置</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/toha-config/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/toha-config/</guid><description>一、启动 模板项目: github
+# --force 即使本文件夹不为空，也会强制创建站点 hugo new site myblog -f=yaml --force # 初始化本地仓库，因为部署时要把该文件的内容push到远端仓库 git init # 添加toha主题 git submodule add https://github.com/hugo-toha/toha.git themes/toha # 在本地启动站点，浏览器中打开: http://localhost:1313 hugo server -t toha -w Demo样例
+Hugo文档
+Github项目
+二、配置 config.yaml: 配置样例
+这个主题的大部分内容是由data目录中的一些 YAML 文件驱动的。 在本节中，我们将添加一些示例数据。 由于我们正在构建一个多语言站点，因此我们会将每种语言的数据保存在各自的语言环境文件夹中。首先，在data目录中创建 en 文件夹(英语环境)/zh-cn(汉语环境)。 我们将在这里添加英语语境数据。
+1、主页配置 在目的环境文件夹中创建site.yaml
+英语环境：/data/en/site.yaml 汉语环境：/data/zh-cn/site.yaml
+# Copyright Notice copyright: © 2021 Copyright. # A disclaimer notice for the footer. Make sure you have set &amp;#34;params.footer.disclaimer.enable: true&amp;#34; in your `config.</description></item><item><title>撰写文章</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/write-blogs/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/write-blogs/</guid><description>一、创建类别 1、创建文章 在content文件夹中创建posts文件夹，在该文件夹中创建一个_index.zh-cn.md文件(中文环境)/_index.en.md(英文环境)。在里面添加如下内容：
+--- title: Posts --- 现在，假设你想写一篇文章。首先，创建一个文件，在末尾用markdown扩展名命名它。例如:我们创建了一个名为analytics-and-comments.en.md，并添加以下几行内容。如果在中文环境下创建，名字应该是analytics-and-comments.zh-cn.md:
+--- title: &amp;#34;Analytics and Comments&amp;#34; date: 2020-06-08T06:00:23+06:00 hero: /images/posts/writing-posts/analytics.svg description: Adding analytics and disquss comment in hugo theme Toha menu: sidebar: name: Analytics &amp;amp; Comments identifier: analytics-and-comments weight: 500 --- ### Complete Post Coming Soon... 在文件的头部以3个-开始和结束，称为前置内容。我们写得每一篇博客文章都需要有前置内容，在前置内容之后，可以开始写文章内容了，前置内容的参数有：
+参数 解释 title 贴子的标题 date 显示博客发布时间，第一部分 year-month-date format hero 文章封面图的位置路径。创建路径static/images/posts/writingposts/ 在其中放置图片文件 description 添加任意你喜欢的描述 menu 这个部分包含了另一个sidebar参数，该参数定义了侧边栏中文件结构的样子。该参数的子参数有：name,identifier,weight name: 定义了侧边栏文件层次结构中，文档的名称 identifier: 标识符。有助于将文件与其他文件区分开来，有助于分类 weight: 权重值，对于多个文件，文档将基于该权重值以升序出现在文件层次结构中。 parent: 2、创建子类 刚刚我们创建了一个_index.</description></item></channel></rss>

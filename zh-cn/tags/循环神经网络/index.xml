@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>循环神经网络 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/</link><description>Recent content in 循环神经网络 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Sep 2021 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml"/><item><title>GRU网络</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/gru/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/gru/</guid><description>一、简介 RNNs中，需要的信息都放在隐藏层，当序列太长时，隐藏层累积了太多的信息，对前面太久的信息，就不容易获取到了。
+另外，有些信息不太重要，有些词比较重要，所以，设计了：
+更新门： $Z_t$ 有助于捕获序列中的长期依赖关系。当$Z_t = 0$时，并不是就没有$H_{t-1}$的信息了，而是$H_{t-1}$的信息通过正常的计算$H_t$的途径进来；而当$Z_t &amp;gt; 0$时，$H_{t-1}$的信息可以绕过正常的计算途径，直接添加到$H_t$中。
+重置门： $R_t$ 有助于捕获序列中的短期依赖关系。$\tilde{H_t}$ 的计算跟RNNs计算相似，就是加了 $R_t$ 来限制 $H_{t-1}$，本来RNNs对太久的信息就不容易获取，所以 $R_t$ 的作用：是否忘掉历史没用的信息。
+$$R_t = sigmoid(X_tW_{xr}+H_{t-1}W_{hr}+b_r)$$ $$Z_t = sigmoid(X_tW_{xz}+H_{t-1}W_{hz}+b_z)$$ $$\tilde{H_t} = tanh(X_tW_{xh} + (R_t \odot H_{t-1})W_{hh} + b_h)$$ $$H_t = Z_t \odot H_{t-1} + (1-Z_t)\odot \tilde{H_t}$$
+其中，$R_t$ ：表示在更新候选隐状态时，需要多少历史隐状态信息，$Z_t$ ：表示在算真正的隐状态时，需要多少新输入的$X_t$的信息，这两个的维度与隐状态是一致的。</description></item><item><title>LSTM网络</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/lstm/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/lstm/</guid><description>一、简介 长短期记忆网络(LSTM)
+忘记门：$F_t = sigmoid(X_tW_{xf}+H_{t-1}W_{hf}+b_f)$ 输入门：$I_t = sigmoid(X_tW_{xi}+H_{t-1}W_{hi}+b_i)$ 输出门：$O_t = sigmoid(X_tW_{xo}+H_{t-1}W_{ho}+b_o)$ 候选记忆单元：$\tilde{C_t} = tanh(X_tW_{xc} + (R_t \odot H_{t-1})W_{hc} + b_c)$ 记忆单元：$C_t = F_t \odot C_{t-1} + I_t\odot \tilde{C_t}$ 隐状态：$H_t = O_t \odot tanh(C_t)$ 其中，$F_t, I_t, O_t, C_t, H_t, \in \R^{n \times d}$</description></item><item><title>RNN综述</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/rnn_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/rnn_summary/</guid><description>一、文本预处理 1、词元-token 英文：在训练文本模型时，模型输入最小单元：可以是词元维度，也可以是字符维度(这样的话，模型还得学习怎么用字符组合成单词)
+中文：一般是字符维度；如果是词元维度，在模型之前需要进行分词，如果要使用词元维度，需要先分词，用空格间隔开。
+特殊词元：未知词元 &amp;lt;unk&amp;gt;，填充词元&amp;lt;pad&amp;gt;，序列开始词元 &amp;lt;bos&amp;gt;，序列结束词元 &amp;lt;eos&amp;gt;
+2、词表-vocabulary 把token映射到：一个从0开始的数字索引，也就是：
+token &amp;ndash;&amp;gt; idx：token_to_idx {0:then, 1:token, &amp;hellip;.}
+idx &amp;ndash;&amp;gt; token：idx_to_token: [the, token, &amp;hellip;.] 例如：
+tokens: 例如：一篇文章
+例如：[[一句话按照空格split后], [], [], ....]
+vocab：词表，代码里可以写成一个类，其元素有：
+self.idx_to_token ：['&amp;lt;unk&amp;gt;', &amp;lsquo;the&amp;rsquo;, &amp;hellip;] token的列表，按照token的个数降序排列
+self.token_to_idx ：{'&amp;lt;unk&amp;gt;': 0, &amp;lsquo;the&amp;rsquo;: 1, &amp;hellip;.} token&amp;ndash;&amp;gt;idx 的映射
+corpus：语料库，先将训练集中的所有文档合并在一起，对它们的唯一词元进行统计， 得到的统计结果称之为语料
+例如：[('&amp;lt;unk&amp;gt;', 1000), ('the', 900), ....]
+二、深度循环神经网络 循环神经网络(Recurrent Netural Networks)：是具有隐状态的神经网络。
+类似于MLP多层感知机，RNNs只是添加了时间轴信息。比如，MLP的表示如下：
+$$ H = \phi(XW_{xh} + b_h) $$ $$O = HW_{hq} + b_q $$</description></item><item><title>编解码架构</title><link>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/encode_decode/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/nlp/rnn/encode_decode/</guid><description>一、编码器-解码器 架构 机器翻译：是把一个序列转换为另一个序列。为处理这种类型的输入和输出，设计这样的架构：
+编码器：接受一个长度可变的序列作为输入，并将其转换为具有固定形状的编码状态。
+解码器：将固定形状的编码状态映射到长度可变的序列。
+二、seq2seq Ilya Sutskever 等人设计的seq2seq：将编码器最后一时间步的state，作为解码器第一时间步的state使用。
+Kyunghyun Cho 等人设计的seq2seq，将编码器最后一时间步的state，作为解码器每一个时间步的输入序列的一部分。</description></item></channel></rss>

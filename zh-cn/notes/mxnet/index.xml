@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>MxNet on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/</link><description>Recent content in MxNet on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><atom:link href="https://biubiobiu.github.io/zh-cn/notes/mxnet/index.xml" rel="self" type="application/rss+xml"/><item><title>NdArray使用</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/ndarray/ndarray_summary/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/ndarray/ndarray_summary/</guid><description>查阅文档 怎么查阅相关文档？ 官网
+1. 查阅模块里的所有函数和类 from mxnet import nd print(dir(nd.random)) __开头和结尾的函数 (python的特别对象) 可以忽略 _开头的函数 (一般为内部函数) 可以忽略 其余成员，可以根据名字 大致猜出是什么意思。 2. 查阅特定函数和类的使用 想了解某个函数或者类的具体用法，可以使用help函数。以NDArray中的ones_like函数为例。
+help(nd.ones_like) 注意：
+jupyter记事本里，使用?来将文档显示在另外一个窗口中。例如：nd.ones_like? 与 help(nd.ones_like)效果一样。nd.ones_like??会额外显示该函数实现的代码。 内存开销 原始操作 首先来个例子：Y = Y + X &amp;ndash;&amp;gt; 每个操作会新开内存来存储运算结果。 上例中，X，Y 变量首先存储在内存中，相加的计算结果会另外开辟内存来存储；然后变量Y在指向新的内存。 内存使用情况：
+内存id_x &amp;lt;&amp;ndash; X 内存id_y &amp;lt;&amp;ndash; Y 内存id_x+y &amp;lt;&amp;ndash; Y
+Y[:] = X + Y 或者 Y += X 通过[:]把X+Y的结果写进Y对应的内存中。上述操作中，需要另外开辟内存来存储计算结果。 内存使用情况： 内存id_x &amp;lt;&amp;ndash; X 内存id_y &amp;lt;&amp;ndash; Y 内存id_x+y &amp;ndash;&amp;gt; 把内存id_x+y中数值复制到内存id_y中</description></item><item><title>NdArray技巧搜集</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/ndarray/technic_gather/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/ndarray/technic_gather/</guid><description>sum/mean等操作 - 保留原维度数 keepdims: 保留原维度数。例如：
+from mxnet import nd def softmax(X): X_exp = X.exp() # shape = (n, m) # shape = (n, 1) 而并不是 (n,) partition = X_exp.sum(axis=1, keepdims=True) return X_exp / partition # 这里应用了广播机制 X = nd.random.normal(shape=(2, 5)) X_prob = softmax(X) B的值作为A的索引 - 取值 from mxnet import nd y_hat = nd.array([[0.1, 0.3, 0.6], [0.3, 0.2, 0.5]]) y = nd.array([0, 2], dtype=&amp;#39;int32&amp;#39;) nd.pick(y_hat, y) # 结果: [0.</description></item><item><title>Gluon-nn模块</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gluon_nn/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gluon_nn/</guid><description>模型基类-Block from mxnet.gluon import Block, nn from mxnet import ndarray as F class Model(Block): def __init__(self, **kwargs): super(Model, self).__init__(**kwargs) # use name_scope to give child Blocks appropriate names. with self.name_scope(): self.dense0 = nn.Dense(20) self.dense1 = nn.Dense(20) def forward(self, x): x = F.relu(self.dense0(x)) return F.relu(self.dense1(x)) model = Model() model.initialize(ctx=mx.cpu(0)) model(F.zeros((10, 10), ctx=mx.cpu(0))) class Block(builtins.object)
+网络的最基础的类，搭建网络时必须继承此Block类 —————————————————
+Block的两个参数：
+prefix : str; 前缀的作用就像一个命名空间。在父模块的作用域下创建的子模块都有父模块的前缀(prefix). params : ParameterDict or None; 共享参数。
+例如：dense1共享dense0的参数。
+dense0 = nn.</description></item><item><title>Gluon实例</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/gluon_summary/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/gluon_summary/</guid><description>实例-单层感知机 模型：o = w1*x1 + w2*x2 + b 输出o作为线性回归的输出，输入层是2维特征；输入层不涉及计算，该神经网络只有输出层1层。
+神经元：输出层中负责计算o的单元。
+该神经元，依赖于输入层的全部特征，也就是说输出层中的神经元和输入层中各个输入完全连接，所以，这里的输出层又叫作全连接层(fully connected layer)或者稠密层(dense layer)
+生成数据集 目标： o = 2x1 - 3.4x2 + 4.2 其中： 样本集：features: [w1, w2]， labels: [真实值+噪声]
+from IPython import display from matplotlib import pyplot as plt from mxnet import autograd, nd import random num_inputs = 2 num_examples = 1000 true_w = [2, -3.4] true_b = 4.2 features = nd.random.normal(scale=1, shape=(num_examples, num_inputs)) labels = true_w[0] * features[:, 0] + true_w[1] * features[:, 1] + true_b labels += nd.</description></item><item><title>Gluon模块简介</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gather/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gather/</guid><description>gluon模块-结构 路径.mxnet/gluon/下的树状结构:
+│　block.py 类：Block, HybridBlock
+│　loss.py 各种loss函数
+│　parameter.py 类：Parameter, Constant, ParameterDict
+│　trainer.py 类：Trainer
+│　utils.py 优化操作
+│　init.py
+│
+├─contrib
+│　│
+│　├─cnn
+│　│　└─ conv_layers.py
+│　├─data
+│　│　└─ sampler.py
+│　│
+│　├─estimator
+│　│　│　estimator.py
+│　│　└─ event_handler.py
+│　│
+│　├─nn
+│　│　└─ basic_layers.py
+│　│
+│　└─rnn
+│　│　conv_rnn_cell.py
+│　└─ rnn_cell.py
+│
+├─data 主要是数据处理操作</description></item></channel></rss>

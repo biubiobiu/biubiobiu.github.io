@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>机器学习 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link><description>Recent content in 机器学习 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Fri, 01 Jan 2021 08:06:25 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>深度学习开篇</title><link>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/deeplearning_start/</link><pubDate>Fri, 01 Jan 2021 08:06:25 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/deeplearning_summary/deeplearning_start/</guid><description>一、开篇 在描述深度学习之前，先回顾下机器学习和深度学习的关系。
+机器学习：研究如何使用计算机系统利用经验改善性能。在机器学习的众多研究方向中，表征学习关注如何自动找出表示数据的合适方式，以便更好地将输入变换为正确的输出。
+深度学习：是具有多级表示的表征学习方法。在每一级，深度学习通过简单的函数将该级的表示变换为更高级的表示。因此，深度学习模型也可以看作是由许多简单函数复合而成的函数。当这些复合函数足够多时，就可以表达非常复杂的变换。 作为表征学习的一种，深度学习将自动找出每一级表示数据的合适方式。 逐级表示越来越抽象的概念或模式。以图像为例，它的输入是一堆原始像素值，模型中逐级表示为：特定位置和角度的边缘 &amp;mdash;&amp;gt; 由边缘组合得出的花纹 &amp;mdash;&amp;gt; 由多种花纹进一步汇合得到的特定部位 &amp;mdash;&amp;gt; 由特定部位组合得到的整个目标。
+二、简介 It&amp;rsquo;s coming soon.
+三、欠/过拟合 1. 误差 训练误差(training error): 训练模型在训练数据集(training set)上表现出的误差。 泛化误差(generalization error)：模型在任意一个测试数据集(test set)上表现出的误差的期望。
+训练集(training set)：用来产出模型参数。
+验证集(validation set)：由于无法从训练误差评估泛化误差，因此从训练集中预留一部分数据作为验证集，主要用来选择模型。 测试集(test set)：在模型参数选定后，实际使用。
+2. 欠/过拟合 欠拟合(underfitting)：模型的表现能力不足。
+训练样本足够，模型参数不足 过拟合(overfitting)：模型的表现能力过剩。
+训练样本不足，模型参数足够：样本不足导致特征较少，相当于模型足够表征数据的特征，产生过拟合现象。 3. 优化过拟合 增大训练集可能会减轻过拟合，但是获取训练数据往往代价很高。可以在模型方面优化一下，减轻过拟合现象。
+权重衰减(weight decay)： 对模型参数计算L2范数正则化。即：在原Loss中添加对模型参数的惩罚。使得模型学到的权重参数较接近于0。权重衰减通过惩罚绝对值较大的模型参数，为需要学习的模型增加了限制。这可能对过拟合有效。
+丢弃法(dropout)：针对隐藏层中的各个神经元，以概率p随机丢弃，有可能该成神经元被全部清零。这样，下一层的计算无法过渡依赖该层的任意一个神经元，从而在训练中可以用来对付过拟合。在测试中，就不需要丢弃了。
+例如：对隐藏层使用丢弃法，丢弃概率: p，那么hi 有p的概率被清零；不丢弃概率: 1-p，为了保证隐藏层的期望值不变E(p')=E(p)，需要对不丢弃的神经元做拉伸，即：$$h'_i = \frac{\xi_i} {1-p} h_i$$ 其中：随机变量ξi 为0和1的概率分别为p和1-p</description></item></channel></rss>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Gluon on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/</link><description>Recent content in Gluon on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><atom:link href="https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/index.xml" rel="self" type="application/rss+xml"/><item><title>Gluon-nn模块</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gluon_nn/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gluon_nn/</guid><description>模型基类-Block from mxnet.gluon import Block, nn from mxnet import ndarray as F class Model(Block): def __init__(self, **kwargs): super(Model, self).__init__(**kwargs) # use name_scope to give child Blocks appropriate names. with self.name_scope(): self.dense0 = nn.Dense(20) self.dense1 = nn.Dense(20) def forward(self, x): x = F.relu(self.dense0(x)) return F.relu(self.dense1(x)) model = Model() model.initialize(ctx=mx.cpu(0)) model(F.zeros((10, 10), ctx=mx.cpu(0))) class Block(builtins.object)
+网络的最基础的类，搭建网络时必须继承此Block类 —————————————————
+Block的两个参数：
+prefix : str; 前缀的作用就像一个命名空间。在父模块的作用域下创建的子模块都有父模块的前缀(prefix). params : ParameterDict or None; 共享参数。
+例如：dense1共享dense0的参数。
+dense0 = nn.</description></item><item><title>Gluon实例</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/gluon_summary/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/gluon_summary/</guid><description>实例-单层感知机 模型：o = w1*x1 + w2*x2 + b 输出o作为线性回归的输出，输入层是2维特征；输入层不涉及计算，该神经网络只有输出层1层。
+神经元：输出层中负责计算o的单元。
+该神经元，依赖于输入层的全部特征，也就是说输出层中的神经元和输入层中各个输入完全连接，所以，这里的输出层又叫作全连接层(fully connected layer)或者稠密层(dense layer)
+生成数据集 目标： o = 2x1 - 3.4x2 + 4.2 其中： 样本集：features: [w1, w2]， labels: [真实值+噪声]
+from IPython import display from matplotlib import pyplot as plt from mxnet import autograd, nd import random num_inputs = 2 num_examples = 1000 true_w = [2, -3.4] true_b = 4.2 features = nd.random.normal(scale=1, shape=(num_examples, num_inputs)) labels = true_w[0] * features[:, 0] + true_w[1] * features[:, 1] + true_b labels += nd.</description></item><item><title>Gluon模块简介</title><link>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gather/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/mxnet/gluon/module_gather/</guid><description>gluon模块-结构 路径.mxnet/gluon/下的树状结构:
+│　block.py 类：Block, HybridBlock
+│　loss.py 各种loss函数
+│　parameter.py 类：Parameter, Constant, ParameterDict
+│　trainer.py 类：Trainer
+│　utils.py 优化操作
+│　init.py
+│
+├─contrib
+│　│
+│　├─cnn
+│　│　└─ conv_layers.py
+│　├─data
+│　│　└─ sampler.py
+│　│
+│　├─estimator
+│　│　│　estimator.py
+│　│　└─ event_handler.py
+│　│
+│　├─nn
+│　│　└─ basic_layers.py
+│　│
+│　└─rnn
+│　│　conv_rnn_cell.py
+│　└─ rnn_cell.py
+│
+├─data 主要是数据处理操作</description></item></channel></rss>

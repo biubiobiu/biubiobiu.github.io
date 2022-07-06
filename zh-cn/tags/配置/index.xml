@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>配置 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/</link><description>Recent content in 配置 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Mon, 08 Jun 2020 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/index.xml" rel="self" type="application/rss+xml"/><item><title>Toha的配置</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/toha-config/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/toha-config/</guid><description>一、启动 模板项目: github
+# --force 即使本文件夹不为空，也会强制创建站点 hugo new site myblog -f=yaml --force # 初始化本地仓库，因为部署时要把该文件的内容push到远端仓库 git init # 添加toha主题 git submodule add https://github.com/hugo-toha/toha.git themes/toha # 在本地启动站点，浏览器中打开: http://localhost:1313 hugo server -t toha -w Demo样例
+Hugo文档
+Github项目
+二、配置 config.yaml: 配置样例
+这个主题的大部分内容是由data目录中的一些 YAML 文件驱动的。 在本节中，我们将添加一些示例数据。 由于我们正在构建一个多语言站点，因此我们会将每种语言的数据保存在各自的语言环境文件夹中。首先，在data目录中创建 en 文件夹(英语环境)/zh-cn(汉语环境)。 我们将在这里添加英语语境数据。
+1、主页配置 在目的环境文件夹中创建site.yaml
+英语环境：/data/en/site.yaml 汉语环境：/data/zh-cn/site.yaml
+# Copyright Notice copyright: © 2021 Copyright. # A disclaimer notice for the footer. Make sure you have set &amp;#34;params.footer.disclaimer.enable: true&amp;#34; in your `config.</description></item></channel></rss>

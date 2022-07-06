@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>公式 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E5%85%AC%E5%BC%8F/</link><description>Recent content in 公式 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Tue, 08 Jun 2021 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E5%85%AC%E5%BC%8F/index.xml" rel="self" type="application/rss+xml"/><item><title>Katex公式</title><link>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/latax_formula/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/toha-tutorial/latax_formula/</guid><description>官方文档
+线上工具
+一、基础篇 1. 输入公式 行内公式： 格式：$数学公式$ 例如：$x^2=1$ : $x^2=1$
+行间公式：
+$$
+数学公式
+$$
+例如: $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$ $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$
+二、进阶篇 1. 声调/变音符号 \dot{a}, \ddot{a}, \acute{a}, \grave{a}
+$\dot{a}, \ddot{a}, \acute{a}, \grave{a}$
+\check{a}, \breve{a}, \tilde{a}, \bar{a}
+$\check{a}, \breve{a}, \tilde{a}, \bar{a}$
+\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}
+$\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}$
+a', a''
+$a', a''$
+2. 标准函数 指数/上下标</description></item></channel></rss>

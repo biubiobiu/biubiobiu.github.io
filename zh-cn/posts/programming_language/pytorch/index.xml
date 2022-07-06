@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>PyTorch on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/</link><description>Recent content in PyTorch on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Fri, 08 Apr 2022 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/index.xml" rel="self" type="application/rss+xml"/><item><title>Tensor</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/tensor/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/tensor/</guid><description>一、</description></item><item><title>基础操作</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/basic/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/basic/</guid><description>一、</description></item><item><title>数学计算</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/mathematical/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/mathematical/</guid><description>一、</description></item><item><title>模型训练</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/train_model/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/train_model/</guid><description>一、</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/torch_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/programming_language/pytorch/torch_summary/</guid><description>官方文档
+torch目录下，树状图:
+├── quasirandom.py
+├── random.py random模块
+├── serialization.py
+├── storage.py
+├── tensor.py Tensor模块
+├── functional.py
+│
+├── cuda
+│　├── comm.py
+│　├── error.py
+│　├── memory.py
+│　├── nccl.py
+│　├── nvtx.py
+│　├── profiler.py
+│　├── random.py
+│　├── sparse.py
+│　└── streams.py
+│
+├── nn
+│　├── backends
+│　├── cpp.py
+│　├── functional.py
+│　├── grad.py
+│　├── init.py
+│　├── intrinsic
+│　│　├── modules</description></item></channel></rss>
