@@ -1,0 +1,37 @@
+# section information
+section:
+  name: 教育
+  id: education
+  template: sections/education.html
+  enable: true
+  weight: 5
+  showOnNavbar: true
+  # Can optionally hide the title in sections
+  # hideTitle: true
+
+degrees:
+- name: 信息与通信工程 硕士 
+  icon: fa-microscope
+  timeframe: 2015-2018
+  institution:
+    name: 清华大学
+    url: "https://www.ee.tsinghua.edu.cn/index.htm"
+  grade:
+    scale: CGPA
+    achieved: 3.6
+    outOf: 4
+  # publications:
+  # - title: Single Image Dehazing based on Dark Channel Prior with Different Atmospheric Light
+  #   url: "https://www.semanticscholar.org/paper/Single-Image-Dehazing-based-on-Dark-Channel-Prior-Zhang-Bai/b8dfb9f64c7a3a97931042af6ca0a18b47e73508"
+
+- name: 电子信息工程 学士
+  icon: fa-graduation-cap
+  timeframe: 2010-2014
+  institution:
+    name: 西安电子科技大学
+    url: "https://www.xidian.edu.cn/"
+  grade:
+    scale: CGPA
+    achieved: 9
+    outOf: 10
+

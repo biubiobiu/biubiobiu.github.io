@@ -1,0 +1,16 @@
+# some information about you
+name: "biubiobiu"
+nickname: "biubiobiu"
+# greeting message before your name. it will default to "Hi! I am" if not provided
+greeting: "👋 嗨，我是"
+image: "images/author/john.png"
+# give your some contact information. they will be used in the footer
+contactInfo:
+  邮箱: "bsgshyn8@163.com"
+  电话: "+0123456789"
+
+# some summary about what you do
+summary:
+  - 👀我是一个算法工程师
+  - 🌱我现在主要从事CV、NLP方向
+  - 💞️我想在这里记录自己的成长

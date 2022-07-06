@@ -1,0 +1,23 @@
+# Copyright Notice
+copyright: © 2021 Copyright.
+
+# A disclaimer notice for the footer. Make sure you have set "params.footer.disclaimer.enable: true" in your `config.yaml` file.
+disclaimer: "这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经
+作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。"
+
+# Meta description for your site.  This will help the search engines to find your site.
+description: 机器学习、深度学习 探索者.
+
+# specify the list of custom menus that you want to show in the top navbar.
+# they will be separated by a divider from the main menus.
+customMenus:
+- name: 文档
+  url: https://toha-guides.netlify.app/posts/
+
+# Specify OpenGraph Headers
+openGraph:
+  title: biubiobiu's Blog
+  type: website
+  description: biubiobiu的简历和私人博客.
+  image: images/author/john.png
+  url: https://biubiobiu.github.io
