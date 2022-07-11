@@ -16,6 +16,9 @@ categories: ["Basic"]
 math: true
 ---
 
+
+<a href="https://openaccess.thecvf.com/menu" target="blank">论文入口</a>
+
 ## 一、开篇
 在描述深度学习之前，先回顾下机器学习和深度学习的关系。
 
