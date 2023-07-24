@@ -68,5 +68,9 @@ Open AI 在2021年1月份发布的<a href="https://openai.com/blog/dall-e/" targ
 ### 2、DALL-E
 <a href="https://arxiv.org/abs/2103.00020" target="blank">DALL-E</a>：通过文本生成图片
 
-### 3、
+### 3、KOSMOS-1
+
+<a href="https://arxiv.org/abs/2302.14045" target="blank">《Language Is Not All You Need: Aligning Perception with Language Models》</a> 代码：<a href="https://github.com/microsoft/unilm" target="blank">github</a> 中介绍了一个多模态大型语言模型(MLLM)——KOSMOS-1。它可以感知一般模态、遵循指令(即零样本学习)以及在上下文中学习(即少样本学习)。研究目标：使感知与LLM保持一致，如此一来模型能够看到(see)和说话(talk)。研究者按照 <a href="https://arxiv.org/abs/2206.06336" target="blank">《Language models are general-purpose interfaces》</a> 的方式从头开始训练KOSMOS-1。
+
+
 

@@ -10,6 +10,9 @@ menu:
 author:
   name: biubiobiu
   image: /images/author/john.png
+math: true
+tags: ["BERT"]
+categories: ["Basic"]
 ---
 
 
@@ -165,4 +168,16 @@ class BERTModel(nn.Module):
         nsp_Y_hat = self.nsp(self.hidden(encoded_X[:, 0, :]))
         return encoded_X, mlm_Y_hat, nsp_Y_hat
 ```
+
+
+## 总结
+
+BERT虽然对上下文有很强的编码能力，但是缺乏细粒度语义的表示。比如：</br>
+  - The sky is blue today.
+  - The sea is blue today.
+sky 和sea 明明是天和海的区别，却因为上下文一样而得到极为相似的编码。细粒度表示能力的缺失会对真实任务造成很大的影响。
+
+## 参考
+
+
 

@@ -1,9 +1,9 @@
 ---
-title: 二叉树
+title: 二叉树-遍历
 weight: 220
 menu:
   notes:
-    name: 二叉树
+    name: 二叉树-遍历
     identifier: notes-algorithm-tree
     parent: notes-algorithm
     weight: 20

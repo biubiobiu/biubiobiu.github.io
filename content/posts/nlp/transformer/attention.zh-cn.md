@@ -104,3 +104,10 @@ $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1}, h_t) h_t$$
   - 编码器各个隐状态 $h_t$ 其中 $t \in [1, n]$
   - $\alpha()$ 函数，采用`加性注意力`
 
+
+
+## 参考
+
+<a href="https://cloud.tencent.com/developer/article/1868051?from=10680" target="blank">Transformer详解</a>
+
+
