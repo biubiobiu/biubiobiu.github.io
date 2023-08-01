@@ -15,10 +15,12 @@ categories: ["Basic"]
 math: true
 ---
 
-## 一、
+## 一、简介
 
 <a href="https://zhuanlan.zhihu.com/p/493489688" target="blank">参考</a>，
 <a href="https://arxiv.org/abs/2103.00020" target="blank">论文</a>，
 <a href="https://github.com/OpenAI/CLIP" target="blank">Gitlab</a>
 
+
+## 二、
 
