@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>配置 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/</link><description>Recent content in 配置 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Mon, 08 Jun 2020 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/index.xml" rel="self" type="application/rss+xml"/><item><title>Toha的配置</title><link>https://biubiobiu.github.io/zh-cn/posts/w00020_toha-tutorial/w0010_toha-config/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/w00020_toha-tutorial/w0010_toha-config/</guid><description>一、启动 模板项目: github
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>配置 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/</link><description>Recent content in 配置 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Dec 2021 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E9%85%8D%E7%BD%AE/index.xml" rel="self" type="application/rss+xml"/><item><title>importlib包</title><link>https://biubiobiu.github.io/zh-cn/posts/w00035_programming_language/w0035_python/w0050_sdk_lib/w0030_importlib/</link><pubDate>Wed, 08 Dec 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/w00035_programming_language/w0035_python/w0050_sdk_lib/w0030_importlib/</guid><description>import_module()函数 背景：一个函数运行，需要根据不同项目的配置，动态导入对应的配置文件。 例如：如下路径，向a模块中导入c.py中的对象 a
+├── a.py
+├── __init__.py
+b
+├── b.py
+├── c │　├── c.py　# 该文件中，有变量args=[]，class C
+│　├── __init__.py
+方案：
+import importlib # 导入 params = importlib.import_module(&amp;#34;b.c.c&amp;#34;) # 对象中取出需要的对象 params.args # 取出变量 params.C # 取出类C</description></item><item><title>Toha的配置</title><link>https://biubiobiu.github.io/zh-cn/posts/w00020_toha-tutorial/w0010_toha-config/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/w00020_toha-tutorial/w0010_toha-config/</guid><description>一、启动 模板项目: github
 # --force 即使本文件夹不为空，也会强制创建站点 hugo new site myblog -f=yaml --force # 初始化本地仓库，因为部署时要把该文件的内容push到远端仓库 git init # 添加toha主题 git submodule add https://github.com/hugo-toha/toha.git themes/toha # 在本地启动站点，浏览器中打开: http://localhost:1313 hugo server -t toha -w Demo样例
 Hugo文档
 Github项目

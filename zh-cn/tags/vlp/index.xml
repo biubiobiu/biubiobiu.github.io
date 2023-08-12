@@ -5,12 +5,4 @@
 多模态表示学习（Multimodal Representation） 模态转化（Translation） 对齐（Alignment） 多模态融合（Multimodal Fusion） 协同学习（Co-learning） 实际应用，比如：
 视频网站上进度条，会显示那个时间段是高光时刻 自动驾驶领域，雷达、视觉与多传感器信息融合 视频的分类、审核、推荐、搜索、特效等等 1、VLP 微软发表的一篇文章《An Empirical Study of Training End-to-End Vision-and-Language Transformers》进行了大量的实验，对不同VLP模型、各个模块不同配置的效果。
 VLP通常都会遵循同一个框架，包含5大模块：
-Vision Encoder：主要有3中类型 使用object detection模型，比如：Faster R-CNN，识别图像中的目标区域，并生成每个目标区域的特征表示，输入到后续模型中 利用CNN模型提取grid feature作为图像输入 ViT采用的将图像分解成patch，每个patch生成embeding输入到模型。 随着Vision Transformer的发展，ViT的方式逐渐成为主流方式。 Text Encoder：包括BERT、RoBERTa、ELECTRA、ALBERT、DeBERTa等经典预训练语言模型结构。 Multimodel Fusion：主要指如何融合图像、文本，主要有2中： co-attention：图像、文本分别使用Transformer编码，在每个Transformer模块中加入图像、文本的cross attention merged attention model，图像、文本在开始就拼接在一起，输入到Transformer 模型结构：主要有2中： Encoder-only：这种比较常见 Encoder-Decoder 预训练任务：主要有3中： Masked Language Modeling（MLM）类似BERT，随机mask掉部分token，用剩余的预测出被mask掉的token Masked Image Modeling，对输入的部分图像patch进行mask，然后预测被mask的patchs Image-Text Matching（ITM），预测image和text的pair对是否匹配，对比学习的预训练方法可以属于这类。 二、网络 Open AI 在2021年1月份发布的DALL-E和CLIP，属于结合图像和文本的多模态模型，其中DALL-E是基于文本来生成模型的模型；CLIP是用文本作为监督信号来训练可迁移的视觉模型，这两个工作带动了一波新的研究高潮。</description></item><item><title>importlib包</title><link>https://biubiobiu.github.io/zh-cn/posts/w00035_programming_language/w0035_python/w0050_sdk_lib/importlib/</link><pubDate>Wed, 08 Dec 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/w00035_programming_language/w0035_python/w0050_sdk_lib/importlib/</guid><description>import_module()函数 背景：一个函数运行，需要根据不同项目的配置，动态导入对应的配置文件。 例如：如下路径，向a模块中导入c.py中的对象 a
-├── a.py
-├── __init__.py
-b
-├── b.py
-├── c │　├── c.py　# 该文件中，有变量args=[]，class C
-│　├── __init__.py
-方案：
-import importlib # 导入 params = importlib.import_module(&amp;#34;b.c.c&amp;#34;) # 对象中取出需要的对象 params.args # 取出变量 params.C # 取出类C</description></item></channel></rss>
+Vision Encoder：主要有3中类型 使用object detection模型，比如：Faster R-CNN，识别图像中的目标区域，并生成每个目标区域的特征表示，输入到后续模型中 利用CNN模型提取grid feature作为图像输入 ViT采用的将图像分解成patch，每个patch生成embeding输入到模型。 随着Vision Transformer的发展，ViT的方式逐渐成为主流方式。 Text Encoder：包括BERT、RoBERTa、ELECTRA、ALBERT、DeBERTa等经典预训练语言模型结构。 Multimodel Fusion：主要指如何融合图像、文本，主要有2中： co-attention：图像、文本分别使用Transformer编码，在每个Transformer模块中加入图像、文本的cross attention merged attention model，图像、文本在开始就拼接在一起，输入到Transformer 模型结构：主要有2中： Encoder-only：这种比较常见 Encoder-Decoder 预训练任务：主要有3中： Masked Language Modeling（MLM）类似BERT，随机mask掉部分token，用剩余的预测出被mask掉的token Masked Image Modeling，对输入的部分图像patch进行mask，然后预测被mask的patchs Image-Text Matching（ITM），预测image和text的pair对是否匹配，对比学习的预训练方法可以属于这类。 二、网络 Open AI 在2021年1月份发布的DALL-E和CLIP，属于结合图像和文本的多模态模型，其中DALL-E是基于文本来生成模型的模型；CLIP是用文本作为监督信号来训练可迁移的视觉模型，这两个工作带动了一波新的研究高潮。</description></item></channel></rss>
