@@ -1,15 +1,20 @@
 ---
 title: "模型训练"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 模型训练
     identifier: tf-compat-train
     parent: tf-compat
-    weight: 2
+    weight: 20
 author:
   name: biubiobiu
   image: /images/author/john.png
+tags: ["TF","训练"]
+categories: ["Basic"]
+math: true
+mermaid: true
+enableEmoji: true
 ---
 
 ### 一、tf.layers

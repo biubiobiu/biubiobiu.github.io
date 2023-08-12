@@ -1,15 +1,20 @@
 ---
 title: "静态图"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 静态图
     identifier: tf-compat-graph
     parent: tf-compat
-    weight: 1
+    weight: 10
 author:
   name: biubiobiu
   image: /images/author/john.png
+tags: ["TF","静态图"]
+categories: ["Basic"]
+math: true
+mermaid: true
+enableEmoji: true
 ---
 
 

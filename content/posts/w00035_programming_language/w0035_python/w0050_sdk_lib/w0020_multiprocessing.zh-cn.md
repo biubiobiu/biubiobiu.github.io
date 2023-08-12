@@ -1,6 +1,6 @@
 ---
 title: "并行操作"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 并行操作
@@ -10,6 +10,11 @@ menu:
 author:
   name: biubiobiu
   image: /images/author/john.png
+tags: ["python","并行"]
+categories: ["Basic"]
+math: true
+mermaid: true
+enableEmoji: true
 ---
 
 ## 一、线程与进程

@@ -1,6 +1,6 @@
 ---
 title: "字符编码"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 字符编码
@@ -10,6 +10,11 @@ menu:
 author:
   name: biubiobiu
   image: /images/author/john.png
+tags: ["python","字符编码"]
+categories: ["Basic"]
+math: true
+mermaid: true
+enableEmoji: true
 ---
 
 ## 一、字符编码

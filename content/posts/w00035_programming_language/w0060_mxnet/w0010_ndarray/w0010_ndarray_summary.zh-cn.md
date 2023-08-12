@@ -1,15 +1,20 @@
 ---
 title: "NdArray使用"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: NdArray使用
     identifier: posts-mxnet-ndarray-summary
     parent: posts-mxnet-ndarray
-    weight: 1
+    weight: 10
 author:
   name: biubiobiu
   image: /images/author/john.png
+tags: ["mxnet","NdArray"]
+categories: ["Basic"]
+math: true
+mermaid: true
+enableEmoji: true
 ---
 
 ## 一、查阅文档
