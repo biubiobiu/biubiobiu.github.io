@@ -338,22 +338,34 @@ markdown的公式: 可以使用两个美元符 `$$` 包裹 TeX 或 LaTeX 格式�
 
 <a href="https://katex.org/docs/supported.html" target="blank">公式katex文档</a>  
 
-| 希腊       | 转义     | 希腊       | 转义     | 希腊       | 转义     | 希腊          | 转义        |
-| ---------- | -------- | ---------- | -------- | ---------- | -------- | ------------- | ----------- |
-| $$\alpha$$   | \alpha   | $$\kappa$$   | \kappa   | $$\psi$$     | \psi     | $$\digamma$$    | \digamma    |
-| $$\beta$$    | \beta    | $$\lambda$$  | \lambda  | $$\rho$$     | \rho     | $$\varepsilon$$ | \varepsilon |
-| $$\chi$$     | \chi     | $$\mu$$      | \mu      | $$\sigma$$   | \sigma   | $$\varkappa$$   | \varkappa   |
-| $$\delta$$   | \delta   | $$\nu$$     | \nu      | $$\tau$$     | \tau     | $$\varphi$$     | \varphi     |
-| $$\epsilon$$ | \epsilon | $$\omicron$$ | \omicron | $$\theta$$   | \theta   | $$\varpi$$      | \varpi      |
-| $$\eta$$     | \eta     | $$\omega$$   | \omega   | $$\upsilon$$ | \upsilon | $$\varrho$$     | \varrho     |
-| $$\gamma$$   | \gamma   | $$\phi$$     | \phi     | $$\xi$$      | \xi      | $$\varsigma$$   | \varsigma   |
-| $$\iota$$    | \iota    | $$\pi$$      | \pi      | $$\zeta$$    | \zeta    | $$\vartheta$$   | \vartheta   |
-| $$\Delta$$   | \Delta   | $$\Theta$$   | \Theta   | $$\Lambda$$  | \Lambda  | $$\Xi$$        | \Xi         |
-| $$\Gamma$$   | \Gamma   | $$\Upsilon$$ | \Upsilon | $$\Omega$$   | \Omega   | $$\Phi$$        | \Phi        |
-| $$\Pi$$      | \Pi      | $$\Psi$$     | \Psi     | $$\Sigma$$   | \Sigma   | $$\aleph$$      | \aleph      |
-| $$\beth$$    | \beth    | $$\gimel$$   | \gimel   | $$\daleth$$  | \daleth  |               |             |
+|序号|大写|大写|小写|小写|英文|英语音标注音|汉语名称|常用指代意义|
+|:--:|:--:|:--|:--:|:--|:--|:--|:--:|:--|
+|1|$$\Alpha$$|\Alpha|$$\alpha$$|\alpha|alpha|/'ælfə/|阿尔法|角度、系数、角加速度、第一个、电离度、转化率|
+|2|$$\Beta$$|\Beta|$$\beta$$|\beta|beta|/'beɪtə/|贝塔|角度、系数、磁通系数|
+|3|$$\Gamma$$|\Gamma|$$\gamma$$|\gamma|gamma|/'gæmə/|伽玛|电导系数、角度、比热容比|
+|4|$$\Delta$$|\Delta|$$\delta$$|\delta|delta|/'deltə/|德尔塔|变化量、焓变、熵变、屈光度、一元二次方程中的判别式、化学位移|
+|5|$$\Epsilon$$|\Epsilon|$$\epsilon, \varepsilon$$|\epsilon, \varepsilon|epsilon|/'epsɪlɒn/|艾普西隆|对数之基数、介电常数、电容率、应变|
+|6|$$\Zeta$$|\Zeta|$$\zeta$$|\zeta|zeta|/'zi:tə/|泽塔|系数、方位角、阻抗、相对黏度|
+|7|$$\Eta$$|\Eta|$$\eta$$|\eta|eta|/'i:tə/|伊塔|迟滞系数、机械效率|
+|8|$$\Theta$$|\Theta|$$\theta, \vartheta$$|\theta, \vartheta|theta|/'θi:tə/|西塔|温度、角度|
+|9|$$\Iota$$|\Iota|$$\iota$$|\iota|iota|/aɪ'əʊtə/|约(yāo)塔|微小、一点|
+|10|$$\Kappa$$|\Kappa|$$\kappa, \varkappa$$|\kappa, \varkappa|kappa|/'kæpə/|卡帕|介质常数、绝热指数|
+|11|$$\Lambda$$|\Lambda|$$\lambda$$|\lambda|lambda|/'læmdə/|拉姆达|波长、体积、导热系数|
+|12|$$\Mu$$|\Mu|$$\mu$$|\mu|mu|/mju:/|谬|磁导率、微、动摩擦系（因）数、流体动力黏度、货币单位、莫比乌斯函数|
+|13|$$\Nu$$|\Nu|$$\nu$$|\nu|nu|/nju:/|纽|磁阻系数、流体运动粘度、光波频率、化学计量数|
+|14|$$\Xi$$|\Xi|$$\xi$$|\xi|xi|/ksi/|克西|随机变量、（小）区间内的一个未知特定值|
+|15|$$\Omicron$$|\Omicron|$$\omicron$$|\omicron|omicron|/əuˈmaikrən/|奥米克戎|高阶无穷小函数|
+|16|$$\Pi$$|\Pi|$$\pi, \varpi$$|\pi, \varpi|pi|/paɪ/|派|圆周率、π(n)表示不大于n的质数个数、连乘|
+|17|$$\Rho$$|\Rho|$$\rho, \varrho$$|\rho, \varrho|rho|/rəʊ/|柔|电阻率、柱坐标和极坐标中的极径、密度、曲率半径|
+|18|$$\Sigma$$|\Sigma|$$\sigma, \varsigma$$|\sigma, \varsigma|sigma|/'sɪɡmə/|西格马|总和、表面密度、跨导、应力、电导率|
+|19|$$\Tau$$|\Tau|$$\tau$$|\tau|tau|/taʊ/|陶|时间常数、切应力、2π（两倍圆周率）|
+|20|$$\Upsilon$$|\Upsilon|$$\upsilon$$|\upsilon|upsilon|/ˈipsɪlon/|宇普西隆 |位移|
+|21|$$\Phi$$|\Phi|$$\phi, \varphi$$|\phi, \varphi|phi|/faɪ/|斐|磁通量、电通量、角、透镜焦度、热流量、电势、直径、欧拉函数、相位、孔隙度|
+|22|$$\Chi$$|\Chi|$$\chi$$|\chi|chi|/kaɪ/|希 /恺|统计学中有卡方(χ^2)分布|
+|23|$$\Psi$$|\Psi|$$\psi$$|\psi|psi|/psaɪ/|普西|角速、介质电通量、ψ函数、磁链|
+|24|$$\Omega$$|\Omega|$$\omega$$|\omega|omega|/'əʊmɪɡə/|欧米伽|欧姆、角速度、角频率、交流电的电角度、化学中的质量分数、有机物的不饱和度|
 
-
+{{< vs 2>}}
 
 我是一个公式 `$$\Gamma(n) = (n-1)!$$`：$$\Gamma(n) = (n-1)!$$
 
@@ -362,6 +374,7 @@ $$
  \varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } } 
 $$
 
+`$$\alpha = \frac a b$$`: 
 $$\alpha = \frac a b$$
 
 ### 15. 切割成列
