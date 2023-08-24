@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>对比学习 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/posts/00100_cv/0020_contrastive_learning/</link><description>Recent content in 对比学习 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Mon, 09 May 2022 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/posts/00100_cv/0020_contrastive_learning/index.xml" rel="self" type="application/rss+xml"/><item><title>contrastive learning</title><link>https://biubiobiu.github.io/zh-cn/posts/00100_cv/0020_contrastive_learning/contrastive_learning/</link><pubDate>Mon, 09 May 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00100_cv/0020_contrastive_learning/contrastive_learning/</guid><description>从2019年中~2020年中，对比学习火了一段时间，到ViT出来后，大量的研究这才投身于ViT。
+一、简介 什么是对比学习？
+简单来说就是，只要模型把相似的数据跟其他不相似的数据区分开就可以。比如：$A_1, A_2, &amp;hellip;$ 是狗，$B_1, B_2, &amp;hellip;$ 是猫，只要模型能把这两批数据区分开就行。
+所以，训练集中不需要明确的标签，只要能区分出那些数据之间是相似的，那些是与它们不相似的。
+所以，训练集中不必人为标注，只需要设计一些规则生产出这种类型的训练集就行。
+看下Hinton老爷子的《Self-organizing neural network that discovers surfaces in random-dot stereograms》 和 LeCun的《Dimensionality reduction by learning an invariant mapping》 对比学习为啥在cv领域被认为是无监督呢？：
+通过设计一些巧妙的代理任务，就是pretext task：人为的定义一些规则，这些规则可以用来定义那些图片是相似的，那些图片是不相似的。
+例如：instance discrimination：如果有N张图片的数据集，随机一张图片$x_i$，对这个图片随机裁剪+数据增广，从同一张图片中通过裁剪+增广产生的数据，虽然有差异但是语义信息是一样的，所以是正样本(它们之间是相似的)，负样本就是除了图$x_i$之外的所有样本。 1、代理任务 代理任务(pretext task)的目的: 生成一个自监督的信号，从而充当ground truth这个标签信息
+有监督学习：训练时比较输出 $\hat{Y}$ 和 groud truth $Y$；
+自监督学习：因为缺少groud truth，所以需要代理任务自己创建类似groud truth的信号。
+2、对比学习的loss 1)、InfoNCE loss noise contrastive estimation loss：其实就是一个交叉熵 $$ L_q = -log\frac{exp(q\cdot k_+ / \tau)}{\sum_{i=0}^{K} exp(q\cdot k_i / \tau)} $$ 分母：一个正样本，K个负样本；$\tau$：温度超参数，值越大分布就越平缓，表示对每种的关注度越相似；值越小分布就越陡峭，表示比较关注比较困难的case，不容易收敛。</description></item></channel></rss>

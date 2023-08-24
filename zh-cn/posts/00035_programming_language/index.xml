@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>编程语言 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/</link><description>Recent content in 编程语言 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Fri, 08 Apr 2022 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/index.xml" rel="self" type="application/rss+xml"/><item><title>Tensor</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0040_tensor/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0040_tensor/</guid><description>一、</description></item><item><title>基础操作</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0020_basic/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0020_basic/</guid><description>一、</description></item><item><title>数学计算</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0030_mathematical/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0030_mathematical/</guid><description>一、</description></item><item><title>模型训练</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0050_train_model/</link><pubDate>Fri, 08 Apr 2022 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0050_train_model/</guid><description>一、</description></item><item><title>importlib包</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0030_importlib/</link><pubDate>Wed, 08 Dec 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0030_importlib/</guid><description>import_module()函数 背景：一个函数运行，需要根据不同项目的配置，动态导入对应的配置文件。 例如：如下路径，向a模块中导入c.py中的对象 a
+├── a.py
+├── __init__.py
+b
+├── b.py
+├── c │　├── c.py　# 该文件中，有变量args=[]，class C
+│　├── __init__.py
+方案：
+import importlib # 导入 params = importlib.import_module(&amp;#34;b.c.c&amp;#34;) # 对象中取出需要的对象 params.args # 取出变量 params.C # 取出类C</description></item><item><title>简介</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0010_torch_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0050_pytorch/0010_torch_summary/</guid><description>官方文档
+torch目录下，树状图:
+├── quasirandom.py
+├── random.py random模块
+├── serialization.py
+├── storage.py
+├── tensor.py Tensor模块
+├── functional.py
+│
+├── cuda
+│　├── comm.py
+│　├── error.py
+│　├── memory.py
+│　├── nccl.py
+│　├── nvtx.py
+│　├── profiler.py
+│　├── random.py
+│　├── sparse.py
+│　└── streams.py
+│
+├── nn
+│　├── backends
+│　├── cpp.py
+│　├── functional.py
+│　├── grad.py
+│　├── init.py
+│　├── intrinsic
+│　│　├── modules</description></item><item><title>NdArray使用</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0060_mxnet/0010_ndarray/0010_ndarray_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0060_mxnet/0010_ndarray/0010_ndarray_summary/</guid><description>一、查阅文档 怎么查阅相关文档？ 官网
+1. 查阅模块里的所有函数和类 from mxnet import nd print(dir(nd.random)) __开头和结尾的函数 (python的特别对象) 可以忽略 _开头的函数 (一般为内部函数) 可以忽略 其余成员，可以根据名字 大致猜出是什么意思。 2. 查阅特定函数和类的使用 想了解某个函数或者类的具体用法，可以使用help函数。以NDArray中的ones_like函数为例。
+help(nd.ones_like) 注意：
+jupyter记事本里，使用?来将文档显示在另外一个窗口中。例如：nd.ones_like? 与 help(nd.ones_like)效果一样。nd.ones_like??会额外显示该函数实现的代码。 二、内存开销 原始操作 首先来个例子：Y = Y + X &amp;ndash;&amp;gt; 每个操作会新开内存来存储运算结果。 上例中，X，Y 变量首先存储在内存中，相加的计算结果会另外开辟内存来存储；然后变量Y在指向新的内存。 内存使用情况：
+内存id_x &amp;lt;&amp;ndash; X 内存id_y &amp;lt;&amp;ndash; Y 内存id_x+y &amp;lt;&amp;ndash; Y
+Y[:] = X + Y 或者 Y += X 通过[:]把X+Y的结果写进Y对应的内存中。上述操作中，需要另外开辟内存来存储计算结果。 内存使用情况： 内存id_x &amp;lt;&amp;ndash; X 内存id_y &amp;lt;&amp;ndash; Y 内存id_x+y &amp;ndash;&amp;gt; 把内存id_x+y中数值复制到内存id_y中</description></item><item><title>基础操作</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0020_basic_operator/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0020_basic_operator/</guid><description>一、数据类型与操作 操作 说明 del A[i] 删除列表A中下标为i的元素，其后的每个元素都前移一个位置 列表-删除 A.pop() 弹出列表尾部元素，相当于出栈 列表-删除 A.pop(i) 弹出列表中任何位置出的元素 列表-删除 A.remove('a') 有时候不知道索引号，只知道要删除的值；remove只删除第一个指定的值 列表-删除 A.sort(reverse=True) 对列表A从大到小排序，列表A被永久改变 列表-排序 B=sorted(A) 排序后，A没有被改变 列表-排序 A.reverse() A列表被永久的翻转了一下 列表-翻转 二、*和**的作用 * 在函数定义/调用时的应用
+在函数定义时：*让python创建一个名为topping的空元组，并将收到的所有值封装在这个元组中。 def make_pizza(size, *topping): # 定义 .</description></item><item><title>字符编码</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0010_encode_mode/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0010_encode_mode/</guid><description>一、字符编码 ASCII：计算机是美国人发明的，所以最早只考虑了简单的26个字母和一些控制字符，所以只用7-bit组合出128个组合，编号0~127，存储的时候凑成了一个byte。这个组合没有考虑其他国家，比如汉字就不只128个，于是中国为汉字编码发明了GB2312编码，其他国家也有自己的各种编码，互不兼容。
+为了统一，提出了unicode编码，包含了各个国家的文字，对每个字符都用2个byte来表示，英文的话就在前面加0。
+unicode对于英文就会有些浪费，为了解决这个问题，为了节约硬盘空间/ 网络带宽，又发明了utf-8编码，1个字符可能会被编码成1~6个字节，英文还是1个字节，汉字变成了3个字节，只有在生僻字才会在4个字节。
+字符 ASCII unicode utf-8 A 01000001 00000000 01000001 01000001 中 01001110 00101101 11100100 10111000 10101101 字符应用层的形式 字符在内存的形式 字符在硬盘/网络中的形式 二、解析/转换 图片在网络中获取下来是二进制的格式(bytes)；或者通过 open('***.jpg', &amp;lsquo;rb&amp;rsquo;) 读取的图片也是二进制的格式
+bytes格式 &amp;lt;-&amp;gt; str
+bytes: 是(二进制)数字序列，是utf-8的编码形式。该格式的变量是不可修改的。 str &amp;ndash;&amp;gt; bytes : 使用str.encode()方法 bytes &amp;ndash;&amp;gt; str : 使用bytes.decode()方法 bytearray(): 该格式的变量是可以修改的 a = &amp;#39;人生苦短&amp;#39; # 此时b的格式是bytes，是不能修改的，即不能操作：b[:6] = &amp;#39;生命&amp;#39;.</description></item><item><title>并行操作</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0020_multiprocessing/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0020_multiprocessing/</guid><description>一、线程与进程 进程 线程 进程：是一个应用程序在处理机上的一次执行过程，是具有一定独立功能的程序在某数据集上的一次运行，是一个动态的概念。进程是系统进行资源分配和调度的独立单位。 线程：是进程中的一个实体，是CPU调度和分派的基本单位，线程自己基本上不拥有系统资源，它与同属于一个进程内的其他线程共享进程的全部资源。 地址空间 进程有自己独立的地址空间 进程中至少有一个线程，它们共享进程的地址空间 资源 进程是资源分配和拥有的单位 进程内的多个线程共享进程的资源 调度 线程是进程内的一个执行单元，也是进程内的可调度实体，也是处理器调度的基本单位 二、多线程 1、threading模块 python主要是通过thread和threading这两个模块来实现多线程，thread模块是比较底层的模块，threading模块是对thread做了一些封装，使用更方便。但是由于GIL的存在，无法使用threading充分利用CPU资源，如果想充分发挥多核CPU的计算能力，需要使用multiprocessing模块
+python 3.x 已经摒弃了python 2.x中采用函数式thread模块来产生线程的方式。而是通过threading模块创建新的线程：
+通过threading.Thread(Target=可执行方法)
+import threading pro_list = [] mult_image_label_list = [] for index, img_list in enumerate(mult_image_label_list): # 创建线程 t1 = threading.Thread(target=函数名, args=(index, img_list)) pro_list.append(t1) for thread in pro_list: # 将线程设置为保护线程，否则会被无限挂起。 thread.setDaemon(True) thread.</description></item><item><title>模型训练</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0020_tf_compat_train/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0020_tf_compat_train/</guid><description>一、tf.layers tf.layers模块在TensorFlow2.0中已经被完全移除了，用tf.keras.layers定义层是新的标准。
+二、tf.losses tf.losses模块包含了经常使用的、能够实现独热编码的损失函数。
+三、tf.train 1. Optimizer TensorFlow提供的优化器
+优化器 功能 tf.train.Optimizer tf.train.GradientDescentOptimizer tf.train.AdadeltaOptimizer tf.train.AdagtadOptimizer tf.train.AdagradDAOptimizer tf.train.MomentumOptimizer tf.train.AdamOptimizer tf.train.FtrlOptimizer tf.train.ProximalGradientDescentOptimizer tf.train.ProximalAdagradOptimizer tf.train.RMSProOptimizer Optimizer类与其子类的继承关系：
+def minimize(self, loss, # 损失值， tensor # 全局训练步数，随着模型迭代优化自增， variable global_step=None, # 待训练模型参数的列表， list var_list=None, # 计算梯度和更新参数模型时的并行化程度，可选值GATE_OP,GATE_NONE,GATE_GRAPH # GATE_NONE 无同步，最大化并行执行效率，将梯度计算和模型参数更新完全并行化。 # GATE_OP，操作级同步，对于每个操作，分别确保所有梯度在使用前都计算完成。 # GATE_GRAPH，图级同步，最小化并行执行效率，确保所有模型参数的梯度计算完成。 gate_gradients=GATE_OP, # 聚集梯度值的方法， Enum aggregation_methed=None, # 是否将梯度计算放置到对应操作所在同一个设备，默认否，Boolean colocate_gradients_with_ops=False, # 优化器在数据流图中的名称，string nmae=None, # 损失值的梯度 grad_loss=None) 属性 功能介绍 _name 表示优化器的名称 _use_locking 表示是否在并发更新模型参数时加锁 minimize 最小化损失函数，该方法会依次调用compute_gradients和apply_gradients compute_gradients 计算模型所有参数的梯度值,返回&amp;lt;梯度，响应参数&amp;gt;的键值对列表 apply_gradients 将梯度值更新到对应的模型参数，优化器的apply_gradients成员方法内部会调用tf.</description></item><item><title>进阶操作</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0030_advance_operator/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0030_advance_operator/</guid><description>一、环境变量 1、临时环境变量 操作 说明 功能 os.environ['WORKON_HOME']=&amp;quot;变量&amp;quot; 设置环境变量 os.environ.get('WORKON_HOME') 获取环境变量-方法1 os.getenv('path') 获取环境变量-方法2-推荐 del os.environ['WORKON_HOME'] 删除环境变量 os.environ['HOMEPATH'] 当前用户主目录 os.environ['TEMP'] 临时目录路径 os.environ['PATHEXT'] 可以执行文件 os.environ['SYSTEMROOT'] 系统主目录 os.environ['LOGONSERVER'] 机器名 os.environ['PROMPT'] 设置提示符 2、永久环境变量 操作 说明 功能 path = r&amp;quot;路径&amp;quot;</description></item><item><title>静态图</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0010_tf_compat_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0010_tf_compat_summary/</guid><description>在TensorFlow 2中使用兼容性模块，必须使用tf.compat.v1替换tf，并且在导入TensorFlow软件包后添加一行tf.compat.v1.disable_eager_execution()函数来关闭eager执行模式。
+import tensorflow as tf tf.compat.v1.disable_eager_execution() 简介 数据流是一种编程模型，被广泛地应用于并行计算中。TF使用数据流图来表示计算中各个运算之间的关系，在数据流图中，节点：表示计算单元(即：操作tf.Operation)；边：表示被计算单元消费/生产的数据(即：tf.Tensor)。 数据流图，可以被导出成一个可移植的、编程语言不相关的表示(ProtoBuf)，这种表示可以被其他语言使用，来创建一个图并在会话中使用它。
+def graph_demo(): a = tf.constant([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=tf.float32) b = tf.constant([[10, 0, 0], [0, 0.5, 0], [0, 0, 2]]) c = tf.constant([[1, -1, 3]], dtype=tf.float32) y = tf.add(tf.matmul(a, b), c, name=&amp;#39;result&amp;#39;) writer = tf.summary.FileWriter(os.path.join(root_dir, &amp;#39;log/matmul&amp;#39;), tf.get_default_graph()) writer.close() return y # 在终端启动TensorBoard对图进行可视化 tensorboard --logdir log/matmul 上例中创建一个数据流图，然后用TensorBoard对这个图进行可视化。
+tf.summary.FileWriter 创建了一个tf.summary.SummaryWriter来保存一个图像化表示，这个writer对象创建时，初始化参数包括：a.该图像化表示的存储路径；b.一个tf.Graph对象，可以使用tf.get_default_graph函数返回默认图 tf.get_default_graph 函数，返回默认图。 在执行时，调用TF API创建数据流图，这个阶段并没有进行计算。</description></item></channel></rss>

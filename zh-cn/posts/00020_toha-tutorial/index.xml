@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Toha教程 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/</link><description>Recent content in Toha教程 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Tue, 08 Jun 2021 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/index.xml" rel="self" type="application/rss+xml"/><item><title>Katex公式</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0015_latax_formula/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0015_latax_formula/</guid><description>官方文档
+线上工具
+一、基础篇 1. 输入公式 行内公式： 格式：$数学公式$ 例如：$x^2=1$ : $x^2=1$
+行间公式：
+$$
+数学公式
+$$
+例如: $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$ $$f(x)=\int_{-\infty}^\infty\widehat f\xi\ e^{2\pi i\xi x}\ d\xi$$
+二、进阶篇 1. 声调/变音符号 \dot{a}, \ddot{a}, \acute{a}, \grave{a}
+$\dot{a}, \ddot{a}, \acute{a}, \grave{a}$
+\check{a}, \breve{a}, \tilde{a}, \bar{a}
+$\check{a}, \breve{a}, \tilde{a}, \bar{a}$
+\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}
+$\hat{a}, \widehat{a}, \vec{a}, \tilde{a}, \widetilde{a}$
+a', a''
+$a', a''$
+2. 标准函数 指数/上下标</description></item><item><title>区域块-实例</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0020_shortcodes_samples/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0020_shortcodes_samples/</guid><description>🤑
+This is a sample post intended to test the followings:
+Default hero image. Different shortcodes. 一、报警(Alert) The following alerts are available in this theme.
+这是 type=&amp;quot;success&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;success&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;danger&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;danger&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;warning&amp;quot;的报警样例.
+格式:
+{{&amp;lt; alert type=&amp;ldquo;warning&amp;rdquo; &amp;gt; }}
+内容
+{{&amp;lt; /alert &amp;gt; }} 这是 type=&amp;quot;info&amp;quot;的报警样例.</description></item><item><title>MarkDown入门</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0013_markdown-tutorial/</link><pubDate>Tue, 08 Jun 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0013_markdown-tutorial/</guid><description>一、小技巧 可以使用html的标签
+markdown中常用的html标签： 操作 标签 换行 测试&amp;lt;br&amp;gt;一下 标记 &amp;lt;mark&amp;gt;测试一下&amp;lt;/mark&amp;gt; 按钮 &amp;lt;kbd&amp;gt;测试一下&amp;lt;/kbd&amp;gt; 颜色 &amp;lt;font color=&amp;quot;#A020F0&amp;quot;&amp;gt;颜色&amp;lt;/font&amp;gt; 四号文字 &amp;lt;font size=&amp;quot;4&amp;quot;&amp;gt;四号文字&amp;lt;/font&amp;gt; 引用1 &amp;lt;cite&amp;gt;引用[^1]&amp;lt;/cite&amp;gt; 空格 &amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;测试一下 删除线 &amp;lt;s&amp;gt;测试一下&amp;lt;/s&amp;gt; 下划线 &amp;lt;u&amp;gt;测试一下&amp;lt;/u&amp;gt; 字体增大 &amp;lt;big&amp;gt;测试一下&amp;lt;/big&amp;gt; 字体减小 &amp;lt;small&amp;gt;测试一下&amp;lt;/small&amp;gt; 文字上标 测试&amp;lt;sup&amp;gt;一下&amp;lt;/sup&amp;gt; 文字下标 测试&amp;lt;sub&amp;gt;一下&amp;lt;/sub&amp;gt; 加n个空行 {{&amp;lt; vs n&amp;gt;}} 右对齐</description></item><item><title>Toha的配置</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0010_toha-config/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0010_toha-config/</guid><description>一、启动 模板项目: github
+# --force 即使本文件夹不为空，也会强制创建站点 hugo new site myblog -f=yaml --force # 初始化本地仓库，因为部署时要把该文件的内容push到远端仓库 git init # 添加toha主题 git submodule add https://github.com/hugo-toha/toha.git themes/toha # 在本地启动站点，浏览器中打开: http://localhost:1313 hugo server -t toha -w Demo样例
+Hugo文档
+Github项目
+二、配置 config.yaml: 配置样例
+这个主题的大部分内容是由data目录中的一些 YAML 文件驱动的。 在本节中，我们将添加一些示例数据。 由于我们正在构建一个多语言站点，因此我们会将每种语言的数据保存在各自的语言环境文件夹中。首先，在data目录中创建 en 文件夹(英语环境)/zh-cn(汉语环境)。 我们将在这里添加英语语境数据。
+1、主页配置 在目的环境文件夹中创建site.yaml
+英语环境：/data/en/site.yaml 汉语环境：/data/zh-cn/site.yaml
+# Copyright Notice copyright: © 2021 Copyright. # A disclaimer notice for the footer. Make sure you have set &amp;#34;params.footer.disclaimer.enable: true&amp;#34; in your `config.</description></item><item><title>撰写文章</title><link>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0011_write-blogs/</link><pubDate>Mon, 08 Jun 2020 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00020_toha-tutorial/0011_write-blogs/</guid><description>一、创建类别 1、创建文章 在content文件夹中创建posts文件夹，在该文件夹中创建一个_index.zh-cn.md文件(中文环境)/_index.en.md(英文环境)。在里面添加如下内容：
+--- title: Posts --- 现在，假设你想写一篇文章。首先，创建一个文件，在末尾用markdown扩展名命名它。例如:我们创建了一个名为analytics-and-comments.en.md，并添加以下几行内容。如果在中文环境下创建，名字应该是analytics-and-comments.zh-cn.md:
+--- title: &amp;#34;Analytics and Comments&amp;#34; date: 2020-06-08T06:00:23+06:00 hero: /images/posts/writing-posts/analytics.svg description: Adding analytics and disquss comment in hugo theme Toha menu: sidebar: name: Analytics &amp;amp; Comments identifier: analytics-and-comments weight: 500 --- ### Complete Post Coming Soon... 在文件的头部以3个-开始和结束，称为前置内容。我们写得每一篇博客文章都需要有前置内容，在前置内容之后，可以开始写文章内容了，前置内容的参数有：
+参数 解释 title 贴子的标题 date 显示博客发布时间，第一部分 year-month-date format hero 文章封面图的位置路径。创建路径static/images/posts/writingposts/ 在其中放置图片文件 description 添加任意你喜欢的描述 menu 这个部分包含了另一个sidebar参数，该参数定义了侧边栏中文件结构的样子。该参数的子参数有：name,identifier,weight name: 定义了侧边栏文件层次结构中，文档的名称 identifier: 标识符。有助于将文件与其他文件区分开来，有助于分类 weight: 权重值，对于多个文件，文档将基于该权重值以升序出现在文件层次结构中。 parent: 2、创建子类 刚刚我们创建了一个_index.</description></item></channel></rss>
