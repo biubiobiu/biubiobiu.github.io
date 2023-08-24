@@ -6,7 +6,7 @@ menu:
     name: GPT综述
     identifier: gpt-summary-github
     parent: gpt-github
-    weight: 1
+    weight: 10
 author:
   name: biubiobiu
   image: /images/author/john.png

@@ -165,9 +165,7 @@ class Tree_Method:
 
 {{< /note >}}
 
+<!--
 {{< note title="torch模块-样例" >}}
-
-```python
-import torch
-```
 {{< /note >}}
+-->

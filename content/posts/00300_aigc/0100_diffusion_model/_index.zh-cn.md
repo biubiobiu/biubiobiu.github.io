@@ -5,5 +5,5 @@ menu:
     name: Diffusion Model
     identifier: diffusion
     parent: aigc
-    weight: 20
+    weight: 100
 ---

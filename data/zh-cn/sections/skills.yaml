@@ -26,10 +26,20 @@ skills:
   summary: "Experienced with git-based development. Mostly, use Github. Also, have experience in working with GitLab."
   url: "https://git-scm.com/"
 
+- name: Kubernetes
+  logo: /images/sections/skills/kubernetes.png
+  summary: "Google开源的一个容器编排引擎，用于管理云平台中多个主机上容器化的应用，它支持自动化部署、大规模可延伸、应用容器化管理。"
+  url: "https://kubernetes.io/"
+
 - name: Docker
   logo: /images/sections/skills/docker.svg
   summary: "为了更好的管理、共享搭建好的环境，在开发机Linux环境下创建、维护Docker镜像，用于开发机上模型训练、推理、部署。"
   url: "https://www.docker.com/"
+
+- name: Hive
+  logo: /images/sections/skills/hive.png
+  summary: "Hive是建立在Hadoop上的数据仓库基础架构，它提供了一系列的工具，可以用来进行数据提取转化加载，是一种可以存储、查询和分析大规模数据的机制，Hive定义了简单的类SQL查询语言。"
+  url: "https://hive.apache.org/"
 
 - name: TensorFlow
   logo: /images/sections/skills/tensorflow.jpg
@@ -45,8 +55,3 @@ skills:
   logo: /images/sections/skills/mxnet.jpg
   summary: "MxNet是一款灵活的深度学习框架，可以熟练地在MxNet环境下搭建模型、数据处理、模型训练、模型推理、模型部署。"
   url: "https://mxnet.apache.org/"
-
-- name: Hive
-  logo: /images/sections/skills/hive.png
-  summary: "Hive是建立在Hadoop上的数据仓库基础架构，它提供了一系列的工具，可以用来进行数据提取转化加载，是一种可以存储、查询和分析大规模数据的机制，Hive定义了简单的类SQL查询语言。"
-  url: "https://hive.apache.org/"
