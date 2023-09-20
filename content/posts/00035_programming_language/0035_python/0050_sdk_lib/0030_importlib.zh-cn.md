@@ -10,7 +10,7 @@ menu:
 author:
   name: biubiobiu
   image: /images/author/john.png
-tags: ["python","配置"]
+tags: ["python","importlib"]
 categories: ["Basic"]
 math: true
 mermaid: true

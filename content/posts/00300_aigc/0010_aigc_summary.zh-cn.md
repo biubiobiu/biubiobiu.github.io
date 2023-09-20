@@ -4,8 +4,8 @@ date: 2023-08-05T12:30:40+08:00
 menu:
   sidebar:
     name: 简介
-    identifier: aigc-summary-1
-    parent: aigc-summary
+    identifier: aigc-summary
+    parent: aigc
     weight: 10
 author:
   name: biubiobiu

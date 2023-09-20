@@ -20,19 +20,20 @@ enableEmoji: true
 ## 一、环境变量
 
 ### 1、`临时环境变量`
-|操作|说明|功能|
-|:---|:---|:---|
-|`os.environ['WORKON_HOME']="变量"`|设置环境变量||
-|`os.environ.get('WORKON_HOME')`|获取环境变量-方法1||
-|`os.getenv('path')`|获取环境变量-方法2-推荐||
-|`del os.environ['WORKON_HOME']`|删除环境变量||
-||||
-|`os.environ['HOMEPATH']`|当前用户主目录||
-|`os.environ['TEMP']`|临时目录路径||
-|`os.environ['PATHEXT']`|可以执行文件||
-|`os.environ['SYSTEMROOT']`|系统主目录||
-|`os.environ['LOGONSERVER']`|机器名||
-|`os.environ['PROMPT']`|设置提示符||
+|操作|说明|
+|:---|:---|
+|`os.environ['WORKON_HOME']="变量"`|设置环境变量|
+|`os.environ['CUDA_VISIBLE_DEVICES']="1"`|设置显卡设备|
+|`os.environ.get('WORKON_HOME')`|获取环境变量-方法1|
+|`os.getenv('path')`|获取环境变量-方法2-推荐|
+|`del os.environ['WORKON_HOME']`|删除环境变量|
+|||
+|`os.environ['HOMEPATH']`|当前用户主目录|
+|`os.environ['TEMP']`|临时目录路径|
+|`os.environ['PATHEXT']`|可以执行文件|
+|`os.environ['SYSTEMROOT']`|系统主目录|
+|`os.environ['LOGONSERVER']`|机器名|
+|`os.environ['PROMPT']`|设置提示符|
 
 ### 2、`永久环境变量`
 
@@ -43,14 +44,14 @@ enableEmoji: true
 
 ### 3、`内部变量`
 
-|操作|说明|功能|
-|:---|:---|:---|
-|`__doc__`|获取文件的注释||
-|`__file__`|获取当前文件的路径||
-|`__name__`|获取导入文件的路径加文件名称。当前文件，其值为__main__||
-|`__package__`|获取导入文件的路径。当前文件，其值为 None||
-|`__cached__`|||
-|`__builtins__`|内置函数在这里||
+|操作|说明|
+|:---|:---|
+|`__doc__`|获取文件的注释|
+|`__file__`|获取当前文件的路径|
+|`__name__`|获取导入文件的路径加文件名称。当前文件，其值为__main__<br>import 一个模块或者一个函数时，在该模块文件中__name__的值是模块名<br>执行一个模块时，`__name__` 的值是__main__|
+|`__package__`|获取导入文件的路径。当前文件，其值为 None|
+|`__cached__`||
+|`__builtins__`|内置函数在这里|
 
 实例：获取该执行文件的绝对路径：`os.path.dirname(os.path.abspath(__file__))`
 

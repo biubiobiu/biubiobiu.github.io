@@ -5,8 +5,8 @@ menu:
   sidebar:
     name: 模型介绍
     identifier: diffusion-summary
-    parent: diffusion
-    weight: 10
+    parent: aigc
+    weight: 100
 author:
   name: biubiobiu
   image: /images/author/john.png

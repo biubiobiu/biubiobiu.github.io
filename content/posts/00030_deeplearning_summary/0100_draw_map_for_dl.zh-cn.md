@@ -6,7 +6,7 @@ menu:
     name: 神经网络画图篇
     identifier: map-in-deeplearning-github
     parent: deep-learning-summary
-    weight: 10
+    weight: 100
 author:
   name: biubiobiu
   image: /images/author/john.png
