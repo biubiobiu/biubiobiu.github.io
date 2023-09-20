@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OpenCV on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/opencv/</link><description>Recent content in OpenCV on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Dec 2021 16:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/opencv/index.xml" rel="self" type="application/rss+xml"/><item><title>OpenCV</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0110_opencv/</link><pubDate>Wed, 08 Dec 2021 16:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0110_opencv/</guid><description>安装问题：在环境里安装OpenCV后，在pycharm上没有命令提示。这个可能是OpenCV版本的问题。
+解决方案：python3 -m pip install &amp;ndash;force-reinstall &amp;ndash;no-cache -U opencv-python==4.5.5.62
+一、连通域 cv2.connectedComponentsWithStats 示例：num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(image, connectivity=8, ltype=None)
+输入参数：
+* image: 二值图
+* connectivity：可选值为4或者8，表示使用4联通还是8联通
+* ltype：输出图像标记的类型，目前支持CV_32S、CV_16U
+输出参数：
+* num_labels: 所有连通域的数目
+* labels：图像上每个像素的标记
+* stats：每个标记的统计信息：是一个5列的矩阵[[x,y,width,height,面积]，]
+* centroids：连通域的中心点
+cv2.connectedComponents 示例：num_objects, labels = cv2.connectedComponents(image)
+输入参数：
+* image: 二值图，8bit单通道图像
+输出参数：
+* num_labels: 所有连通域的数目
+二、画图</description></item></channel></rss>

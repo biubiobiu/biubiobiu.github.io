@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络结构 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/</link><description>Recent content in 网络结构 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Thu, 05 Aug 2021 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml"/><item><title>深度学习-结构</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</guid><description>一、激活函数 1、Sigmoid函数 logistic函数
+$$ \varphi(v) = \frac{1}{1+e^{-av}} $$
+tanh函数
+$$ \varphi(v) = tanh(v) = \frac{1-e^{-v}}{1+e^{-v}} $$
+分段线性函数
+$$ \varphi(v) = \begin{cases} 1 &amp;amp;\text{if } v \geqslant \theta \
+kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \
+0 &amp;amp;\text{if } v \leqslant 0 \end{cases} $$
+概率型函数
+$$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
+2、ReLU函数 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
+0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases} $$</description></item></channel></rss>

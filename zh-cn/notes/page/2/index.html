@@ -6,7 +6,362 @@ biubiobiu's Blog</a>
 <span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse lang-selector" id=top-nav-items><ul class="navbar-nav ml-auto"><li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href=# id=languageSelector role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false><span class="flag-icon flag-icon-zh-cn"></span>简体中文</a><div class=dropdown-menu aria-labelledby=languageSelector><a class="dropdown-item nav-link languages-item" href=/notes><span class="flag-icon flag-icon-gb"></span>English</a></div></li><li class="nav-item dropdown"><div id=theme-initialization style=display:none default-theme=system></div><a class="nav-link dropdown-toggle" href=# id=themeSelector role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false><img id=navbar-theme-icon-svg src=/icons/moon-svgrepo-com.svg width=20></a><div class="dropdown-menu dropdown-menu-icons-only" aria-labelledby=themeSelector><a class="dropdown-item nav-link" href=# onclick=enableLightTheme()><img class=menu-icon-center src=/icons/sun-svgrepo-com.svg width=20></a>
 <a class="dropdown-item nav-link" href=# onclick=enableDarkTheme()><img class=menu-icon-center src=/icons/moon-svgrepo-com.svg width=20></a>
 <a class="dropdown-item nav-link" href=# onclick=useSystemTheme()><img class=menu-icon-center src=/icons/computer-svgrepo-com.svg width=20></a></div></li></ul></div></div><img src=/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_2.png class=d-none id=main-logo alt=Logo>
-<img src=/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_2.png class=d-none id=inverted-logo alt="Inverted Logo"></nav><section class=sidebar-section id=sidebar-section><div class=sidebar-holder><div class=sidebar id=sidebar><form class=mx-auto method=get action=/zh-cn/search><input type=text name=keyword placeholder=搜索 data-search id=search-box></form><div class=sidebar-tree><ul class=tree id=tree><li id=list-heading><a href=/zh-cn/notes data-filter=all>笔记</a></li><div class=subtree><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/computer_algorithm/>Computer Algorithm</a><ul><li><a href=/zh-cn/notes/computer_algorithm/0010_data_struct/ title=数据结构>数据结构</a></li><li><a href=/zh-cn/notes/computer_algorithm/0015_comm_ideas/ title=常见算法思路>常见算法思路</a></li><li><a href=/zh-cn/notes/computer_algorithm/0020_tree_search/ title=二叉树-遍历>二叉树-遍历</a></li><li><a href=/zh-cn/notes/computer_algorithm/0030_five_algorithms/ title=五大常用算法>五大常用算法</a></li><li><a href=/zh-cn/notes/computer_algorithm/0040_sliding_window/ title=滑动窗口>滑动窗口</a></li><li><a href=/zh-cn/notes/computer_algorithm/0500_leedcode_list/ title=LeedCode刷库记录>LeedCode刷库记录</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/>MxNet</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/ndarray/>NdArray</a><ul><li><a href=/zh-cn/notes/mxnet/ndarray/0010_ndarray_summary/ title=NdArray使用>NdArray使用</a></li><li><a href=/zh-cn/notes/mxnet/ndarray/0020_technic_gather/ title=NdArray技巧搜集>NdArray技巧搜集</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/gluon/>Gluon</a><ul><li><a href=/zh-cn/notes/mxnet/gluon/0010_gluon_summary/ title=Gluon实例>Gluon实例</a></li><li><a href=/zh-cn/notes/mxnet/gluon/0020_module_gather/ title=Gluon模块简介>Gluon模块简介</a></li><li><a href=/zh-cn/notes/mxnet/gluon/0030_module_gluon_nn/ title=Gluon-nn模块>Gluon-nn模块</a></li></ul></li></ul></li></div></ul></div></div></div></section><section class=content-section id=content-section><div class="content container-fluid" id=content><div class="container-fluid note-card-holder" id=note-card-holder><div class=note-card><div class=item><h5 class=note-title><span>滑动窗口算法</span></h5><div class=card><div class=card-body><p><a href=https://www.cnblogs.com/huansky/p/13488234.html target=blank>参考</a></p><p>滑动窗口算法：是在给定特定窗口大小的数组或字符串上执行要求的操作，该技术可以将一部分问题中的嵌套循环转变为一个单循环，可以减少时间复杂度。即：在一个特定大小的字符串/数组上进行操作，而不是在整个字符串/数组上操作，这样就降低了问题的复杂度。<br>滑动：说明这个窗口是移动的；<br>窗口：窗口大小并不是固定的，可以不断扩容直到满足一定的条件；也可以不断缩小，直到找到一个满足条件的最小窗口；也可以是固定大小。<br></p><p>滑动窗口算法的思路：<br></p><ol><li>我们在字符串 S 中使用双指针中的左右指针技巧，初始化 left = right = 0，把索引闭区间 [left, right] 称为一个「窗口」。</li><li>我们先不断地增加 right 指针扩大窗口 [left, right]，直到窗口中的字符串符合要求（包含了 T 中的所有字符）。</li><li>此时，我们停止增加 right，转而不断增加 left 指针缩小窗口 [left, right]，直到窗口中的字符串不再符合要求（不包含 T 中的所有字符了）。同时，每次增加 left，我们都要更新一轮结果。</li><li>重复第 2 和第 3 步，直到 right 到达字符串 S 的尽头。</li></ol><p><code>对于固定窗口大小，框架总结如下：</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># 固定窗口大小为k</span>
+<img src=/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_2.png class=d-none id=inverted-logo alt="Inverted Logo"></nav><section class=sidebar-section id=sidebar-section><div class=sidebar-holder><div class=sidebar id=sidebar><form class=mx-auto method=get action=/zh-cn/search><input type=text name=keyword placeholder=搜索 data-search id=search-box></form><div class=sidebar-tree><ul class=tree id=tree><li id=list-heading><a href=/zh-cn/notes data-filter=all>笔记</a></li><div class=subtree><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/computer_algorithm/>Computer Algorithm</a><ul><li><a href=/zh-cn/notes/computer_algorithm/0010_data_struct/ title=数据结构>数据结构</a></li><li><a href=/zh-cn/notes/computer_algorithm/0015_comm_ideas/ title=常见算法思路>常见算法思路</a></li><li><a href=/zh-cn/notes/computer_algorithm/0020_tree_search/ title=二叉树-遍历>二叉树-遍历</a></li><li><a href=/zh-cn/notes/computer_algorithm/0030_five_algorithms/ title=五大常用算法>五大常用算法</a></li><li><a href=/zh-cn/notes/computer_algorithm/0040_sliding_window/ title=滑动窗口>滑动窗口</a></li><li><a href=/zh-cn/notes/computer_algorithm/0050_graph_search/ title=图的搜索>图的搜索</a></li><li><a href=/zh-cn/notes/computer_algorithm/0450_leedcode_classic.zh-ch/ title=LeedCode-经典>LeedCode-经典</a></li><li><a href=/zh-cn/notes/computer_algorithm/0500_leedcode_list/ title=LeedCode刷库记录>LeedCode刷库记录</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/>MxNet</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/ndarray/>NdArray</a><ul><li><a href=/zh-cn/notes/mxnet/ndarray/0010_ndarray_summary/ title=NdArray使用>NdArray使用</a></li><li><a href=/zh-cn/notes/mxnet/ndarray/0020_technic_gather/ title=NdArray技巧搜集>NdArray技巧搜集</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/notes/mxnet/gluon/>Gluon</a><ul><li><a href=/zh-cn/notes/mxnet/gluon/0010_gluon_summary/ title=Gluon实例>Gluon实例</a></li><li><a href=/zh-cn/notes/mxnet/gluon/0020_module_gather/ title=Gluon模块简介>Gluon模块简介</a></li><li><a href=/zh-cn/notes/mxnet/gluon/0030_module_gluon_nn/ title=Gluon-nn模块>Gluon-nn模块</a></li></ul></li></ul></li></div></ul></div></div></div></section><section class=content-section id=content-section><div class="content container-fluid" id=content><div class="container-fluid note-card-holder" id=note-card-holder><div class=note-card><div class=item><h5 class=note-title><span>递归</span></h5><div class=card><div class=card-body><p>Leigh Caldwell在Stack Overflow上说的一句话: “如果使用循环，程序的性能可能更高;如果使用递归，程序可能更容易理解。如何选择要看什么对你来说更重要。”<br></p><p>编写递归函数时，必须告诉它何时停止递归。正因为如此，每个递归函数都有两部分:</p><ol><li>基线条件(base case)。指的是函数不再调用自己，从而避免形成无限循环。</li><li>递归条件(recursive case)。指的是函数调用自己。</li></ol></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>二分查找</span></h5><div class=card><div class=card-body><p>比如：从1~100的数字中，我认选一个，让你猜。我只会说：大了、小了、对了。需要猜多少次呢？<br>二分查找：一半一半的猜，每次都排除一半。所以需要的次数是：log<sub>2</sub>N。（向上取整）</p><p align=center><img src=/datasets/note/dichotomy.png width=100% height=100% title=log2 alt=log2></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>BinarySearch</span>(object):
+    <span style=color:#75715e># 迭代</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>search_iterative</span>(self, nums, item):
+        low <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+        high <span style=color:#f92672>=</span> len(nums) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>while</span> low<span style=color:#f92672>&lt;=</span>high:
+            mid <span style=color:#f92672>=</span> (low <span style=color:#f92672>+</span> high) <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span>
+            guess <span style=color:#f92672>=</span> nums[mid]
+            <span style=color:#66d9ef>if</span> guess <span style=color:#f92672>==</span> item:
+                <span style=color:#66d9ef>return</span> mid
+            <span style=color:#66d9ef>elif</span> guess <span style=color:#f92672>&gt;</span> item:
+                high <span style=color:#f92672>=</span> mid <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
+            <span style=color:#66d9ef>else</span>:
+                low <span style=color:#f92672>=</span> mid <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>return</span> None
+    
+    <span style=color:#75715e># 递归</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>search_recursive</span>(self, nums, low, high, item):
+        <span style=color:#66d9ef>if</span> high <span style=color:#f92672>&gt;=</span> low:
+            mid <span style=color:#f92672>=</span> (high <span style=color:#f92672>+</span> low) <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span>
+            guess <span style=color:#f92672>=</span> nums[mid]
+            <span style=color:#66d9ef>if</span> guess <span style=color:#f92672>==</span> item:
+                <span style=color:#66d9ef>return</span> mid
+            <span style=color:#66d9ef>elif</span> guess <span style=color:#f92672>&gt;</span> item:
+                <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>search_recursive(nums, low, mid<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, item)
+            <span style=color:#66d9ef>else</span>:
+                <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>search_recursive(nums, mid<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>, high, item)
+        <span style=color:#66d9ef>else</span>:
+            <span style=color:#66d9ef>return</span> None
+
+</code></pre></div></div></div><div class=card><div class=card-body><p><a href="https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/description/?envType=study-plan-v2&envId=top-interview-150" target=blank>在排序数组中查找元素的第一个和最后一个位置</a><br>体会一下：二分查找法。如下代码中：nums为有序数组，ans 在 <code>nums[mid] > target</code> 中跟新，即：<font color=#f00000>切分到最后，ans记录的是第一个 大于 target的值。</font></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span>(object):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>searchRange</span>(self, nums, target):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type nums: List[int]
+</span><span style=color:#e6db74>        :type target: int
+</span><span style=color:#e6db74>        :rtype: List[int]
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        n <span style=color:#f92672>=</span> len(nums)
+
+        <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>binary_search</span>(lower):
+            left, right, ans <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, n<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, n 
+
+            <span style=color:#66d9ef>while</span> left <span style=color:#f92672>&lt;=</span> right:
+                mid <span style=color:#f92672>=</span> (left <span style=color:#f92672>+</span> right)<span style=color:#f92672>//</span><span style=color:#ae81ff>2</span>
+                <span style=color:#66d9ef>if</span> nums[mid] <span style=color:#f92672>&gt;</span> target <span style=color:#f92672>or</span> (lower <span style=color:#f92672>and</span> nums[mid] <span style=color:#f92672>&gt;=</span> target):
+                    right <span style=color:#f92672>=</span> mid<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>
+                    ans <span style=color:#f92672>=</span> mid
+                <span style=color:#66d9ef>else</span>:
+                    left <span style=color:#f92672>=</span> mid <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+
+            <span style=color:#66d9ef>return</span> ans
+
+        left_id <span style=color:#f92672>=</span> binary_search(True)
+        right_id <span style=color:#f92672>=</span> binary_search(False)<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>
+
+        <span style=color:#66d9ef>if</span> left_id <span style=color:#f92672>&lt;=</span> right_id <span style=color:#f92672>and</span> right_id <span style=color:#f92672>&lt;</span> n <span style=color:#f92672>and</span> nums[left_id] <span style=color:#f92672>==</span> target <span style=color:#f92672>and</span> nums[right_id]<span style=color:#f92672>==</span>target:
+            <span style=color:#66d9ef>return</span> [left_id, right_id]
+        <span style=color:#66d9ef>return</span> [<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+</code></pre></div></div></div><div class=card><div class=card-body><p>问题描述：给两个有序数组，nums1、nums2。返回 这两个有序数按照顺序组合并后的第k个值。<br>这个可以用来解决：<a href="https://leetcode.cn/problems/median-of-two-sorted-arrays/description/?envType=study-plan-v2&envId=top-interview-150" target=blank>寻找两个正序数组的中位数</a></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>nums1 <span style=color:#f92672>=</span> [<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>5</span>, <span style=color:#ae81ff>9</span>]
+nums2 <span style=color:#f92672>=</span> [<span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>6</span>, <span style=color:#ae81ff>8</span>, <span style=color:#ae81ff>13</span>]
+m, n <span style=color:#f92672>=</span> len(nums1), len(nums2)
+
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>get_k</span>(k):
+    idx1, idx2 <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>
+    <span style=color:#66d9ef>while</span> True:
+        <span style=color:#75715e># 特殊情况：其中一个数组为空</span>
+        <span style=color:#66d9ef>if</span> idx1 <span style=color:#f92672>==</span> m:
+            <span style=color:#66d9ef>return</span> nums2[idx2<span style=color:#f92672>+</span>k<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+        <span style=color:#66d9ef>if</span> idx2 <span style=color:#f92672>==</span> n:
+            <span style=color:#66d9ef>return</span> nums1[idx1<span style=color:#f92672>+</span>k<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+        <span style=color:#66d9ef>if</span> k <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>:
+            <span style=color:#66d9ef>return</span> min(nums1[idx1], nums2[idx2])
+        <span style=color:#75715e># 从0开始，比较两个数组 第k//2位置的大小；然后调整 分割线：idx1, idx2和k的值</span>
+        new_idx1 <span style=color:#f92672>=</span> min(idx1 <span style=color:#f92672>+</span> k <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, m <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+        new_idx2 <span style=color:#f92672>=</span> min(idx2 <span style=color:#f92672>+</span> k <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, n <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+        pivot1, pivot2 <span style=color:#f92672>=</span> nums1[new_idx1], nums2[new_idx2]
+        <span style=color:#75715e># 如果nums1[new_idx1]位置的值比较小，说明这 new_idx1+1个数，肯定是较小的值排在前面</span>
+        <span style=color:#75715e># 所以：起始位置 idx1 移动到new_idx1+1，k = k - (new_idx1-idx1+1)，即：删掉了new_idx1-idx1+1个元素</span>
+        <span style=color:#75715e># 从寻找第k个值，变成：寻找第k-(new_idx1-idx1+1)个值</span>
+        <span style=color:#66d9ef>if</span> pivot1 <span style=color:#f92672>&lt;=</span> pivot2:
+            k <span style=color:#f92672>-=</span> new_idx1 <span style=color:#f92672>-</span> idx1 <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+            idx1 <span style=color:#f92672>=</span> new_idx1 <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>else</span>:
+            k <span style=color:#f92672>-=</span> new_idx2 <span style=color:#f92672>-</span> idx2 <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+            idx2 <span style=color:#f92672>=</span> new_idx2 <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>最大公约数</span></h5><div class=card><div class=card-body><ol><li>原始：求两个数(N, M)的最大公约数。</li><li>变形1：假设你是农场主，有一小块土地。你要将这块地均匀地分成方块，且分出的方块要尽可能大。</li></ol><pre><code>伪代码-思路：  
+假设：N表示较小的数，M表示较大的数。  
+重复一下操作，直到 N=0
+新N = M % N
+新M = 原N
+
+
+</code></pre></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>摩尔投票算法</span></h5><div class=card><div class=card-body><p><strong>问题描述</strong>：给定一个大小为n的数组，其中有一个元素，出现次数大于 n/2。只遍历一次数组，找出这个元素。<br></p><ol><li>这个元素就是 “众数”。</li><li>投票：众数：票数+1，非众数：票数-1。</li><li>所以，用 票数(cnt) 和 相应的元素对应起来。如果cnt=0时，就更换元素。</li></ol></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>数组的翻转-旋转</span></h5><div class=card><div class=card-body><p><strong>数组的旋转</strong>：移动k次，从1 2 3 4 5 6 &ndash;移动k次-> 5 6 1 2 3 4<br><strong>直接 环状替换:</strong></p><p align=center><img src=/datasets/note/list_rotate.png width=100% height=100% title=list_rotate alt=list_rotate></p><ol><li>从0位置开始，替换到下一个，下一个继续替换到下一个，直到回到0位置。</li><li>回到0位置后，是否遍历完全部的数据呢？可以用一个count变量来记录已遍历的个数，直到遍历完毕。</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span>(object):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>rotate</span>(self, nums, k):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type nums: List[int]
+</span><span style=color:#e6db74>        :type k: int
+</span><span style=color:#e6db74>        :rtype: None Do not return anything, modify nums in-place instead.
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        k <span style=color:#f92672>=</span> k<span style=color:#f92672>%</span>len(nums)
+        <span style=color:#66d9ef>if</span> len(nums) <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>2</span>:
+            <span style=color:#66d9ef>return</span> nums
+        anchor, point <span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>
+
+        anchor_value <span style=color:#f92672>=</span> nums[anchor]
+        <span style=color:#66d9ef>for</span> _ <span style=color:#f92672>in</span> range(len(nums)):
+            anchor <span style=color:#f92672>=</span> (anchor <span style=color:#f92672>+</span> k) <span style=color:#f92672>%</span> len(nums)
+            anchor_value, nums[anchor] <span style=color:#f92672>=</span> nums[anchor], anchor_value
+
+            <span style=color:#66d9ef>if</span> anchor <span style=color:#f92672>==</span> point:
+                point <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+                anchor <span style=color:#f92672>=</span> point
+                <span style=color:#66d9ef>if</span> anchor <span style=color:#f92672>&lt;</span> len(nums):
+                    anchor_value <span style=color:#f92672>=</span> nums[anchor]
+
+        <span style=color:#66d9ef>return</span> nums
+</code></pre></div><p><strong>数组的多次翻转==旋转</strong></p><table><thead><tr><th style=text-align:left>操作</th><th style=text-align:left>结果</th></tr></thead><tbody><tr><td style=text-align:left>原始数组</td><td style=text-align:left>1 2 3 4 5 6 7</td></tr><tr><td style=text-align:left>翻转所有元素</td><td style=text-align:left>7 6 5 4 3 2 1</td></tr><tr><td style=text-align:left>翻转[0, k]区间</td><td style=text-align:left>5 6 7 4 3 2 1</td></tr><tr><td style=text-align:left>翻转[k, n]区间</td><td style=text-align:left>5 6 7 1 2 3 4</td></tr></tbody></table></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>图的搜索</span></h5><div class=card><div class=card-body><blockquote><p><font color=#a020f0>广度优先搜索</font>：可以回答两类问题，即：适合<font color=#a020f0>非加权图</font></p><ol><li>从节点A出发，有往节点B的路径吗？</li><li>从节点A出发，前往节点B的那条<font color=#a020f0>路径最短</font>。</li></ol></blockquote></div></div><div class=card><div class=card-body><blockquote><p><font color=#a020f0>狄克斯特拉算法(Dijkstra)</font>：适合 <font color=#a020f0>没有负权边的加权图</font>。</p><ol><li>狄克斯特拉算法，假设：对于处理过的节点，没有前往该节点的更短路径。这种假设仅在<font color=#a020f0>没有负权边</font>时才成立。</li></ol></blockquote></div></div><div class=card><div class=card-body><blockquote><p><font color=#a020f0>贝尔曼-福德算法</font>：适合 <font color=#a020f0>包含负权边</font>的加权图</p></blockquote></div></div><div class=card><div class=card-body><p>狄克斯特拉算法(Dijkstra)包括4个步骤</p><blockquote><ol><li>找出”最便宜“的节点，即：可在最短时间内到达的节点</li><li>更新该节点的邻居的开销，检查是否有前往它们的更短路径，如果有，就更新其开销。</li><li>重复这个过程，直到对图中的每个节点都这样做了</li><li>计算最终路径</li></ol></blockquote><p>例如：乐谱 -换-> 钢琴</p><p align=center><img src=/datasets/note/dikesi.png width=100% height=100% title=dikesi alt=dikesi></p><p><strong>第一步</strong>：找出最便宜的节点。这里，换海报最便宜了，不需要支付额外的费用。<br><strong>第二步</strong>：计算前往该节点的各个邻居的开销。</p><p align=center><img src=/datasets/note/dikesi-2.png width=100% height=100% title=dikesi alt=dikesi></p>父节点：代表该节点的上一级最便宜节点。<br><p><strong>第三步</strong>：目前条件(未遍历：<font color=#a020f0>黑胶唱片、吉他、架子鼓</font>；已遍历：海报)，在目前未遍历节点中找下一个最便宜的节点是 ”黑胶唱片“；更新 ”黑胶唱片“ 的各个邻居的开销。</p><p align=center><img src=/datasets/note/dikesi-3.png width=100% height=100% title=dikesi alt=dikesi></p>下一个最便宜的是 吉他，因此更新其邻居的开销：<p align=center><img src=/datasets/note/dikesi-4.png width=100% height=100% title=dikesi alt=dikesi></p>下一个最便宜的是 架子鼓，因此更新其邻居的开销：<p align=center><img src=/datasets/note/dikesi-5.png width=100% height=100% title=dikesi alt=dikesi></p><p><strong>第四步</strong>：所有节点都已遍历完了，当前，我们直到最短路径的开销是35美元，但如何确定这条路径呢？为此，可以根据父节点寻找。</p></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>狄克斯特拉算法：python实例：乐谱 -换-> 钢琴</span></h5><div class=card><div class=card-body><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span>(object):
+    <span style=color:#66d9ef>def</span> __init__(self):
+        <span style=color:#66d9ef>pass</span>
+    
+    <span style=color:#a6e22e>@staticmethod</span>
+    <span style=color:#75715e># 在未处理的节点中找出开销最小的节点</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>find_lowest_cost_node</span>(costs, processed):
+        lowest_cost <span style=color:#f92672>=</span> float(<span style=color:#e6db74>&#39;inf&#39;</span>)
+        lowest_cost_node <span style=color:#f92672>=</span> None
+        <span style=color:#66d9ef>for</span> node <span style=color:#f92672>in</span> costs:
+            cost <span style=color:#f92672>=</span> costs[node]
+            <span style=color:#66d9ef>if</span> cost <span style=color:#f92672>&lt;</span> lowest_cost <span style=color:#f92672>and</span> node <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> processed:
+                lowest_cost <span style=color:#f92672>=</span> cost
+                lowest_cost_node <span style=color:#f92672>=</span> node
+
+        <span style=color:#66d9ef>return</span> lowest_cost_node
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>dikesi</span>(self, graph):
+
+        <span style=color:#75715e># 开销-散列表。未知节点的开销，先设置为无穷大</span>
+        costs <span style=color:#f92672>=</span> {
+          <span style=color:#e6db74>&#39;A&#39;</span>: <span style=color:#ae81ff>0</span>, 
+          <span style=color:#e6db74>&#39;B&#39;</span>: <span style=color:#ae81ff>5</span>, 
+          <span style=color:#e6db74>&#39;C&#39;</span>: <span style=color:#ae81ff>0</span>, 
+          <span style=color:#e6db74>&#39;D&#39;</span>: float(<span style=color:#e6db74>&#39;inf&#39;</span>), 
+          <span style=color:#e6db74>&#39;E&#39;</span>: float(<span style=color:#e6db74>&#39;inf&#39;</span>), 
+          <span style=color:#e6db74>&#39;F&#39;</span>: float(<span style=color:#e6db74>&#39;inf&#39;</span>)
+        }
+        <span style=color:#75715e># 父节点-散列表</span>
+        parents <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;B&#39;</span>: <span style=color:#e6db74>&#39;A&#39;</span>, <span style=color:#e6db74>&#39;C&#39;</span>: <span style=color:#e6db74>&#39;A&#39;</span>, <span style=color:#e6db74>&#39;F&#39;</span>: None}
+        <span style=color:#75715e># 已处理过的节点</span>
+        processed <span style=color:#f92672>=</span> []
+
+        node <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;A&#39;</span>
+        <span style=color:#66d9ef>while</span> node <span style=color:#f92672>is</span> <span style=color:#f92672>not</span> None:
+            cost <span style=color:#f92672>=</span> costs[node]
+            neighbors <span style=color:#f92672>=</span> graph[node]
+            <span style=color:#75715e># 遍历当前节点的所有邻居</span>
+            <span style=color:#66d9ef>for</span> n <span style=color:#f92672>in</span> neighbors:
+                new_cost <span style=color:#f92672>=</span> cost <span style=color:#f92672>+</span> neighbors[n]
+                <span style=color:#75715e># 如果当前节点前往邻居更近，就更新该邻居的开销；同时更新该邻居的父节点</span>
+                <span style=color:#66d9ef>if</span> costs[n] <span style=color:#f92672>&gt;</span> new_cost:
+                    costs[n] <span style=color:#f92672>=</span> new_cost
+                    parents[n] <span style=color:#f92672>=</span> node
+            processed<span style=color:#f92672>.</span>append(node)
+            node <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>find_lowest_cost_node(costs, processed)
+
+        <span style=color:#66d9ef>return</span> costs[<span style=color:#e6db74>&#39;F&#39;</span>]
+
+<span style=color:#75715e># 图-散列表</span>
+graph <span style=color:#f92672>=</span> {}
+graph[<span style=color:#e6db74>&#39;A&#39;</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;B&#39;</span>: <span style=color:#ae81ff>5</span>, <span style=color:#e6db74>&#39;C&#39;</span>: <span style=color:#ae81ff>0</span>}
+graph[<span style=color:#e6db74>&#39;B&#39;</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;D&#39;</span>: <span style=color:#ae81ff>15</span>, <span style=color:#e6db74>&#39;E&#39;</span>: <span style=color:#ae81ff>20</span>}
+graph[<span style=color:#e6db74>&#39;C&#39;</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;D&#39;</span>: <span style=color:#ae81ff>30</span>, <span style=color:#e6db74>&#39;E&#39;</span>: <span style=color:#ae81ff>35</span>}
+graph[<span style=color:#e6db74>&#39;D&#39;</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;F&#39;</span>: <span style=color:#ae81ff>20</span>}
+graph[<span style=color:#e6db74>&#39;E&#39;</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;F&#39;</span>: <span style=color:#ae81ff>10</span>}
+graph[<span style=color:#e6db74>&#39;F&#39;</span>] <span style=color:#f92672>=</span> {}
+alpha <span style=color:#f92672>=</span> Solution()
+rst <span style=color:#f92672>=</span> alpha<span style=color:#f92672>.</span>dikesi(graph)
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>双指针</span></h5><div class=card><div class=card-body><p>示例：<a href="https://leetcode.cn/problems/container-with-most-water/description/?envType=study-plan-v2&envId=top-interview-150" target=blank>盛更多的水</a></p><p align=center><img src=/datasets/note/double_point.png width=100% height=100% title=double alt=double></p><p>通过这个题目，来体会一下 <font color=#f00000>双指针</font>的优雅。<br></p><ol><li>开始的状态：一个指针（left）指向 头，一个指针（right）指向 尾；</li><li>当 $h[left_0] &lt; h[right_0]$时，则把 $left_0+=1$ 。<br>这是因为：当 $h[left_0] &lt; h[right_0]$ 时，如果 $left_0$ 指针不动，调整 $right_0$ 指针， $ right \in (left_0, right_0]$ 这个系列的值对会小于 起始值，所以，<font color=#f00000>相当于这个系列拿最大值比较，其他的就不用考虑了。</font></li><li>所以，每个调整小边。相当于每次过滤了一批可能项。对比两个for循环的话，所有可能项都会遍历。</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span>(object):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>maxArea</span>(self, height):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type height: List[int]
+</span><span style=color:#e6db74>        :rtype: int
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        max_c <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+        n <span style=color:#f92672>=</span> len(height)
+        i, j <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, n<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> j:
+            <span style=color:#66d9ef>if</span> height[i] <span style=color:#f92672>&lt;</span> height[j]:
+                max_c <span style=color:#f92672>=</span> max(max_c, height[i] <span style=color:#f92672>*</span> (j<span style=color:#f92672>-</span>i))
+                i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+            <span style=color:#66d9ef>else</span>:
+                max_c <span style=color:#f92672>=</span> max(max_c, height[j] <span style=color:#f92672>*</span> (j <span style=color:#f92672>-</span> i))
+                j <span style=color:#f92672>-=</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>return</span> max_c
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>固定位数-比较</span></h5><div class=card><div class=card-body><p>示例：<a href="https://leetcode.cn/problems/group-anagrams/?envType=study-plan-v2&envId=top-interview-150" target=blank>字母异位词分组</a><br><strong>关键点</strong>：26个字母是固定的，异位词：相同字母的个数是一样的，就是位置可能不一样。每个字符串 都可以用 [0]*26，累积每个位置字母的个数。用这个 元组作为比较的可以。<br></p><p>类似这个题目，<font color=#f00000>有固定位数的情况，可以考虑 固定位数的数组（[0]*26）、固定位数的二进制表示。</font></p></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>KMP算法</span></h5><div class=card><div class=card-body><p>KMP算法，是经典的字符匹配算法。<br>在介绍KMP之前，先介绍 字符串的 <font color=#f00000>前缀集合</font> 和 <font color=#f00000>后缀集合</font><br>比如：abab，前缀集合：a, ab, aba； 后缀集合：b, ab, bab。<br></p><p>KMP算法的思路：</p><ol><li>逐个 原字符串 和 匹配字符串。每次匹配失败时，就不用从0开始，而是从当前 <font color=#f00000>前/后缀 的最长长度</font> 开始</li><li>用next记录 匹配字符串 的每个位置的最长 前/后缀 的最长长度</li></ol><p align=center><img src=/datasets/note/kmp_0.jpg width=100% height=100% title=KMP alt=KMP></p><p>在计算next数组时，当匹配失败时，为什么是：$ j = next[j-1] $ ？</p><ol><li>此时，$p[j] \ne p[i]$。$p[:j]$：表示目前最长的前缀</li><li>$next[j-1]$ ：表示 在 $p[:j]$ 字符串中，最长的 前/后缀长度，假设 $ k = next[j-1] $。</li><li>所以 $ p[:k] == p[i-k: i] == p[j-k: j] $，这三段字符串相等，所以，$ j = next[j-1] $，即：从 $ p[k] $ 开始 继续与 $p[i]$ 比较</li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>get_next</span>(p):
+    n <span style=color:#f92672>=</span> len(p)
+    <span style=color:#75715e># i: 表示遍历的字符下标</span>
+    <span style=color:#75715e># j: 最大前后缀长度</span>
+    i, j <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>0</span>
+    <span style=color:#75715e># 记录：每个当前的最大前后缀长度</span>
+    next <span style=color:#f92672>=</span> [<span style=color:#ae81ff>0</span>] <span style=color:#f92672>*</span> n
+
+    <span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>1</span>, n):
+        <span style=color:#75715e># 如果相等，长度+1</span>
+        <span style=color:#66d9ef>if</span> p[i] <span style=color:#f92672>==</span> p[j]:
+            j <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+            next[i] <span style=color:#f92672>=</span> j
+        <span style=color:#75715e># 如果不相等，更新长度的值，直到相等或者长度为0</span>
+        <span style=color:#66d9ef>else</span>:
+            <span style=color:#66d9ef>while</span> j <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>and</span> p[i] <span style=color:#f92672>!=</span> p[j]:
+                j <span style=color:#f92672>=</span> next[j<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+    <span style=color:#66d9ef>return</span> next
+
+
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>kmp_search</span>(string, patt):
+    <span style=color:#75715e># 获取next数组</span>
+    next <span style=color:#f92672>=</span> get_next(patt)
+    i, j, n, m <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>, len(string), len(patt)
+    <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> n <span style=color:#f92672>and</span> j <span style=color:#f92672>&lt;</span> m:
+        <span style=color:#66d9ef>if</span> string[i] <span style=color:#f92672>==</span> patt[j]:
+            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+            j <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>elif</span> j <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>:   <span style=color:#75715e># 字符匹配失败，根据next跳过子串前面的一些字符</span>
+            j <span style=color:#f92672>=</span> next[j<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+        <span style=color:#66d9ef>else</span>:  <span style=color:#75715e># 子串第一个字符就失配</span>
+            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>if</span> j <span style=color:#f92672>==</span> m:
+            <span style=color:#66d9ef>return</span> i<span style=color:#f92672>-</span>m
+
+    <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>数据结构</span></h5><div class=card><div class=card-body><p>常见的数据结构可分为「线性数据结构」与「非线性数据结构」，具体为：「数组」、「链表」、「栈」、「队列」、「树」、「图」、「散列表」、「堆」。</p><p align=center><img src=/datasets/note/data-struct.png width=80% height=80% title=data-struct alt=data-struct></p></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>数组与链表</span></h5><div class=card><div class=card-body><blockquote><p>数组： 在内存中是连续的一整块。</p><ol><li>随机访问，数组在内存中是连续的一整块，所以支持随机访问。</li><li>增/删操作，费事。增加元素时，如果内存不够一整块，还得整体迁移</li></ol></blockquote></div></div><div class=card><div class=card-body><blockquote><p>链表： 可以存储在内存的任何地方。</p><ol><li>顺序访问，由于存在任何地方，每个元素都存储了下一个元素的地址，所以只能从头开始逐个查询。</li><li>增/删操作，不费事。只要修改一下 <font color=#a020f0>下一元素地址</font> 就行。</li></ol></blockquote></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>栈</span></h5><div class=card><div class=card-body><p><font color=#a020f0>递归</font>操作，就是使用的调用栈。即：把每个递归调用函数，都压入栈，完成一个弹出一个，直到空栈。<br></p><blockquote><p>优先考虑用栈的 “信号”</p><ol><li>有返回上一步的操作</li><li>成对匹配的问题，比如：（）</li><li>链表/list 的<font color=#f00000>翻转问题</font>，例如：<a href="https://leetcode.cn/problems/reverse-nodes-in-k-group/description/?envType=study-plan-v2&envId=top-interview-150" target=blank>K 个一组翻转链表</a></li></ol></blockquote></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>队列</span></h5><div class=card><div class=card-body><p><font color=#a020f0>队列</font>(First In First Out)：先进先出的数据结构。<br></p><blockquote><ol><li>图的广度优先搜索，就是先把1级元素压入队列，然后在一个一个出队遍历时，把其邻居压入队列</li><li></li></ol></blockquote></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>树</span></h5><div class=card><div class=card-body><p><strong>字典树</strong><br>字典树 ( Trie 树 ) 又称单词查找树，
+是一种用于在 字符串集合 中 高效地 存储 和 查找 字符串 的 树形 数据结构。</p><p align=center><img src=/datasets/note/trie_tree.png width=100% height=100% title=hash alt=hash></p><p>实例： <a href="https://leetcode.cn/problems/implement-trie-prefix-tree/?envType=study-plan-v2&envId=top-interview-150" target=blank>实现 Trie (前缀树)</a></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Trie</span>(object):
+
+    <span style=color:#66d9ef>def</span> __init__(self):
+        self<span style=color:#f92672>.</span>children <span style=color:#f92672>=</span> [None] <span style=color:#f92672>*</span> <span style=color:#ae81ff>26</span>
+        self<span style=color:#f92672>.</span>is_end <span style=color:#f92672>=</span> False
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>searchPrefix</span>(self, prefix):
+        node <span style=color:#f92672>=</span> self
+        <span style=color:#66d9ef>for</span> ch <span style=color:#f92672>in</span> prefix:
+            ch <span style=color:#f92672>=</span> ord(ch) <span style=color:#f92672>-</span> ord(<span style=color:#e6db74>&#39;a&#39;</span>)
+            <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> node<span style=color:#f92672>.</span>children[ch]:
+                <span style=color:#66d9ef>return</span> None
+            node <span style=color:#f92672>=</span> node<span style=color:#f92672>.</span>children[ch]
+        <span style=color:#66d9ef>return</span> node
+
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>insert</span>(self, word):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type word: str
+</span><span style=color:#e6db74>        :rtype: None
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        node <span style=color:#f92672>=</span> self
+        <span style=color:#66d9ef>for</span> ch <span style=color:#f92672>in</span> word:
+            ch <span style=color:#f92672>=</span> ord(ch) <span style=color:#f92672>-</span> ord(<span style=color:#e6db74>&#39;a&#39;</span>)
+            <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> node<span style=color:#f92672>.</span>children[ch]:
+                node<span style=color:#f92672>.</span>children[ch] <span style=color:#f92672>=</span> Trie()
+            node <span style=color:#f92672>=</span> node<span style=color:#f92672>.</span>children[ch]
+        node<span style=color:#f92672>.</span>is_end <span style=color:#f92672>=</span> True
+
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>search</span>(self, word):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type word: str
+</span><span style=color:#e6db74>        :rtype: bool
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        node <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>searchPrefix(word)
+        <span style=color:#66d9ef>return</span> node <span style=color:#f92672>is</span> <span style=color:#f92672>not</span> None <span style=color:#f92672>and</span> node<span style=color:#f92672>.</span>is_end
+
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>startsWith</span>(self, prefix):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type prefix: str
+</span><span style=color:#e6db74>        :rtype: bool
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        node <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>searchPrefix(prefix)
+        <span style=color:#66d9ef>return</span> node <span style=color:#f92672>is</span> <span style=color:#f92672>not</span> None
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>散列表</span></h5><div class=card><div class=card-body><p><font color=#a020f0>散列函数</font>：将任何输入映射到数字。<br></p><p>在pyhton中 散列表的实现为字典 dict()</p><p>散列表是一种非线性数据结构，通过利用 Hash 函数将指定的「键 key」映射至对应的「值 value」，以实现高效的元素查找。<br>比如：通过输入学号，在名字库里找到对应的名字。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># 输入：学号</span>
+<span style=color:#75715e># 小力: 10001</span>
+<span style=color:#75715e># 小特: 10002</span>
+<span style=color:#75715e># 小扣: 10003</span>
+<span style=color:#75715e># 名字库</span>
+names <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;小力&#34;</span>, <span style=color:#e6db74>&#34;小特&#34;</span>, <span style=color:#e6db74>&#34;小扣&#34;</span> ]
+<span style=color:#75715e># Hash函数的目的：把学号，映射为序号index，</span>
+<span style=color:#75715e># 这个序号index就是 名字库names的名字对应序号</span>
+</code></pre></div><p align=center><img src=/datasets/note/hash.png width=100% height=100% title=hash alt=hash></p></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>堆</span></h5><div class=card><div class=card-body><p>堆是一种基于「完全二叉树」的数据结构，可使用数组实现。以堆为原理的排序算法称为「堆排序」，基于堆实现的数据结构为「优先队列」。堆分为「大顶堆」和「小顶堆」，大（小）顶堆：任意节点的值不大于（小于）其父节点的值。</p><p>完全二叉树定义： 设二叉树深度为 k，若二叉树除第 k 层外的其它各层（第 1 至 k−1 层）的节点达到最大个数，且处于第 k 层的节点都连续集中在最左边，则称此二叉树为完全二叉树。</p><p align=center><img src=/datasets/note/heap.png width=30% height=30% title=heap alt=heap></p><p><strong>小顶堆</strong>： $K_i &lt;= K_{2i+1} \ \& \ K_i &lt;= K_{2i+2}$<br>**大顶堆**： $K_i >= K_{2i+1} \ \& \ K_i >= K_{2i+2}$<br></p><p>怎么构建一个「小顶堆」?<br></p><ol><li>遍历二叉树的<font color=#f00000>非叶子节点自下往上</font>的构造小顶堆，针对每个非叶子节点，都跟它的左右子节点比较，把最大的值换到这个子树的父节点。</li></ol><p>上图就是一个「小顶堆」，堆的操作：</p><ol><li>搜索：$O(1)$，就是访问 堆顶的元素。</li><li>添加：就是要满足堆的定义：<font color=#a020f0>任意节点的值不大于（小于）其父节点的值。</font></li><li>删除：跟添加一样，就是要满足堆的定义：<font color=#a020f0>任意节点的值不大于（小于）其父节点的值。</font></li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># encoding: utf-8</span>
+
+<span style=color:#75715e># 大顶堆</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>big_heap</span>(array, start, end):
+    root <span style=color:#f92672>=</span> start
+    <span style=color:#75715e># 左孩子的索引</span>
+    child <span style=color:#f92672>=</span> root <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+    <span style=color:#66d9ef>while</span> child <span style=color:#f92672>&lt;=</span> end:
+        <span style=color:#75715e># 节点有右子节点，并且右子节点的值大于左子节点，则将child变为右子节点的索引</span>
+        <span style=color:#66d9ef>if</span> child <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>&lt;=</span> end <span style=color:#f92672>and</span> array[child] <span style=color:#f92672>&lt;</span> array[child <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>]:
+            child <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>if</span> array[root] <span style=color:#f92672>&lt;</span> array[child]:
+            <span style=color:#75715e># 交换节点与子节点中较大者的值</span>
+            array[root], array[child] <span style=color:#f92672>=</span> array[child], array[root]
+            <span style=color:#75715e># 交换值后，如果存在孙节点，则将root设置为子节点，继续与孙节点进行比较</span>
+            root <span style=color:#f92672>=</span> child
+            child <span style=color:#f92672>=</span> root <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>else</span>:
+            <span style=color:#66d9ef>break</span>
+
+<span style=color:#75715e># 小顶堆</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>little_heap</span>(array, start, end):
+    root <span style=color:#f92672>=</span> start
+    <span style=color:#75715e># 左孩子的索引</span>
+    child <span style=color:#f92672>=</span> root <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+    <span style=color:#66d9ef>while</span> child <span style=color:#f92672>&lt;=</span> end:
+        <span style=color:#75715e># 节点有右子节点，并且右子节点的值小于左子节点，则将child变为右子节点的索引</span>
+        <span style=color:#66d9ef>if</span> child <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>&lt;=</span> end <span style=color:#f92672>and</span> array[child] <span style=color:#f92672>&gt;</span> array[child <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>]:
+            child <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>if</span> array[root] <span style=color:#f92672>&gt;</span> array[child]:
+            <span style=color:#75715e># 交换节点与子节点中较小者的值</span>
+            array[root], array[child] <span style=color:#f92672>=</span> array[child], array[root]
+            <span style=color:#75715e># 交换值后，如果存在孙节点，则将root设置为子节点，继续与孙节点进行比较</span>
+            root <span style=color:#f92672>=</span> child
+            child <span style=color:#f92672>=</span> root <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+        <span style=color:#66d9ef>else</span>:
+            <span style=color:#66d9ef>break</span>
+
+
+<span style=color:#75715e># 正序：使用大顶堆</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>heap_sort</span>(array):
+    first <span style=color:#f92672>=</span> len(array) <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
+    <span style=color:#75715e># 1.构建大顶堆：从下到上，从右到左对每个非叶节点进行调整，循环构建成大顶堆</span>
+    <span style=color:#66d9ef>for</span> start <span style=color:#f92672>in</span> range(first, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+        big_heap(array, start, len(array) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+
+    <span style=color:#75715e># 2.排序</span>
+    <span style=color:#66d9ef>for</span> end <span style=color:#f92672>in</span> range(len(array) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>0</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+        <span style=color:#75715e># 交换堆顶和堆尾的数据</span>
+        array[<span style=color:#ae81ff>0</span>], array[end] <span style=color:#f92672>=</span> array[end], array[<span style=color:#ae81ff>0</span>]
+        <span style=color:#75715e># 重新调整完全二叉树，构造成大顶堆</span>
+        big_heap(array, <span style=color:#ae81ff>0</span>, end <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+    
+    <span style=color:#66d9ef>return</span> array
+
+
+<span style=color:#75715e># 倒序：使用小顶堆</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>heap_sort_reverse</span>(array):
+    first <span style=color:#f92672>=</span> len(array) <span style=color:#f92672>//</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
+
+    <span style=color:#75715e># 1.构建小顶堆：从下到上，从右到左对每个非叶节点进行调整，循环构建成大顶堆</span>
+    <span style=color:#66d9ef>for</span> start <span style=color:#f92672>in</span> range(first, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+        little_heap(array, start, len(array) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+
+    <span style=color:#75715e># 2.排序</span>
+    <span style=color:#66d9ef>for</span> end <span style=color:#f92672>in</span> range(len(array) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>0</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+        <span style=color:#75715e># 交换堆顶和堆尾的数据</span>
+        array[<span style=color:#ae81ff>0</span>], array[end] <span style=color:#f92672>=</span> array[end], array[<span style=color:#ae81ff>0</span>]
+        <span style=color:#75715e># 重新调整完全二叉树，构造成大顶堆</span>
+        little_heap(array, <span style=color:#ae81ff>0</span>, end <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>)
+    <span style=color:#66d9ef>return</span> array
+
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>图</span></h5><div class=card><div class=card-body><p><strong>连通图与非联通图</strong></p><p align=center><img src=/datasets/note/graph_1.png width=100% height=100% title=graph alt=graph></p><ol><li>非连通图：比如图a中，找不到一条从a到c的路径</li><li>连通图：图b是一个连通图，因为从一个顶点到另一个顶点都至少存在一条通路</li></ol><p><strong>生成树</strong></p><p align=center><img src=/datasets/note/graph_2.png width=100% height=100% title=graph alt=graph></p><p>所谓生成树，是指具备一下条件的<font color=#f00000>连通图</font></p><ol><li>包含图中所有顶点</li><li>任意顶点之间<font color=#f00000>有且只有一条通路</font>，比如上图就是一个连通图，对应的多种生成树。</li></ol><p><strong>最小生成树</strong>：就是上述生成树中，路径权值和最小的那个。具体问题比如：修路问题，n座城市之间修公路，要求两两互联，公里数最短。<br>求解最小生成树的算法通常有两种：</p><ol><li><a href=http://c.biancheng.net/algorithm/prim.html target=blank>普里姆算法<a></li><li><a href=http://c.biancheng.net/algorithm/kruskal.html target=blank>克鲁斯卡尔算法<a></li></ol></div></div></div></div><blockquote></blockquote><div class=note-card><div class=item><h5 class=note-title><span>滑动窗口算法</span></h5><div class=card><div class=card-body><p><a href=https://www.cnblogs.com/huansky/p/13488234.html target=blank>参考</a></p><blockquote><p><font color=#f00000>个人理解，滑动窗口主要解决的问题特点</font>：</p><ol><li>连续性，一定是连续序列或者字符串的最长/最短 的问题。</li></ol></blockquote><p>滑动窗口算法：是在给定特定窗口大小的数组或字符串上执行要求的操作，该技术可以将一部分问题中的嵌套循环转变为一个单循环，可以减少时间复杂度。即：在一个特定大小的字符串/数组上进行操作，而不是在整个字符串/数组上操作，这样就降低了问题的复杂度。<br>滑动：说明这个窗口是移动的；<br>窗口：窗口大小并不是固定的，可以不断扩容直到满足一定的条件；也可以不断缩小，直到找到一个满足条件的最小窗口；也可以是固定大小。<br></p><p>滑动窗口算法的思路：<br></p><ol><li>我们在字符串 S 中使用双指针中的左右指针技巧，初始化 left = right = 0，把索引闭区间 [left, right] 称为一个「窗口」。</li><li>我们先不断地增加 right 指针扩大窗口 [left, right]，直到窗口中的字符串符合要求（包含了 T 中的所有字符）。</li><li>此时，我们停止增加 right，转而不断增加 left 指针缩小窗口 [left, right]，直到窗口中的字符串不再符合要求（不包含 T 中的所有字符了）。同时，每次增加 left，我们都要更新一轮结果。</li><li>重复第 2 和第 3 步，直到 right 到达字符串 S 的尽头。</li></ol><p><code>对于固定窗口大小，框架总结如下：</code></p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># 固定窗口大小为k</span>
 <span style=color:#75715e># 在s中 寻找窗口大小为k时的所包含最大元音字母个数</span>
 right <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
 <span style=color:#66d9ef>while</span> right<span style=color:#f92672>&lt;</span>len(s):

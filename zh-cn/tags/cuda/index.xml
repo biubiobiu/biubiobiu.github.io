@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>cuda on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/cuda/</link><description>Recent content in cuda on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Dec 2021 16:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/cuda/index.xml" rel="self" type="application/rss+xml"/><item><title>cuda</title><link>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0010_build_env/0020_cuda_env/</link><pubDate>Wed, 08 Dec 2021 16:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00035_programming_language/0035_python/0010_build_env/0020_cuda_env/</guid><description>一、简介 1、CUDA CUDA：英伟达开发的一个通用并行计算平台和编程模型，能让你调用GPU的指令集及其并行计算单元。基于cuda编程可以利用GPU的并行计算引擎来更高效地计算。
+特点：
+GPU有更多的计算核心，适合数据并行的计算密集型任务。 CPU有较少的运算核心，适合实现复杂的逻辑计算，用于控制密集型任务。 对比一下： CPU &amp;ndash; 线程是重量级的，上下文切换开销较大。 负责处理逻辑复杂的串行程序 GPU &amp;ndash; 由于存在较多核心，线程是轻量级的。负责处理数据密集型的并行机选程序 2、CUDA编程模型 CUDA编程模型是一个异构模型，需要CPU和GPU协同工作，在CUDA中有两个重要的概念：host和device。
+host: CPU + 其内存
+device: GPU + 其内存
+典型的CUDA程序的执行流程：
+分配host内存，并进行数据初始化 分配device内存，并从host将数据copy到device上 调用CUDA的核函数在device上完成指定的运算 将device上的运算结果copy到host上 释放device和host上分配的内存。 3、cuDNN cuDNN: CUDA Deep Neural Network软件库，是一个用于深度神经网络的GPU加速原语库。
+TensorRT: 是一套用于高性能深度学习接口的SDK，其包含深度学习接口优化器、运行时优化器，能为深度学习接口提供低延迟和高通量的特性。
+二、CUDA安装 1、驱动安装 NVIDIA驱动
+关键点：CUDA和显卡驱动没有一一对应的关系，一般情况下安装最新的驱动。
+2、CUDA安装 CUDA下载
+CUDA: 只是一个工具包，在同一设备上可以安装多个不同的版本，比如：9.0，10.0，11.0。一般情况下安装最新的驱动，然后根据自己的需求选择不同CUDA工具包就行了。但在离线安装CUDA时会绑定CUDA和驱动程序，所以在使用多个CUDA的时候就不要选择离线安装CUDA了。
+安装步骤:
+不用选择太高的cuda版本，太高反而兼容性不好，要兼顾Tensorflow等架构的版本 安装包下载后，一路默认安装就好。检查是否安装成功：nvcc -V cuda的安装包中包含NVIDIA驱动，安装时取消勾选安装驱动，只安装工具包就行 CUDA安装后，配置环境变量：
+CUDA10.1是之前安装的，CUDA11.1是之后安装的，所以默认CUDA10.1的环境变量在CUA11.1之前，CUDA_PATH环境变量被CUDA11.1覆盖
+CUDA版本切换：
+切换CUDA版本时，只需要切换环境变量中CUDA的顺序即可，比如让CUDA11.1生效，则CUDA11.1环境变量在CUDA10.1之前。
+3、cuDNN安装 cuDNN下载
+cuDNN：是一个SDK，是一个专门用于神经网路的加速包，它跟CUDA没有一一对应的关系。即：每个CUDA版本可能有好几个cuDNN版本，一般有一个最新版本的cuDNN版本与CUDA对应更好。
+安装步骤：
+根据cuda版本选择对应的cudnn版本；不同系统，选择不同的型号。 下载的不是安装包，而是压缩文件，解压后将对应的文件拷贝到cuda安装路径对应的目录中。默认安装的路径： 复制 cudnn\bin\cudnn64_5.</description></item></channel></rss>
