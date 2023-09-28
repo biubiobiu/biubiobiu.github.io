@@ -6,7 +6,7 @@ menu:
     name: 简介
     identifier: vlp-summary
     parent: vlp
-    weight: 10
+    weight: 1
 author:
   name: biubiobiu
   image: /images/author/john.png

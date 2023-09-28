@@ -76,6 +76,8 @@ $$
 \bold{X} \times M + \bold{P}
 $$
 
+<p align="center"><img src="/datasets/posts/nlp/position_em.png" width="50%" height="50%" title="position" alt="position"></p>
+
 ### 2、层归一化
 
 **层归一化**：<a href="https://arxiv.org/abs/1607.06450" target="blank">《Layer Normalization》</a>，在一个输入序列中，做归一化。

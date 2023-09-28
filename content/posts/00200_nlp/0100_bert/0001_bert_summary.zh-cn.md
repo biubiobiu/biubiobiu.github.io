@@ -116,6 +116,10 @@ class NextSentencePred(nn.Module):
 
 
 ### 4、bert模型
+
+位置编码，是可学习的。<font color=f00000>nn.Parameter()</font>
+
+
 ```python
 
 class BERTEncoder(nn.Module):
@@ -169,6 +173,9 @@ class BERTModel(nn.Module):
         return encoded_X, mlm_Y_hat, nsp_Y_hat
 ```
 
+## 三、各式各样的Bert
+
+<a href="http://mitchgordon.me/machine/learning/2019/11/18/all-the-ways-to-compress-BERT.html" target="bland">《All The Ways You Can Compress BERT》</a>
 
 ## 总结
 

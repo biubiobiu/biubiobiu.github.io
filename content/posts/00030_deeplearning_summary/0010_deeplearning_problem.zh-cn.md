@@ -47,7 +47,8 @@ P(1) = \frac{1}{1+e^{-\frac{x}{T}}}
 $$
 
 ### 2、ReLU函数
-
+relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：<br>
+在x<0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。
 $$
 ReLU(x) = max(0, x) = \begin{cases}
    x &\text{if } x \geqslant 0 \\\
@@ -63,6 +64,7 @@ LeakyReLU(x) = \begin{cases}
 \end{cases}
 $$
 
+缓解了死区，不过 $\gamma$ 是个超参，人为设定的不准，调参影响较大。<br>
 $\gamma = 0.01$ ，当神经元处于非激活状态时，也能有一个非零的梯度可以更新参数，避免永远不能被激活。
 
 **带参数的ReLU**<br>
@@ -76,10 +78,13 @@ $$
 引入一个可学习的参数 $\gamma_i$ ，不同神经元可以有不同的参数。
 
 **ELU函数**：Exponential Linear Unit 指数线性单元<br>
+
+在小于0的部分使用指数，具备relu的优点，同时ELU也解决了relu函数自身死区的问题。不过ELU函数指数操作稍稍增大了工作量
+
 $$
 ELU(x) = \begin{cases}
    x &\text{if } x \geqslant 0 \\\
-   \gamma(e_x-1) &\text{if } x < 0
+   \gamma(e^x-1) &\text{if } x < 0
 \end{cases}
 $$
 
@@ -89,6 +94,13 @@ $$
 Softplus(x) = log(1+e^x)
 $$
 Softplus函数可以看做ReLU函数的平滑版本，其导数刚好是logistic函数。Softplus函数虽然也具有单侧抑制、宽兴奋边界的特性，但没有稀疏激活性。
+
+**swish**<br>
+该函数是google大脑提出的一个新的激活函数，从图像上来看，与relu差不多，唯一区别较大的是接近0的负半轴区域。
+$$
+swish(x) = \frac{x}{1+e^{-x}}
+$$
+
 
 ## 二、损失函数
 
