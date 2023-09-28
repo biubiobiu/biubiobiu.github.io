@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Family on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/family/</link><description>Recent content in Family on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Sep 2021 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/family/index.xml" rel="self" type="application/rss+xml"/><item><title>Bert家族</title><link>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0100_bert/0020_bert_family/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0100_bert/0020_bert_family/</guid><description>一、简介 1、为什么需要预训练 《Visualizing and Understanding the Effectiveness of BERT》 这篇文章指出:
+首先，预训练能在下游任务中达到一个良好的初始点，与从头开始训练相比，预训练能带来更宽的最优点，更容易优化。尽管 BERT 对下游任务的参数设置过高，但微调程序对过拟合具有很强的鲁棒性。 其次，可视化结果表明，由于最佳值平坦且宽广，以及训练损失面和泛化误差面之间的一致性，微调 BERT 趋向于更好地泛化。 第三，在微调过程中，BERT 的低层更具不变性，这表明靠近输入的层学习到了更多可迁移的语言表征。 2、下游任务怎么Fine-tune 我们希望有一个预训练的模型，输入一串单词，输出一串嵌入向量，并且希望这些向量是可以考虑上下文的。那么要怎么做呢？
+最早是由CoVe提出用翻译的方法，来得到可以考虑上下文的向量。那如何通过翻译的方法来得到这个预训练模型呢，就是把该模型当成翻译的编码器，输入一个A语言的序列，然后有一个解码器，结合编码器的注意力，得到B语言的输出。
+虽然可以做到这件事，但是翻译任务需要大量的语言对数据，收集这么多语言对数据是比较困难的，所以我们期望可以用很容易得到的无标签文本得到一个这样的预训练模型。
+过去这样的方法被叫做无监督学习，不过现在通常叫做自监督学习。在自监督学习中，模型学会用部分输入去预测另外一部分输入。换句话说，就是输入的一部分用于预测输入中的其他部分。这种预测下一个单词的方法就是我们训练语言模型的方式。那么要用什么样的网络结构来训练这个模型呢？
+最早用的就是LSTM，比较知名的使用LSTM进行预训练的模型，就是​ ​ELMo​​。随着自注意的流行，很多人把LSTM换成Transformer。
+问题：
+为什么预训练下一个单词的方法，能让我们得到代表单词意思的嵌入向量呢？
+语言学家John Rupert Firth说过，你想要知道某个单词的意思，只要知道它和哪些单词一起出现。预测下一个单词其实做的是类似的事情。
+假设我们有一些特定任务的标签数据，那如何微调模型呢？
+一种做法是预选练的模型训练好后就固定了，变成一个特征Extrator。输入一个单词序列，通过这个预训练模型抽取一大堆特征，把这些特征丢到特征任务模型中，然后进行微调； 另外一种做法是把预训练的模型和特定任务的模型接在一起，在微调的时候，同时微调预训练模型和特定任务的模型。 如果微调整个模型，会遇到什么问题呢? 现在有三个不同的任务，每个任务中都有一个预训练好的模型，然后都微调整个模型。
+这三个预训练好的模型，在不同的任务微调里面，它们会变得不一样。每一个任务都需要存一个新的模型，包含微调的预训练模型和特定任务模型。这样的模型往往非常巨大，其中的参数非常多，导致需要占用特别多的空间。
+怎么解决这个问题呢 有人提出 Adaptor 的概念，在预训练的模型中加入一些叫Apt(Adaptor)的层，在微调的时候，只微调Apt层。这篇文章中，将Adapter插在Feed-forward层之后，在预训练的时候是没有Adapter的，只有在微调的时候才插进去。并且在微调的时候，只调整Adapter层的参数。
+二、bert家族 1、修改Mask范围 那在BERT里面，要盖住哪些单词呢，原始的BERT里面是随机的。也许随机的不够好，尤其对于中文来说，如果盖住中文中的某个字，还是很容易从它附近的字猜出，比如“奥x会”，只要看到“奥”和“会”就可以猜到中间是”运”了。所以
+有人提出 Whole Word Masking ​​盖住整个单词(中文里的词语)的方法，这样得到的模型可以学到更长的依赖关系。 可能只是盖住几个单词还不够好，ERNIE​(Baidu) ​​就提出了盖住短语级别(多个单词组成一个短语)和实体级别(需要识别出实体，然后盖住)。 还有一种Masking的方法，SpanBert​​​，思想很简单，一次盖住一排单词(token)。不用考虑什么短语啊、单词啊、实体啊。在SpanBert里面还提出了一种训练方法，叫SBO(Span Boundary Objective)，一般我们盖住了一些单词后，我们要把盖住的部分预测出现。而SBO通过被盖住范围的左右两边的向量，然后给定一个数值，比如3，代表要还原被盖住的第3个单词。然后SBO就知道，现在要还原3个位置。 还有一种方法，XLNet，从输入的文本序列中，随机一部分，去预测mask的结果，就是让各种各样不同的信息去预测一个单词，模型可以学到比较多的依赖关系。 2、生成式任务 一般讲到BERT，大家都会说BERT不适于用来做生成任务，因为BERT训练的时候，会看到MASK左右两边的单词，而在生成任务中，只能看到左边已经生成出来的单词，然后BERT就表现不好了。</description></item></channel></rss>

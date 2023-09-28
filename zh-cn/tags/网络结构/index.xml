@@ -8,5 +8,6 @@ kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \
 0 &amp;amp;\text{if } v \leqslant 0 \end{cases} $$
 概率型函数
 $$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
-2、ReLU函数 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
+2、ReLU函数 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：
+在x&amp;lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
 0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases} $$</description></item></channel></rss>

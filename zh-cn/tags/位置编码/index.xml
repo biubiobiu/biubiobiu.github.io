@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>位置编码 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/</link><description>Recent content in 位置编码 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Sep 2021 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/index.xml" rel="self" type="application/rss+xml"/><item><title>位置编码</title><link>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0030_transformer/0030_position/</link><pubDate>Wed, 08 Sep 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0030_transformer/0030_position/</guid><description>位置编码 1、绝对位置编码 最早出现于Transformer文章中，目的是为了弥补模型中位置信息的缺失。
+输入：$\bold{X} \in \R^{n \times d}$ 包含一个序列中n个词元的d维嵌入表示。
+位置编码：$\bold{P} \in \R^{n \times d}$, 矩阵第i行 偶数列、奇数列：用不同的频率、偏移来记录位置信息。 $$p_{i,2j} = sin(\frac{i}{10000^{\frac{2j}{d}}})$$ $$p_{i,2j+1} = cos(\frac{i}{10000^{\frac{2j}{d}}})$$
+在 $\bold{X} + \bold{P}$ 时，当$\bold{X}$的幅度值比$\bold{P}$小或者差不多时，可以增大$\bold{X}$的幅度值，以保证$\bold{X}$的主导性。 $$ \bold{X} \times M + \bold{P} $$
+2、相对位置编码 Google于2018年提出的 《Self-Attention with Relative Position Representations》 。该方法出自Transformer的原班人马，通过在attention模块中加入可训练的参数，帮助模型来记住输入中的相对位置。
+3、ALiBi ALiBi
+4、旋转位置编码(RoPE) RoPE
+个人理解：对embedding向量做一个角度旋转。由于d维的向量旋转太复杂，只对2维的向量做旋转。所以d维的向量，有d/2个小向量。 旋转的基本角度：
+参考：苏剑林的blog def precompute_freqs_cis(dim: int, seq_len: int, theta: float = 10000.0): # 计算词向量元素两两分组之后，每组元素对应的旋转角度 freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: (dim // 2)].</description></item></channel></rss>

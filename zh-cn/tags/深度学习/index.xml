@@ -1,4 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>深度学习 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link><description>Recent content in 深度学习 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Thu, 05 Aug 2021 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>深度学习-结构</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</guid><description>一、激活函数 1、Sigmoid函数 logistic函数
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>深度学习 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link><description>Recent content in 深度学习 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Sat, 05 Aug 2023 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml"/><item><title>初始化</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0020_deeplearing_init/</link><pubDate>Sat, 05 Aug 2023 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0020_deeplearing_init/</guid><description>一、初始化 1、Xavier初始化 在全连接层的Xavier初始化：用 $N(0, 1/m)$ 的随机分布初始化。
+2、NTK参数化 除了直接用这种方式初始化外，还可以使用 参数化的方式：用 $N(0, 1)$ 的随机分布来初始化，但需要将输出结果除以 $\sqrt{m}$，即： $$ y_j = b_j + \frac{1}{\sqrt{m}} \sum_i{x_i w_{ij}} $$
+这个高斯过程被称为 &amp;ldquo;NTK参数化&amp;rdquo;，可以参考 《Neural Tangent Kernel: Convergence and Generalization in Neural Networks》，《On the infinite width limit of neural networks with a standard parameterization》。利用NTK参数化后，所有参数都可以用方差为1的分布初始化，这意味着每个参数的尺度大致是一个级别，这样的话我们就可以设置较大的学习率，加快收敛。</description></item><item><title>综述</title><link>https://biubiobiu.github.io/zh-cn/posts/00033_reinforce/0001_reinforce_summary/</link><pubDate>Sat, 05 Aug 2023 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00033_reinforce/0001_reinforce_summary/</guid><description>一、简介 graph LR; A(动态规划) -- B(Monte Carlo) B -- C(TD) C -- D(Q学习) D -- E(SARSA) E -- F(DQN) F -- G(PPO) G -- H(AC/A2C/A3C) H -- I(DDPG) I -- J(SAC) 二、</description></item><item><title>归一化</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</guid><description>一、Normlization介绍 一般而言，样本特征由于来源及度量单位不同，其尺度往往差异很大。如果尺度差异很大，神经网络就比较难训练。为了提高训练效率，对输入特征做归一化，把不同的尺度压缩到一定范围内，尺度统一后，大部分位置的梯度方向近似于最优解搜索方向。这样，在用梯度下降法进行求解时，每一步梯度的方向都基本上指向最小值，训练效率会大大提高。
+归一化：泛指把数据特征转换为相同尺度的方法，比如：
+把数据特征映射到 [0, 1] 或者 [-1, 1] 区间 映射为服从 N(0, 1) 的标准正态分布 1、逐层归一化 逐层归一化可以有效提高训练效率的原因：
+更好的尺度不变形
+深度神经网路中，一个神经层的输入是之前神经层的输出。给定一个神经层 $l$，它之前的神经层 $1, 2, &amp;hellip;, l-1$，的参数变化会导致其输入的分布发生很大的变化。当使用随机梯度下降法训练网络时，每次参数更新都会导致该神经层的输入分布发生变化，层数越高，其输入分布会改变得越明显。
+为了缓解这个问题，可以对每个神经层的输入进行归一化，使其分布保持稳定。不管底层的参数如何变化，高层的输入相对稳定。另外，尺度不变性，可以使我们更加高效地进行参数初始化以及超参数选择。
+更平滑的优化地形
+逐层归一化，一方面可以是大部分神经层的输入处于不饱和区域，从而让梯度变大，避免梯度消失问题；另一方面可以使得神经网络的优化地形（Optimization Landscape）更加平滑，并使梯度变得更加稳定，从而允许使用更高的学习率，并加快收敛速度。
+1. 批量归一化 批量归一化（Batch Normalization）对神经网络中的任意中间层进行归一化。
+$$ a^{(l)} = f(z^{(l)}) = f(Wa^{(l-1)}+b) $$ $f(·)$ 是激活函数，$W$ 和 $b$ 是可学习的参数。
+为了提高优化效率，就要使净输入 $z^l$ 的分布一致，比如：都归一化为标准正态分布。虽然归一化操作可以应用在输入 $a^{(l-1)}$ 上，但归一化 $z^l$ 更加有利于优化。因此，在实践中，归一化操作一般应用在仿射变换之后，激活函数之前。
+2. 层归一化 层归一化（Layer Normalization）是和批量归一化非常类似的方法，与批量归一化不同的是，层归一化是对一个中间层的所有神经元进行归一化。
+二、Norm的位置 在目前大模型中 Normalization 的位置：
+pre Norm 的状态： $x_{t+1} = x_t + F_t(Norm(x_t))$</description></item><item><title>深度学习-结构</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</guid><description>一、激活函数 1、Sigmoid函数 logistic函数
 $$ \varphi(v) = \frac{1}{1+e^{-av}} $$
 tanh函数
 $$ \varphi(v) = tanh(v) = \frac{1-e^{-v}}{1+e^{-v}} $$
@@ -8,7 +23,8 @@ kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \
 0 &amp;amp;\text{if } v \leqslant 0 \end{cases} $$
 概率型函数
 $$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
-2、ReLU函数 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
+2、ReLU函数 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：
+在x&amp;lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
 0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases} $$</description></item><item><title>深度学习开篇</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0005_deeplearning_summary/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0005_deeplearning_summary/</guid><description>论文入口
 一、机器学习 目前，人工智能研究领域主要体现在一下几个方面：
 智能感知：通过模拟人的感知能力（视觉、听觉、嗅觉）对外部信息进行感知和识别，并能够对信息进行加工和处理，从而做出反应。
