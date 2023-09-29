@@ -68,15 +68,21 @@ post Norm 的状态： $x_{t+1} = Norm(x_t + F_t(x_t))$
 **Pre-Norm**<br>
 
 $$
-\begin{aligned}
-x_{t+1} &= x_t + F_t(Norm(x_t)) \\\
-&= x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \\\
-&= ... \\\
-&=x_0 + F_0(Norm(x_0)) + ... + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t))
-\end{aligned}
+\begin{cases}
+x_{t+1} & = x_t + F_t(Norm(x_t)) \\\
+& = x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \\\
+& = ... \\\
+& =x_0 + F_0(Norm(x_0)) + ... + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t))
+\end{cases}
 $$
 
+<!--aligned-->
+
 当 $t$ 比较大时，$F_{t-1}(Norm(x_{t-1}))$ 与 $F_t(Norm(x_t))$ 很接近，等效于一个更宽的 $t$ 层模型，所以，在Pre-Norm中多层叠加的结果更多的是增加宽度而不是深度，深度上有水分。<font color=#f00000>在模型训练中，深度通常比宽度更重要。</font><br>
+
+
+$x = \begin{cases} a &\text{if } b \\\ c &\text{if } d \end{cases}$ 
+
 
 **Post-Norm**<br>
 
