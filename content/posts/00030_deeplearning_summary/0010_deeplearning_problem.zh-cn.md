@@ -33,13 +33,7 @@ $$
 $$
 
 **分段线性函数**<br>
-$$
-\varphi(v) = \begin{cases}
-   1 &\text{if } v \geqslant \theta \\\
-   kv &\text{if } - \theta < v < \theta \\\
-   0 &\text{if } v \leqslant 0
-\end{cases}
-$$
+$ \varphi(v) = \begin{cases} 1 &\text{if } v \geqslant \theta \\\ kv &\text{if } - \theta < v < \theta \\\ 0 &\text{if } v \leqslant 0 \end{cases}$
 
 **概率型函数**<br>
 $$
@@ -48,45 +42,26 @@ $$
 
 ### 2、ReLU函数
 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：<br>
-在x<0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。
-$$
-ReLU(x) = max(0, x) = \begin{cases}
-   x &\text{if } x \geqslant 0 \\\
-   0 &\text{if } x < 0
-\end{cases}
-$$
+在x<0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。<br>
+
+$ ReLU(x) = max(0, x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ 0 &\text{if } x < 0 \end{cases}$
 
 **带滞漏的ReLU**<br>
-$$
-LeakyReLU(x) = \begin{cases}
-   x &\text{if } x \geqslant 0 \\\
-   \gamma x &\text{if } x < 0
-\end{cases}
-$$
+$ LeakyReLU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma x &\text{if } x < 0 \end{cases}$
 
 缓解了死区，不过 $\gamma$ 是个超参，人为设定的不准，调参影响较大。<br>
 $\gamma = 0.01$ ，当神经元处于非激活状态时，也能有一个非零的梯度可以更新参数，避免永远不能被激活。
 
 **带参数的ReLU**<br>
-$$
-PReLU(x) = \begin{cases}
-   x &\text{if } x \geqslant 0 \\\
-   \gamma_i x &\text{if } x < 0
-\end{cases}
-$$
+$ PReLU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma_i x &\text{if } x < 0 \end{cases}$
 
 引入一个可学习的参数 $\gamma_i$ ，不同神经元可以有不同的参数。
 
 **ELU函数**：Exponential Linear Unit 指数线性单元<br>
 
-在小于0的部分使用指数，具备relu的优点，同时ELU也解决了relu函数自身死区的问题。不过ELU函数指数操作稍稍增大了工作量
+在小于0的部分使用指数，具备relu的优点，同时ELU也解决了relu函数自身死区的问题。不过ELU函数指数操作稍稍增大了工作量<br>
 
-$$
-ELU(x) = \begin{cases}
-   x &\text{if } x \geqslant 0 \\\
-   \gamma(e^x-1) &\text{if } x < 0
-\end{cases}
-$$
+$ ELU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma(e^x-1) &\text{if } x < 0 \end{cases}$
 
 
 **Softplus函数**<br>
