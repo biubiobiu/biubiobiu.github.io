@@ -65,7 +65,8 @@ post Norm 的状态： $x_{t+1} = Norm(x_t + F_t(x_t))$
 
 <a href="https://kexue.fm/archives/9009" target="bland">来自苏神的解释</a>: pre-Norm的深度有水分，到一定深度后增加网络深度的效果等同于增加宽度，而不是深度。 <br>
 
-**Pre-Norm**
+**Pre-Norm**<br>
+
 $$
 \begin{aligned}
 x_{t+1} &= x_t + F_t(Norm(x_t)) \\\
