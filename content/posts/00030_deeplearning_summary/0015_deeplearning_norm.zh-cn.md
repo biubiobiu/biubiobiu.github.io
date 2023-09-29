@@ -74,21 +74,16 @@ $ \begin{aligned} x_{t+1} & = x_t + F_t(Norm(x_t)) \\\ & = x_{t-1} + F_{t-1}(Nor
 当 $t$ 比较大时，$F_{t-1}(Norm(x_{t-1}))$ 与 $F_t(Norm(x_t))$ 很接近，等效于一个更宽的 $t$ 层模型，所以，在Pre-Norm中多层叠加的结果更多的是增加宽度而不是深度，深度上有水分。<font color=#f00000>在模型训练中，深度通常比宽度更重要。</font><br>
 
 
-$x = \begin{cases} a &\text{if } b \\\ c &\text{if } d \end{cases}$ 
-
-
 **Post-Norm**<br>
 
 回顾一下残差链接：$x_{t+1} = x_t + F_t(x_t)$<br>
 由于残差分支的存在，$x_{t+1}$的方差是 $x_t$ 与 $F_t(x_t)$ 之和 $\sigma^2_1 + \sigma^2_2$，<font color=#f00000>残差会进一步放大方差</font> 。所以需要缩小方差，其中Normalization就可以实现。在Norm过程中方差的变化：
 
-$$
-\begin{aligned}
+$$ \begin{aligned}
 x_l &= \frac{x_{l-1}}{2^{1/2}} + \frac{F_{l-1}(x_{l-1})}{2^{1/2}} \\\
 &=... \\\
 &= \frac{x_0}{2^{l/2}} + \frac{F_0(x_0)}{2^{l/2}} + \frac{F_1(x_1)}{2^{(l-1)/2}} + ... + \frac{F_{l-1}(x_{l-1})}{2^{1/2}} 
-\end{aligned}
-$$
+\end{aligned} $$
 
 在每条残差通道上都有权重缩小，距离越远的削弱的越严重，原始残差效果越来越弱，因此还是不容易训练。所以，post-Norm 通常要warmup+较小的学习率才能收敛。相关分析见：<a href="https://arxiv.org/abs/2002.04745" target="bland">《On Layer Normalization in the Transformer Architecture》</a> <br>
 
