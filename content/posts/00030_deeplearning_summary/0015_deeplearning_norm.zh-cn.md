@@ -67,14 +67,7 @@ post Norm 的状态： $x_{t+1} = Norm(x_t + F_t(x_t))$
 
 **Pre-Norm**<br>
 
-$$
-\begin{cases}
-x_{t+1} & = x_t + F_t(Norm(x_t)) \\\
-& = x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \\\
-& = ... \\\
-& =x_0 + F_0(Norm(x_0)) + ... + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t))
-\end{cases}
-$$
+$ \begin{aligned} x_{t+1} & = x_t + F_t(Norm(x_t)) \\\ & = x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \\\ & = ... \\\ & =x_0 + F_0(Norm(x_0)) + ... + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \end{aligned}$
 
 <!--aligned-->
 
