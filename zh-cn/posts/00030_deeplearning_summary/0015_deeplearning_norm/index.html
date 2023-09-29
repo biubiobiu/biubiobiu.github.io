@@ -10,10 +10,10 @@ biubiobiu's Blog</a>
 a^{(l)} = f(z^{(l)}) = f(Wa^{(l-1)}+b)
 $$
 $f(·)$ 是激活函数，$W$ 和 $b$ 是可学习的参数。<br>为了提高优化效率，就要使净输入 $z^l$ 的分布一致，比如：都归一化为标准正态分布。虽然归一化操作可以应用在输入 $a^{(l-1)}$ 上，但归一化 $z^l$ 更加有利于优化。因此，在实践中，归一化操作一般应用在<font color=#a00000>仿射变换之后，激活函数之前</font>。</p><h4 id=2-层归一化>2. 层归一化</h4><p>层归一化（Layer Normalization）是和批量归一化非常类似的方法，与批量归一化不同的是，层归一化是对一个中间层的所有神经元进行归一化。</p><h2 id=二norm的位置>二、Norm的位置</h2><p>在目前大模型中 Normalization 的位置：</p><p align=center><img src=/datasets/posts/nlp/pre_normalization.jpg width=90% height=90%></p><p align=center><img src=/datasets/posts/dp_summary/norm_pre_post.jpg width=90% height=90%></p><p>pre Norm 的状态： $x_{t+1} = x_t + F_t(Norm(x_t))$</p><p>post Norm 的状态： $x_{t+1} = Norm(x_t + F_t(x_t))$</p><h3 id=1为什么pre效果弱于post>1、为什么Pre效果弱于post</h3><p><a href=https://kexue.fm/archives/9009 target=bland>来自苏神的解释</a>: pre-Norm的深度有水分，到一定深度后增加网络深度的效果等同于增加宽度，而不是深度。<br></p><p><strong>Pre-Norm</strong><br></p><p>$$
-\begin{aligned}
-x_{t+1} &= x_t + F_t(Norm(x_t)) \<br>&= x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \<br>&= &mldr; \<br>&=x_0 + F_0(Norm(x_0)) + &mldr; + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t))
-\end{aligned}
-$$</p><p>当 $t$ 比较大时，$F_{t-1}(Norm(x_{t-1}))$ 与 $F_t(Norm(x_t))$ 很接近，等效于一个更宽的 $t$ 层模型，所以，在Pre-Norm中多层叠加的结果更多的是增加宽度而不是深度，深度上有水分。<font color=#f00000>在模型训练中，深度通常比宽度更重要。</font><br></p><p><strong>Post-Norm</strong><br></p><p>回顾一下残差链接：$x_{t+1} = x_t + F_t(x_t)$<br>由于残差分支的存在，$x_{t+1}$的方差是 $x_t$ 与 $F_t(x_t)$ 之和 $\sigma^2_1 + \sigma^2_2$，<font color=#f00000>残差会进一步放大方差</font> 。所以需要缩小方差，其中Normalization就可以实现。在Norm过程中方差的变化：</p><p>$$
+\begin{cases}
+x_{t+1} & = x_t + F_t(Norm(x_t)) \<br>& = x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \<br>& = &mldr; \<br>& =x_0 + F_0(Norm(x_0)) + &mldr; + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t))
+\end{cases}
+$$</p><p>当 $t$ 比较大时，$F_{t-1}(Norm(x_{t-1}))$ 与 $F_t(Norm(x_t))$ 很接近，等效于一个更宽的 $t$ 层模型，所以，在Pre-Norm中多层叠加的结果更多的是增加宽度而不是深度，深度上有水分。<font color=#f00000>在模型训练中，深度通常比宽度更重要。</font><br></p><p>$x = \begin{cases} a &\text{if } b \\ c &\text{if } d \end{cases}$</p><p><strong>Post-Norm</strong><br></p><p>回顾一下残差链接：$x_{t+1} = x_t + F_t(x_t)$<br>由于残差分支的存在，$x_{t+1}$的方差是 $x_t$ 与 $F_t(x_t)$ 之和 $\sigma^2_1 + \sigma^2_2$，<font color=#f00000>残差会进一步放大方差</font> 。所以需要缩小方差，其中Normalization就可以实现。在Norm过程中方差的变化：</p><p>$$
 \begin{aligned}
 x_l &= \frac{x_{l-1}}{2^{1/2}} + \frac{F_{l-1}(x_{l-1})}{2^{1/2}} \<br>&=&mldr; \<br>&= \frac{x_0}{2^{l/2}} + \frac{F_0(x_0)}{2^{l/2}} + \frac{F_1(x_1)}{2^{(l-1)/2}} + &mldr; + \frac{F_{l-1}(x_{l-1})}{2^{1/2}}
 \end{aligned}
