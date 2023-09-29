@@ -337,14 +337,12 @@ $$ \varphi(v) = \frac{1}{1+e^{-av}} $$
 tanh函数
 $$ \varphi(v) = tanh(v) = \frac{1-e^{-v}}{1+e^{-v}} $$
 分段线性函数
-$$ \varphi(v) = \begin{cases} 1 &amp;amp;\text{if } v \geqslant \theta \
-kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \
-0 &amp;amp;\text{if } v \leqslant 0 \end{cases} $$
+$ \varphi(v) = \begin{cases} 1 &amp;amp;\text{if } v \geqslant \theta \\ kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \\ 0 &amp;amp;\text{if } v \leqslant 0 \end{cases}$
 概率型函数
 $$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
 2、ReLU函数 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：
-在x&amp;lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。 $$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \
-0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases} $$</description></item><item><title>归一化</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</guid><description>一、Normlization介绍 一般而言，样本特征由于来源及度量单位不同，其尺度往往差异很大。如果尺度差异很大，神经网络就比较难训练。为了提高训练效率，对输入特征做归一化，把不同的尺度压缩到一定范围内，尺度统一后，大部分位置的梯度方向近似于最优解搜索方向。这样，在用梯度下降法进行求解时，每一步梯度的方向都基本上指向最小值，训练效率会大大提高。
+在x&amp;lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。
+$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \\ 0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases}$</description></item><item><title>归一化</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/</guid><description>一、Normlization介绍 一般而言，样本特征由于来源及度量单位不同，其尺度往往差异很大。如果尺度差异很大，神经网络就比较难训练。为了提高训练效率，对输入特征做归一化，把不同的尺度压缩到一定范围内，尺度统一后，大部分位置的梯度方向近似于最优解搜索方向。这样，在用梯度下降法进行求解时，每一步梯度的方向都基本上指向最小值，训练效率会大大提高。
 归一化：泛指把数据特征转换为相同尺度的方法，比如：
 把数据特征映射到 [0, 1] 或者 [-1, 1] 区间 映射为服从 N(0, 1) 的标准正态分布 1、逐层归一化 逐层归一化可以有效提高训练效率的原因：
 更好的尺度不变形

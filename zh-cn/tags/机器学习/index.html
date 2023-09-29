@@ -28,14 +28,12 @@ $$ \varphi(v) = \frac{1}{1+e^{-av}} $$
 tanh函数
 $$ \varphi(v) = tanh(v) = \frac{1-e^{-v}}{1+e^{-v}} $$
 分段线性函数
-$$ \varphi(v) = \begin{cases} 1 &\text{if } v \geqslant \theta \
-kv &\text{if } - \theta &lt; v &lt; \theta \
-0 &\text{if } v \leqslant 0 \end{cases} $$
+$ \varphi(v) = \begin{cases} 1 &\text{if } v \geqslant \theta \\ kv &\text{if } - \theta &lt; v &lt; \theta \\ 0 &\text{if } v \leqslant 0 \end{cases}$
 概率型函数
 $$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
 2、ReLU函数 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：
-在x&lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。 $$ ReLU(x) = max(0, x) = \begin{cases} x &\text{if } x \geqslant 0 \
-0 &\text{if } x &lt; 0 \end{cases} $$</p></div><div class=card-footer><span class=float-left>August 5, 2021</span>
+在x&lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。
+$ ReLU(x) = max(0, x) = \begin{cases} x &\text{if } x \geqslant 0 \\ 0 &\text{if } x &lt; 0 \end{cases}$</p></div><div class=card-footer><span class=float-left>August 5, 2021</span>
 <a href=/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00030_deeplearning_summary/0005_deeplearning_summary/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>深度学习开篇</h5><p class="card-text post-summary">论文入口
 一、机器学习 目前，人工智能研究领域主要体现在一下几个方面：
 智能感知：通过模拟人的感知能力（视觉、听觉、嗅觉）对外部信息进行感知和识别，并能够对信息进行加工和处理，从而做出反应。
