@@ -36,6 +36,12 @@ enableEmoji: true
 
 {{< /alert >}}
 
+### 1、Adapter插件
+
+有人提出 <a href="https://arxiv.org/pdf/1902.00751.pdf" target="bland">Adaptor</a> 的概念，在预训练的模型中加入一些叫Apt(Adaptor)的层，在微调的时候，只微调Apt层。这篇文章中，将Adapter插在Feed-forward层之后，在预训练的时候是没有Adapter的，只有在微调的时候才插进去。并且在微调的时候，只调整Adapter层的参数。
+<p align="center"><img src="/datasets/posts/nlp/adaptor_0.png" width=70% height=70%></p>
+
+
 
 ## 二、大模型-使用策略
 

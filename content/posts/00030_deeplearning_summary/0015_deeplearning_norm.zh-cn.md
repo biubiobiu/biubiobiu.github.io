@@ -65,6 +65,11 @@ post Norm 的状态： $x_{t+1} = Norm(x_t + F_t(x_t))$
 
 <a href="https://kexue.fm/archives/9009" target="bland">来自苏神的解释</a>: pre-Norm的深度有水分，到一定深度后增加网络深度的效果等同于增加宽度，而不是深度。 <br>
 
+Post-Norm，如果模型稍微扩展（比如：数据量增多，导致数据异构性增强，导致模型不容易收敛），就会导致不容易收敛。<br>
+1. post-Norm 不容易收敛的原因，微软的 <a href="https://arxiv.org/pdf/2203.00555.pdf" target="bland">DeepNet</a> 这篇指出，因为模型在训练前期，增量更新过大，导致优化到了不好的局部最优点，通过调整残差、更改初始化，稳定了模型前期的前期增量
+
+Pre-Norm，使得模型容易训练，但是性能不如稳定的post-norm。
+
 **Pre-Norm**<br>
 
 $ \begin{aligned} x_{t+1} & = x_t + F_t(Norm(x_t)) \\\ & = x_{t-1} + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \\\ & = ... \\\ & =x_0 + F_0(Norm(x_0)) + ... + F_{t-1}(Norm(x_{t-1})) + F_t(Norm(x_t)) \end{aligned}$

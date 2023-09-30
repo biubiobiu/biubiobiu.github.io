@@ -17,14 +17,26 @@ mermaid: true
 enableEmoji: true
 ---
 
+<p align="center"><img src="/datasets/posts/nlp/evolutionary_tree.png" width="100%" height="100%"></p>
+
 在大语言模型的训练中，如果增大数据量，相应的应该减少学习率，这个跟原来的经验相反。<br>
 
-模型大小与模型效果：<br>
+## 模型大小与模型效果
+
 <a href="https://arxiv.org/pdf/2206.07682.pdf" target="bland">《Emergent Abilities of Large Language Models》</a> <br>
 这篇文章指出：随着模型大小的增大，模型效果先不会有明显提升；增加到一定程度，模型有个突然顿悟时刻。
 
 <p align="center"><img src="/datasets/posts/nlp/ablity_llm.png" width="90%" height="90%"></p>
 
+## 为什么需要预训练
+
+<a href="https://arxiv.org/pdf/1908.05620.pdf" target="bland">《Visualizing and Understanding the Effectiveness of BERT》</a> <br>
+<p align="center"><img src="/datasets/posts/nlp/why_pretrain_0.png" width=100% height=100%></p>
+
+> 这篇文章指出:
+> 1. 首先，预训练能在下游任务中<font color=#f00000>达到一个良好的初始点</font>，与从头开始训练相比，预训练能带来<font color=#f00000>更宽的最优点，更容易优化</font>。尽管 BERT 对下游任务的参数设置过高，但微调程序对过拟合具有很强的鲁棒性。
+> 2. 其次，可视化结果表明，由于<font color=#f00000>最佳值平坦且宽广</font>，以及训练损失面和泛化误差面之间的一致性，微调 BERT 趋向于更好地泛化。
+> 3. 第三，在微调过程中，BERT 的低层更具不变性，这表明靠近输入的层学习到了更多可迁移的语言表征。
 
 
 ## 一、文本生成

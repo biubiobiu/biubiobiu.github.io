@@ -19,9 +19,108 @@ enableEmoji: true
 
 ## 一、简介
 
+模型并行：将模型参数分布到多个GPU上
+1. 张量并行：切分参数矩阵，每个GPU计算一部分。缺点是：需要额外通信，降低计算粒度
+2. 流水线并行：将网络分成多段并行。缺点是：引入流水线气泡
+3. ZeRO-3：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信
+
+
+为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：<font color=#f00000>在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸</font>。<br>
+
+### 1、混合精度(AMP)
+混合精度 (Automatically Mixed Precision, AMP)
+
+1. 为加速训练，模型的参数是以FP16半精度存储的；
+2. 然后，输入数据也是 FP16半精度，与模型参数 foreword计算，激活结果也是FP16半精度；
+3. 计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位
+
 
 ## 二、Deepspeed
 
+<a href="https://deepspeed.readthedocs.io/en/latest/" target="bland">使用文档</a> <br>
+
+DeepSpeed的核心就在于：<font color=#f00000>GPU显存不够，CPU内存来凑</font>。比方说，我们只有一张10GB的GPU，那么我们很可能需要借助80GB的CPU，才能够训练一个大模型。<br>
+**具体点说**，DeepSpeed将当前时刻，训练模型用不到的参数，缓存到CPU中，等到要用到了，再从CPU挪到GPU。这里的“参数”，不仅指的是模型参数，还指optimizer、梯度等。<br>
+越多的参数挪到CPU上，GPU的负担就越小；但随之的代价就是，更为频繁的CPU，GPU交互，极大增加了训练推理的时间开销。因此，DeepSpeed使用的一个核心要义是：<font color=#f00000>时间开销和显存占用的权衡</font>。
+
+### 1、使用DeepSpeed
+
+```python
+deepspeed --master_port 29500 --num_gpus=2 run_s2s.py --deepspeed ds_config.json
+```
+<font color=#f00000>--master_port</font>：端口号。最好显示指定，默认为29500，可能会被占用（i.e., 跑了多个DeepSpeed进程）。<br>
+<font color=#f00000>--num_gpus</font>: GPU数目，默认会使用当前所见的所有GPU。<br>
+<font color=#f00000>--deepspeed</font>: 提供的config文件，用来指定许多DeepSpeed的重要参数。<br>
+
+使用DeepSpeed的一个核心要点，就在于写一个config文件（可以是.json，也可以是类json格式的配置文件），在这个配置文件中，你可以指定你想要的参数，例如，权衡时间和显存。因此，上面几个参数里，最重要的便是--deepspeed，即你提供的config文件，即ZeRO。<br>
+
+### 2、ZeRO
+Zero Redundancy Optimizer (ZeRO)是DeepSpeed的workhorse. 用户可以提供不同的ZeRO config文件，来实现DeepSpeed的不同功能特性。<br>
+
+即，传统的深度学习，模型训练并行，是将模型参数复制多份到多张GPU上，只将数据拆分（如，torch的Dataparallel），这样就会有大量的显存冗余浪费。而ZeRO就是为了消除这种冗余，提高对memory的利用率。注意，这里的“memory”不仅指多张GPU memory，还包括CPU。<br>
+
+而ZeRO的实现方法，就是把参数占用，逻辑上分成三种类型。将这些类型的参数划分：
+1. <font color=#f00000>optimizer states</font>：即优化器的参数状态。例如，Adam的动量参数。
+2. <font color=#f00000>gradients</font>：梯度缓存，对应于optimizer。
+3. <font color=#f00000>parameters</font>：模型参数。
+
+对应的，DeepSpeed的ZeRO config文件就可以分为如下几类：
+1. <font color=#f00000>ZeRO Stage 1</font>: 划分optimizer states。优化器参数被划分到多个memory上，每个momoey上的进程只负责更新它自己那部分参数。
+2. <font color=#f00000>ZeRO Stage 2</font>: 划分gradient。每个memory，只保留它分配到的optimizer state所对应的梯度。这很合理，因为梯度和optimizer是紧密联系在一起的。只知道梯度，不知道optimizer state，是没有办法优化模型参数的。
+3. <font color=#f00000>ZeRO Stage 3</font>: 划分模型参数，或者说，不同的layer. ZeRO-3会在forward和backward的时候，自动将模型参数分配到多个memory。
+
+
+**示例**:
+```python
+{
+    "bfloat16": {
+        "enabled": "auto"
+    },
+    "fp16": {
+        "enabled": "auto",
+        "loss_scale": 0,
+        "loss_scale_window": 1000,
+        "initial_scale_power": 16,
+        "hysteresis": 2,
+        "min_loss_scale": 1
+    },
+    "optimizer": {
+        "type": "AdamW",
+        "params": {
+            "lr": "auto",
+            "betas": "auto",
+            "eps": "auto",
+            "weight_decay": "auto"
+        }
+    },
+    "scheduler": {
+        "type": "WarmupLR",
+        "params": {
+            "warmup_min_lr": "auto",
+            "warmup_max_lr": "auto",
+            "warmup_num_steps": "auto"
+        }
+    },
+    "zero_optimization": {
+        "stage": 2,
+        "offload_optimizer": {
+            "device": "cpu",
+            "pin_memory": true
+        },
+        "allgather_partitions": true,
+        "allgather_bucket_size": 2e8,
+        "overlap_comm": true,
+        "reduce_scatter": true,
+        "reduce_bucket_size": 2e8,
+        "contiguous_gradients": true
+    },
+    "gradient_accumulation_steps": "auto",
+    "gradient_clipping": "auto",
+    "train_batch_size": "auto",
+    "train_micro_batch_size_per_gpu": "auto",
+    "steps_per_print": 1e5
+}
+```
 
 
 ## 三、Megatron-LM
