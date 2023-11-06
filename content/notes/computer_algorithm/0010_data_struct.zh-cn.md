@@ -41,6 +41,17 @@ math: true
 > 3. 链表/list 的<font color=#f00000>翻转问题</font>，例如：<a href="https://leetcode.cn/problems/reverse-nodes-in-k-group/description/?envType=study-plan-v2&envId=top-interview-150" target="blank">K 个一组翻转链表
 </a> 
 
+**单调栈**<br>
+<a href="https://leetcode.cn/problems/largest-rectangle-in-histogram/description/" target="bland">柱状图中最大的矩形</a> <br>
+
+<a href="https://leetcode.cn/problems/maximal-rectangle/description/" target="bland">最大矩形</a> 
+基于 <font color=#f00000>柱状图中最大的矩形</font> 的  <br>
+思路：计算每列的柱状图：就是从该到左边界，连续的1的个数，就类似于柱状图 <br>
+
+<a href="https://leetcode.cn/problems/trapping-rain-water/description/" target="bland">接雨水</a> : <font color=#f00000>思路：</font> 位置i处的雨水量，取决于左右两边的最大值。
+
+
+
 {{< /note >}}
 
 <!--=====================队列=================-->

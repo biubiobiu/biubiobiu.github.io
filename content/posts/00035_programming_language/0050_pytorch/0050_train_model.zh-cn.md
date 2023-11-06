@@ -252,6 +252,29 @@ torch.save(<font color=#a020f0>the_model.state_dict()</font>, PATH) <br>
 the_model = TheModelClass(*args, **kwargs) <br>
 the_model.load_state_dict(torch.load(PATH)) <br>
 
+```python
+model = build_model()
+pretrained_dict = torch.load(path)
+model.load_state_dict(pretrained_dict)
+
+# ===========需要选参数============= #
+# 1. 加载模型的参数
+pretrained_dict = torch.load('params.pkl')
+
+net = Net()
+# 2. 获取已创建net的state_dict
+net_state_dict = net.state_dict()
+
+# 3. 将pretrained_dict 里不属于net_state_dict的剔除
+pretrained_dict_1 = {k: v  for k, v in pretrained_dict.items() if k in net_state_dict}
+
+# 4. 更新 新模型参数字典
+net_state_dict.update(pretrained_dict_1)
+
+# 5. 将包含预训练模型参数的字典放回到网络中
+net.load_state_dict(net_state_dict)
+```
+
 2. 第二种保存和加载整个模型：<br>
 **保存**：<br>
 torch.save(the_model, PATH)<br>
@@ -454,5 +477,155 @@ class Optimizer(object):
 
 ## 五、loss
 
-## 六、
+Loss指的是模型的误差大小，也就是预测值与实际值之间的差距。通常情况下，我们可以使用某种损失函数来计算模型的Loss，以此来指导我们优化模型、提高模型的精度。<br>
+常见的损失函数有：
+1. 均方误差（MSE）
+2. 交叉熵（Cross Entropy）
+3. 对数损失（Logarithm Loss）
 
+### 1、均方误差（MSE）
+均方误差是机器学习领域中最常用的损失函数之一，它计算的是预测值与实际值之间的平均误差。
+```python
+import numpy as np
+
+def mse(y_true, y_pred):
+    return np.mean(np.square(y_true - y_pred))
+```
+
+### 2、交叉熵（Cross Entropy）
+交叉熵用于度量两个概率分布之间的距离，常用于分类问题中的损失函数。交叉熵的值越小，代表模型的预测结果越接近于真实情况。
+
+```python
+import numpy as np
+
+def cross_entropy(y_true, y_pred):
+    return -np.sum(y_true * np.log(y_pred))
+```
+
+### 3、对数损失（Logarithm Loss）
+对数损失也是分类问题中常用的损失函数，它的计算方式是预测值与实际值之间的对数差的平均值。
+```python
+import numpy as np
+
+def logarithm_loss(y_true, y_pred):
+    return -np.mean(np.log(y_pred) * y_true + (1 - y_true) * np.log(1 - y_pred))
+```
+
+
+## 六、总结
+
+整个训练流程如下：
+
+```python
+import numpy as np
+
+import torch
+from torch.utils.data import Dataset, DataLoader, TensorDataset
+from torch.autograd import Variable
+
+import torch.nn as nn
+import torch.nn.functional as F
+
+# 数据：自定义
+class MyDataset(Dataset):
+    """
+    下载数据、初始化数据，都可以在这里完成
+    """
+    def __init__(self):
+        xy = np.loadtxt('../dataSet/diabetes.csv.gz', delimiter=',', dtype=np.float32) # 使用numpy读取数据
+        self.x_data = torch.from_numpy(xy[:, 0:-1])
+        self.y_data = torch.from_numpy(xy[:, [-1]])
+        self.len = xy.shape[0]
+    
+    def __getitem__(self, index):
+        return self.x_data[index], self.y_data[index]
+
+    def __len__(self):
+        return self.len
+
+# 模型：自定义-多层感知机
+class MLP(torch.nn.Module):
+    # 默认三层隐藏层，分别有128个 64个 16个神经元
+    def __init__(self, input_n, output_n, num_layer=3, layer_list=[128, 64, 16], dropout=0.5):
+        """
+        :param input_n: int 输入神经元个数
+        :param output_n: int 输出神经元个数
+        :param num_layer: int 隐藏层层数
+        :param layer_list: list(int) 每层隐藏层神经元个数
+        :param dropout: float 训练完丢掉多少
+        """
+        super(MLP, self).__init__()
+
+        # 输入层
+        self.input_layer = nn.Sequential(
+            nn.Linear(input_n, layer_list[0], bias=False),
+            nn.ReLU()
+        )
+
+        # 隐藏层
+        self.hidden_layer = nn.Sequential()
+
+        for index in range(num_layer-1):
+        	self.hidden_layer.append(nn.Linear(layer_list[index], layer_list[index+1], bias=False))
+        	self.hidden_layer.append(nn.ReLU())
+
+        # 输出层
+        self.output_layer = nn.Sequential(
+            nn.Linear(layer_list[-1], output_n, bias=False),
+            nn.Softmax(dim=1),
+        )
+
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        input = self.input_layer(x)
+        hidden = self.hidden_layer(input)
+        hidden = self.dropout(hidden)
+        output = self.output_layer(hidden)
+        return output
+
+
+# 创建Dataset对象
+dataset = MyDataset()
+
+# 创建DataLoadder对象
+dataloader = DataLoader(dataset,
+                        batch_size=32,
+                        shuffle=True,
+                        num_workers=2)
+
+# 创建模型结构
+model = MLP()
+
+# 模型初始化
+model.load_state_dict(torch.load('model_path'))
+
+model.train()
+
+# 优化器
+optimizer = torch.optim.Adam(model.parameters(), lr=0.1, momentum=0.9)
+
+# loss目标函数
+def loss_fac(output, label):
+	loss = cross_entropy(output, label)
+	return loss
+
+
+# 循环DataLoader对象
+num_epoches = 100
+for epoch in range(num_epoches)
+    for inputs, labels in dataloader:
+        # 将数据从dataloader中读取出来，一次读取的样本数为32个
+        outputs = model(inputs)
+        optimizer.zero_grad()
+        loss = loss_fac(outputs, inputs)
+        # 梯度计算
+        loss.backward()
+        # 更新权重
+        optimizer.step()
+
+
+    torch.save(model.state_dict(), 'save_path')
+
+
+```

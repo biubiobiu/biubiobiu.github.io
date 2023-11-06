@@ -69,6 +69,13 @@ def get_tokens_and_segments(tokens_a, tokens_b=None):
   - 10%的概率 替换为 随机词元 （纠错）
   - 10%的概率 不做任何处理 （作弊）
 
+> 为什么选择15%的mask量? <br>
+> 
+> 在这15%中，为啥有3种类型？ <br>
+> 1. 由于 预训练过程中有mask，在fine-tuning、推理的时候是没有mask的。为了能保持一致，保持了80%是 token <mask> ，其余的是有对于的值是其他token。
+> 2. 10%为错误的token，这个是为了保持模型的纠错能力
+> 3. 10%为正确的token，为了避免让模型认为：给出的token都是错误的，所以一部分是正确的token
+
 ```python
 class MaskLM(nn.Module):
     """BERT的掩蔽语言模型任务"""
@@ -174,6 +181,12 @@ class BERTModel(nn.Module):
 ```
 
 ## 三、各式各样的Bert
+
+### 1、Bert的问题
+
+> 1. 预训练 与 fine-tuning 之间会有差异。<mask> 在预训练里存在，在fine-tuning是不存在的
+> 2. 预训练的效率是比较低的，训练数据中只预测了15%的量   <font color=#f00000>ELECTA：针对这个问题改进。输出是判断这个token是否被mask</font>
+> 3. 上下文长度只有512
 
 <a href="http://mitchgordon.me/machine/learning/2019/11/18/all-the-ways-to-compress-BERT.html" target="bland">《All The Ways You Can Compress BERT》</a>
 

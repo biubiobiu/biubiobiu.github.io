@@ -20,6 +20,11 @@ enableEmoji: true
 
 ## 一、激活函数
 
+> 为什么需要激活函数？<br>
+> 例如：两个感知机。 $h_1 = W_1 x + b_1, h_2 = W_2 h_1 + b_2$ <br>
+> 如果没有激活函数这个 非线性变换，由于感知机的计算时线性变换，可以转换为：$h_2 = W_2 W_1 x + W_2 b_1 + b_2$ <br>
+> 就是说：<font color=#f00000>如果没有激活函数，模型就做不了太深。两层的权重完全可以用一层的权重来表示。</font>
+
 ### 1、Sigmoid函数
 
 **logistic函数**<br>
@@ -61,8 +66,16 @@ $ PReLU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma_i x &\text{if 
 
 在小于0的部分使用指数，具备relu的优点，同时ELU也解决了relu函数自身死区的问题。不过ELU函数指数操作稍稍增大了工作量<br>
 
-$ ELU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma(e^x-1) &\text{if } x < 0 \end{cases}$
+优点：
+1. 在所有点上都是连续的可微的
+2. 与ReLU不同，它没有死区问题
+3. 与ReLU相比，实现了更高的准确性
 
+缺点：
+1. 计算速度慢，由于负输入设计非线性
+
+$ ELU(x) = \begin{cases} x &\text{if } x \geqslant 0 \\\ \gamma(e^x-1) &\text{if } x < 0 \end{cases}$
+<p align="center"><img src="/datasets/posts/nlp/elu_0.png" width=50% height=50%></p>
 
 **Softplus函数**<br>
 $$
@@ -75,7 +88,66 @@ Softplus函数可以看做ReLU函数的平滑版本，其导数刚好是logistic
 $$
 swish(x) = \frac{x}{1+e^{-x}}
 $$
+<p align="center"><img src="/datasets/posts/nlp/swish_0.png" width=50% height=50%></p>
 
+**GELU**<br>
+高斯误差线性单元（Gaussian Error Linear Unit）激活函数，公式如下：
+$$
+GELU(x) = 0.5 x (1+tanh(\sqrt{\frac{2}{\pi}} (x + 0.044715 x^3)))
+$$
+<p align="center"><img src="/datasets/posts/nlp/gelu_0.png" width=50% height=50%></p>
+在大于0时，输出基本上是x。GELU激活函数的微分：
+<p align="center"><img src="/datasets/posts/nlp/gelu_1.png" width=50% height=50%></p>
+
+优点：
+1. 平滑性：所有点上都可导，没有梯度截断问题。这使得梯度优化更加稳定，有助于提高神经网路的训练效率
+2. 近似性：对于较大的输入，GELU 接近线性函数 x，这使得它在这些情况下起到线性激活函数的作用
+3. 高斯分布：GELU 在0附近，近似微高斯分布，这有助于提高网络的泛化能力，使得模型更容易适应不同的数据分布。
+
+缺点：
+1. 计算量大
+
+### 3、GLU函数
+<a href="https://arxiv.org/pdf/1612.08083.pdf" target="bland">GLU（Gated Linear Unit）</a>激活函数是2017年提出的，其实不算是一种激活函数，而是一种神经网络层。它是一个线性变换后面接门控机制的结构。其中门控机制是一个sigmoid函数用来控制信息能够通过多少。<br>
+它的门控机制，可以帮助网络更好地捕捉序列数据中的长期依赖关系。GLU激活函数最初在自然语言处理（NLP）任务中提出，并在机器翻译、语音识别等领域取得了良好的效果。<br>
+
+$$
+GLU(x) = (Vx+c) \otimes \sigma{(Wx+b)}
+$$
+其中，$x$：表示输入向量；$\otimes$：表示逐元素相乘；$\sigma()$：表示Sigmoid函数；$W, V, b, c$：是需要学习的参数。<br>
+
+理解GLU激活函数的关键在于它的门控机制。门控机制使得GLU能够选择性地过滤输入向量的某些部分，并根据输入的上下文来调整输出。门控部分的作用是将输入进行二分类，决定哪些部分应该被保留，哪些部分应该被抑制。例如，在语言模型中，GLU激活函数可以帮助网络根据上下文选择性地关注某些单词或短语，从而更好地理解句子的语义。门控机制可以有效地减少噪声和不相关信息的影响，提高网络的表达能力和泛化能力。
+
+```python
+class GluLayer(nn.Module):
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        # 第一个线性层
+        self.fc1 = nn.Linear(input_size, output_size)
+        # 第二个线性层
+        self.fc2 = nn.Linear(input_size, output_size)
+        # pytorch的GLU层
+        self.glu = nn.GLU()
+    
+    def forward(self, x):
+        # 先计算第一个线性层结果
+        a = self.fc1(x)
+        # 再计算第二个线性层结果
+        b = self.fc2(x)
+        # 拼接a和b，水平扩展的方式拼接
+        # 然后把拼接的结果传给glu
+        return self.glu(torch.cat((a, b), dim=1)) 
+```
+
+### 1、GLU的变体
+
+可以把 $\sigma()$ 换成其他的激活函数，例如：Relu、swish、tanh、GELU等等。<br>
+
+替换为tanh：$ GTU(x, W, V, b, c) = tanh(xW + b) \otimes \sigma{(xV+c)}$ <br>
+替换为ReLU：$ReGLU(x, W, V, b, c) = ReLU(xW + b) \otimes \sigma{(xV+c)}$ <br>
+替换为Swish：$SwiGLU(x, W, V, b, c) = Swish(xW + b) \otimes \sigma{(xV+c)}$ <br>
+替换为GELU：$GEGLU(x, W, V, b, c) = GELU(xW + b) \otimes \sigma{(xV+c)}$ <br>
+替换为Bilinear：$Bilinear(x, W, V, b, c) = (xW + b) \otimes \sigma{(xV+c)}$ <br>
 
 ## 二、损失函数
 

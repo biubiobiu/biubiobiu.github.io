@@ -26,6 +26,24 @@ enableEmoji: true
 4. Architecture Design
 5. Dynamic Computation
 
+
+### 1、蒸馏 Knowledge Distillation
+
+{{< split 6 6>}}
+<p align="center"><img src="/datasets/posts/nlp/distillation-0.png" width=100% height=100%></p>
+---
+
+{{< /split >}}
+
+
+### 2、量化 Parameter Quantization
+
+
+### 3、剪枝 Network Pruning
+
+在权重W中，有些值非常接近于0，这些值好像没有啥作用。说明这些参数是冗余的，可以去掉。
+
+
 ## 二、TensorRT
 
 

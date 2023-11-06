@@ -66,7 +66,8 @@ categories: ["Basic"]
 1. 有人提出 <a href="https://arxiv.org/pdf/1906.08101.pdf" target="bland">Whole Word Masking</a> ​​盖住整个单词(中文里的词语)的方法，这样得到的模型可以学到更长的依赖关系。
 2. 可能只是盖住几个单词还不够好，<a href="https://arxiv.org/pdf/1904.09223.pdf" target="bland">ERNIE​(Baidu)</a> ​​就提出了盖住短语级别(多个单词组成一个短语)和实体级别(需要识别出实体，然后盖住)。
 3. 还有一种Masking的方法，<a href="https://arxiv.org/pdf/1907.10529.pdf" target="bland">SpanBert</a>​​​，思想很简单，一次盖住一排单词(token)。不用考虑什么短语啊、单词啊、实体啊。在SpanBert里面还提出了一种训练方法，叫SBO(Span Boundary Objective)，一般我们盖住了一些单词后，我们要把盖住的部分预测出现。而SBO通过被盖住范围的左右两边的向量，然后给定一个数值，比如3，代表要还原被盖住的第3个单词。然后SBO就知道，现在要还原3个位置。
-4. 还有一种方法，<a href="https://arxiv.org/pdf/1906.08237.pdf" target="bland">XLNet</a>，从输入的文本序列中，随机一部分，去预测mask的结果，就是让各种各样不同的信息去预测一个单词，模型可以学到比较多的依赖关系。
+4. 还有一种方法，<a href="https://arxiv.org/pdf/1906.08237.pdf" target="bland">XLNet</a>，从输入的文本序列中，随机一部分，去预测mask的结果，就是让各种各样不同的信息去预测一个单词，模型可以学到比较多的依赖关系。具体
+    * 在预训练阶段，引入permutation language model 的训练目标，对句子中单词排列组合，把一部分下文单词排列到上文位置中。这种做法是采用 attention掩码的机制来实现的：当前输入句子是X，要预测的第i个单词，i前面的单词位置不变，但是在transformer内部，通过attention mask，把其他没有被选到的单词mask掉，不让他们在预测单词的时候发生作用，看上去就是把这些被选中用来做预测的单词放在了上文位置了。
 
 ### 2、生成式任务
 一般讲到BERT，大家都会说BERT不适于用来做生成任务，因为BERT训练的时候，会看到MASK左右两边的单词，而在生成任务中，只能看到左边已经生成出来的单词，然后BERT就表现不好了。<br>
@@ -114,4 +115,36 @@ ELECTRA的效果还比较不错，从上图可以看到，在同样的运算量�
 在预训练的时候，加入外部知识，比如知识图谱。<a href="https://arxiv.org/pdf/1905.07129.pdf" target="bland">ERNIE(Tsinghua)</a> <br>
 
 
+## RoBERTa
+
+改进处RoBERTa是在论文《RoBERTa: A Robustly Optimized BERT Pretraining Approach》中被提出的。此方法属于BERT的强化版本，也是BERT模型更为精细的调优版本。<br>
+
+在模型层面的改进：
+1. 去掉下一句预测任务 NSP
+2. 动态掩码：bert依赖随机掩码和预测token。原版bert在数据预处理期间执行一次掩码，得到一个静态掩码，而RoBERTa 使用了动态掩码：
+    * 动态掩码：每次向模型输入一个序列时，会生成新的掩码模式。这样，在大量数据不打断输入的过程中，模型会逐渐适应不同的掩码策略，学习不同的语音表征。
+    * 静态掩码：在准备数据时，每个样本会进行一次随机mask，因此每个epoch都是重复的。后续每个训练步都是采用相同的mask。
+3. 文本掩码：Byte-Pair Encoding（BPE）是字符级和词级别表征的混合，支持处理自然语言语料库中的众多常见词汇。原版的 BERT 实现使用字符级别的 BPE 词汇，大小为 30K，是在利用启发式分词规则对输入进行预处理之后学得的。Facebook 研究者没有采用这种方式，而是考虑用更大的 byte 级别 BPE 词汇表来训练 BERT，这一词汇表包含 50K 的 subword 单元，且没有对输入作任何额外的预处理或分词。
+
+
+在数据层面的优化：
+1. 将16G的数据集提升到了160G
+2. 采用bytes-leval的BPE后，词表从3万增加到5w。
+
+
+## ALBERT
+
+A Lite BERT(ALBERT) 的参数量只有BERT的70%，性能却能够显著超越BERT。ALBERT 采用两种参数精简技术来降低内存消耗，加快训练速度。
+1. factorized embedding parameterization（词嵌入的因式分解）：<br>
+对嵌入参数进行因式分解，将一个大的词汇嵌入矩阵分解为两个小矩阵，从而将隐藏层的大小与词汇嵌入的大小分离开来。这种分离便于后续隐藏层单元数量的增加，怎么说呢？就是增加隐藏层单元数量，并不显著增加词汇嵌入的参数量。
+2. cross-layer parameter sharing（交叉层的参数共享）：<br>
+这一技术可以避免参数量随着网络深度的增加而增加。
+3. 放弃NSP（下一句预测），引入SOP（sentence order prediction 句子顺序预测），有利于学习句子间的连贯性
+
+这两项技术显著降低了bert的参数量，同时不显著损坏其性能。
+
+
+**SOP**：SOP关注于句子间的连贯性，而非句子间的匹配性。SOP正样本也是从原始语料中获得，负样本是原始语料的句子A和句子B交换顺序。
+
+**跨层参数共享**<br>
 

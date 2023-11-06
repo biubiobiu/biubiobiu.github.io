@@ -48,7 +48,7 @@ optimizer.zero_grad()
 <p align="center"><img src="/datasets/posts/nlp/mix_precision_0.png" width=90% height=90%></p>
 
 **训练流程**：
-1. 把<font color=#f00000数据输入、模型参数</a>都转换为FP16，forward的计算结果也是FP16，梯度的计算也是FP16
+1. 把<font color=#f00000>数据输入、模型参数</font>都转换为FP16，forward的计算结果也是FP16，梯度的计算也是FP16
 2. 同时维护一份 FP32 的模型权重副本用于更新
 3. 在backward阶段，梯度是FP16存储的，在更新到FP32模型权重前，先把梯度的FP16，转换为FP32
 

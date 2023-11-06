@@ -19,6 +19,16 @@ enableEmoji: true
 
 <p align="center"><img src="/datasets/posts/nlp/evolutionary_tree.png" width="100%" height="100%"></p>
 
+AIGC 的技术分类按照处理的模态来看，可以分为一下几类：
+1. 文本类：<br>
+主要包括：文章生成、文本风格转换、问答对话等生成或者编辑文本内容的AIGC技术。
+2. 音频类：<br>
+包括：文本转音频、语音转换、语音属性编辑等生成或者编辑语音内容的AIGC技术；以及音乐合成、场景声音编辑等生成或者编辑非语言内容的AIGC技术。例如：智能配音主播、虚拟歌手演唱、自动配乐、歌曲生成等
+3. 图像视频类：<br>
+包括：人脸生成、人脸替换、人物属性编辑、人类操控、姿态操控等AIGC技术；以及编辑图像、视频内容、图像生成、图像增强、图像修复等AIGC技术
+4. 虚拟空间类：<br>
+主要包括：三维重建、数字仿真等AIGC技术，以及编辑数字任务、虚拟场景相关的AIGC技术，例如：元宇宙、数字孪生、游戏引擎、3D建模、VR等。
+
 在大语言模型的训练中，如果增大数据量，相应的应该减少学习率，这个跟原来的经验相反。<br>
 
 ## 模型大小与模型效果
@@ -46,6 +56,9 @@ enableEmoji: true
 
 <a href="/zh-cn/posts/00200_nlp/0080_gpt/0010_gpt_summary">参考</a>
 
+**GPT-4**: 参数量1800B，训练集：1.3T token <br>
+
+
 ### 2、PaLM
 <a href="https://arxiv.org/pdf/2204.02311.pdf" target="bland">《PaLM: Scaling Language Modeling with Pathways》</a> <br>
 
@@ -68,6 +81,17 @@ PaLM才是真正的“大”模型。它是迄今为止训练的最大的密集�
 
 
 ### 3、ChatGLM
+**数据**：
+1. 经过了 1.4T 中英文，1:1 比例
+2. 130528 词表大小
+
+**模型**
+1. Transformer的整体
+2. 编码器，采用span-mask，调整span的个数、长度，同时满足NLU和NLG
+3. 2D的位置编码，旋转位置编码RoPE
+4. Post-DeepNorm
+5. 激活函数：GeGLU
+6. 上下文长度：32k，基于FlashAttention技术
 
 Layer Normalization的顺序和残差连接被重新排列，
 用于输出标记预测的单个线性层；
@@ -76,14 +100,48 @@ ReLU s替换为GELU s
 
 ### 4、BLOOM
 
-使用 ALiBi 位置嵌入，它根据键和查询的距离直接衰减注意力分数。 与原始的 Transformer 和 Rotary 嵌入相比，它可以带来更流畅的训练和更好的下游性能。ALiBi不会在词嵌入中添加位置嵌入；相反，它会使用与其距离成比例的惩罚来偏向查询键的注意力评分。
-Embedding Layer Norm 在第一个嵌入层之后立即使用，以避免训练不稳定。
-使用了 25 万个标记的词汇表。 使用字节级 BPE。 这样，标记化永远不会产生未知标记
-两个全连接层：
+<a href="https://arxiv.org/pdf/2211.05100.pdf" target="bland">《BLOOM: A 176B-Parameter Open-Access Multilingual
+Language Model》</a> <br>
+
+**数据**
+1. 使用了 25 万个token的词汇表。 使用字节级 BPE。 这样，标记化永远不会产生未知标记
+2. BLOOM是在一个称为ROOTS的语料上训练的，其是一个由498个Hugging Face数据集组成的语料。共计1.61TB的文本，包含46种自然语言和13种编程语言。
+
+**模型**
+1. 使用Transformer的decoder
+2. 使用 ALiBi 位置嵌入，它根据键和查询的距离直接衰减注意力分数，能够外推至更长的序列。
+3. 在BLOOM的第一个embedding层后添加了额外的layer normalization层来避免训练不稳定性
+
+**训练**
+1. 模型在Jean Zay上训练，其是由法国政府资助的超级计算机。训练BLOOM花费了3.5个月才完成，并消耗了1082990计算小时。在48个节点上进行训练，每个有8 NVIDIA A100 80GB GPUs(总共384个GPUs)
+2. BLOOM使用Megatron-DeepSpeed训练，一个用于大规模分布式训练的框架。其由两部分组成：
+    * Megatron-LM提供Transformer实现、张量并行和数据加载原语，
+    * DeepSpeed提供ZeRO优化器、模型流水线、通过分布式训练组件。
+3. 混合精度训练
+
+**模型版本**
+|模型|Layers|Hidden dim|vocab|句长|batch|
+|:--|:--|:--|:--|:--|:--|
+|BLOOM-560M|24|1024|||256|
+|BLOOM-1.1B|24|1536|||256|
+|BLOOM-1.7B|24|2048|||512|
+|BLOOM-3B|30|2560|||512|
+|BLOOM-7.1B|30|4096|||512|
+|BLOOM-176B|70|14336|250680|2048|2048|
 
 
 ### 5、LLaMa
+<a href="https://arxiv.org/pdf/2307.09288.pdf" target="bland">《Llama 2: Open Foundation and Fine-Tuned Chat Models》</a> <br>
+<a href="https://github.com/facebookresearch/llama" target="bland">Github</a> <br>
 
+<p align="center"><img src="/datasets/posts/nlp/llama_scale.png" width="90%" height="90%"></p>
+
+
+**数据**<br>
+1. 2T 的数据，英文为主
+2. 32k 的词表
+
+**模型**<br>
 LLaMa结合了PaLM和Chinchilla两个模型的最佳特点，并做出了一些改进：
 
 > 1. 预归一化（Pre-normalize）：在每个Transformer子层之前对输入进行预归一化。
@@ -91,17 +149,32 @@ LLaMa结合了PaLM和Chinchilla两个模型的最佳特点，并做出了一些�
 > 3. SwiGLU激活函数：使用了PaLM中的SwiGLU激活函数，但是维度从PaLM的值改为了新的值。
 > 4. 旋转位置嵌入（Rotary positional embeddings）：采用RoPE（相对位置编码）替代了PaLM中的绝对位置嵌入法。
 > 5. 使用AdamW：与Chinchilla模型一样，使用AdamW优化算法。
+> 6. 上下文长度：4096
 
 在计算方面的变化有：
 > 1. 使用高效的注意力机制（Rabe & Staats, FlashAttention）。
 > 2. 梯度检查点（Gradient checkpointing）。
 
-作者唯一的抱怨是他希望他们能够将模型训练更长时间，因为学习曲线与收敛相差甚远！
+作者唯一的抱怨是他希望他们能够将模型训练更长时间，因为学习曲线与收敛相差甚远！<br>
+
+
+<font color=#f00000>基于LLaMa的衍生模型</font>：
+|模型|介绍|
+|:--|:--|
+|<a href="https://github.com/tatsu-lab/stanford_alpaca" target="bland">Alpaca</a>|斯坦福大学在52k条英文指令遵循数据集上微调了7B规模的LLaMA。|
+|<a href="https://github.com/lm-sys/FastChat" target="bland">Vicuna</a>|加州大学伯克利分校在ShareGPT收集的用户共享对话数据上，微调了13B规模的LLaMA。|
+|<a href="https://github.com/project-baize/baize-chatbot" target="bland">Baize</a>|在100k条ChatGPT产生的数据上，对LLaMA通过LoRA微调得到的模型。|
+|<a href="https://github.com/Stability-AI/StableLM" target="bland">StableLM</a>|Stability AI在LLaMA基础上微调得到的模型。|
+|<a href="https://github.com/LianjiaTech/BELLE" target="bland">BELLE</a>|链家仅使用由ChatGPT生产的数据，对LLaMA进行了指令微调，并针对中文进行了优化。|
 
 
 ### 6、Claude
 
 <a href="https://claude.ai/chat/" target="bland">Claude Chat API</a> <br>
+
+特点：
+1. 输入序列长度可达：100k
+2. 
 
 ### 7、Cohere
 

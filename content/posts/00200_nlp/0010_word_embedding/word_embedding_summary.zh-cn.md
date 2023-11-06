@@ -50,6 +50,8 @@ $$
 
 ## 三、prediction-based method
 
+根据语言学家的理论：<font color=#f00000> 一个词的含义可以有其周围的词来决定。 </font>
+
 word2vec工具，将每个词表示成一个定长的向量，并使得这些向量能较好地表达不同词之间的相似和类比关系。包含了两个模型，
 1. <a href="https://arxiv.org/pdf/1310.4546.pdf" target="bland">跳字模型(skip-gram)</a>
 2. <a href="https://arxiv.org/pdf/1301.3781.pdf" target="bland">连续词袋模型(continuous bag of word, CBOW)</a>
@@ -100,7 +102,61 @@ $$
 
 
 
-## 五、子词嵌入 fastText
+## 五、子词嵌入/fastText
+
+
+### 1、子词嵌入（subword）
+问题：通常w2v模型使用向量表示词信息，忽略了词构造(词性)特点，词词之间的信息没有被联系起来。
+
+编码方式介绍：
+> 1. 传统方式：<br>
+> 用空格作为划分符，不利于模型学习词缀信息，不能处理 OOV（罕见词、训练集之外的词）问题。
+> 2. 字节对编码(BPE)：<br>
+> 一种数据压缩方式，词库大小可控，对单词拆分。减少词数，可以加快训练。缺点：基于贪心算法和确定串的匹配，不能提供概率的多个分片结果。
+> 3. wordpiece：<br>
+> BPE的变种，过程类似BPE，但是基于概率确定subword，而不是基于下一个最高频次字节对。在bert模型预处理中被使用。
+> 4. n-gram子词编码：<br>
+> 和wordpiece一样，利用模型语音建立subword
+
+<a href="https://cloud.tencent.com/developer/article/1593466?areaSource=102001.3&traceId=P9zvRUxQMHvv5MPUUhjUB" target="bland">对比：BPE、wordpiece、</a> <br>
+
+#### a、BPE(Byte Pair Encoding)
+
+<a href="https://zhuanlan.zhihu.com/p/424631681" target="bland">参考1</a> <br>
+
+
+1. 优点 <br>
+可以有效地平衡词汇表大小和对未知词的覆盖。
+2. 缺点 <br>
+基于贪婪和确定的符号替换，不能提供带概率的多个分片结果。
+
+#### b、wordpiece
+WordPiece算法可以看作是BPE的变种。不同点在于，WordPiece基于概率生成新的subword而不是下一最高频字节对。
+
+算法:
+1. 准备足够大的训练语料
+2. 确定期望的subword词表大小
+3. 将单词拆分成字符序列
+4. 基于第3步数据训练语言模型
+5. 从所有可能的subword单元中选择加入语言模型后能最大程度地增加训练数据概率的单元作为新的单元
+6. 重复第5步直到达到第2步设定的subword词表大小或概率增量低于某一阈值
+
+#### c、ULM
+ULM是另外一种subword分隔算法，它能够输出带概率的多个子词分段。它引入了一个假设：所有subword的出现都是独立的，并且subword序列由subword出现概率的乘积产生。WordPiece和ULM都利用语言模型建立subword词表。
+
+
+ULM(unigram Language Model) 算法：
+1. 准备足够大的训练语料
+2. 确定期望的subword词表大小
+3. 给定词序列优化下一个词出现的概率
+4. 计算每个subword的损失
+5. 基于损失对subword排序并保留前X%。为了避免OOV，建议保留字符级的单元
+6. 重复第3至第5步直到达到第2步设定的subword词表大小或第5步的结果不再变化
+
+
+### 2、FastText
+FastText 是2013年Facebook开源的计算词向量及高效的文本分类工具。<br>
+
 问题：在上述模型中，将形状不同的单词用不同的向量来表示。例如：dog和dogs分别用不同的向量表示，模型中没有直接表示这两个向量的关系。鉴于此，fastText提出了子词嵌入(subword embedding)的方法，从而试图将构词信息引入Word2vec中的跳字模型。
 
 改进：
@@ -111,3 +167,12 @@ $$
 3. 模型中词w作为中心词的向量 $v_w$  则表示成 $v_w = \sum_{g \in G_w} z_g$
 
 
+
+## 六、git工程
+
+参考：
+1. <a href="https://www.jianshu.com/p/d4de091d1367" target="bland">BPE、WordPiece和SentencePiece</a>
+2. <a href="https://zhuanlan.zhihu.com/p/86965595" target="bland">深入理解NLP Subword算法：BPE、WordPiece、ULM</a>
+
+如果自己想添加自己的词表：可以用 <a href="https://github.com/taishan1994/sentencepiece_chinese_bpe" target="bland">使用sentencepiece中BPE训练中文词表</a> <br>
+然后，<a href="https://github.com/ymcui/Chinese-LLaMA-Alpaca/blob/main/scripts/merge_tokenizer/merge_tokenizers.py" target="bland">再添加到词表中</a>

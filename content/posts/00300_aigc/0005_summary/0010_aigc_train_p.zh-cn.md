@@ -17,17 +17,26 @@ mermaid: true
 enableEmoji: true
 ---
 
+目前训练超大规模语言模型主要有两条技术路线：
+1. TPU + XLA + TensorFlow/JAX 
+2. GPU + PyTorch + Megatron-LM + DeepSpeed。
+
+前者由Google主导，由于TPU和自家云平台GCP深度绑定，对于非Googler来说， 只可远观而不可把玩，后者背后则有NVIDIA、Meta、MS大厂加持，社区氛围活跃，也更受到群众欢迎。
+
+
 ## 一、简介
 
+### 1、并行计算
 模型并行：将模型参数分布到多个GPU上
-1. 张量并行：切分参数矩阵，每个GPU计算一部分。缺点是：需要额外通信，降低计算粒度
-2. 流水线并行：将网络分成多段并行。缺点是：引入流水线气泡
-3. ZeRO-3：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信
+1. 数据并行(Data parallelism, DP)：复制多份模型，每个副本被放置在不同设备上，并输入数据分片。该过程是并行完成的，所有模型副本在每个训练step结束时同步。
+2. 张量并行(Tensor parallelism, TP)：这种方式，我们不把整个激活张量或者梯度张量放在单个GPU上，而是<font color=#f00000>切分参数矩阵，每个GPU计算一部分</font>。该技术有时被称为水平并行或者层内模型并行。缺点是：需要额外通信，降低计算粒度
+3. 流水线并行(Pipeline parallelism, PP)：将网络分成多段并行。这有时也称为垂直并行。缺点是：引入流水线气泡
+4. Zero Redundancy Optimizer(ZeRO)：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信
 
 
 为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：<font color=#f00000>在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸</font>。<br>
 
-### 1、混合精度(AMP)
+### 2、混合精度(AMP)
 混合精度 (Automatically Mixed Precision, AMP)
 
 1. 为加速训练，模型的参数是以FP16半精度存储的；
@@ -35,12 +44,59 @@ enableEmoji: true
 3. 计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位
 
 
+### 3、训练时的空间量
+
+#### a. 模型参数（parameter）
+需要的空间大小：跟模型大小一致。
+
+#### b. 梯度（gradient）
+需要的空间大小：跟模型大小一致。
+
+#### c. 中间状态
+以线性层为例：
+1. Forword: $y = Wx$
+2. Backword: $\nabla x = W^T \nabla y, \nabla W = \nabla y x^T$ <br>
+利用梯度更新模型参数时，需要用到：模型输入、输出。所以这些数据是要一直保存，直到参数更新完毕。
+
+需要的空间大小：
+
+#### d. 优化器（Optimizer）
+例如：adam。需要保存
+1. 模型梯度：$m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t$
+2. 模型梯度二次项相关的一些历史信息：$v_t = \beta_2 v_{t-1} + (1-\beta_2)g^2_t$
+
+需要的空间大小：至少2倍的模型参数量。
+
 ## 二、Deepspeed
 
 <a href="https://deepspeed.readthedocs.io/en/latest/" target="bland">使用文档</a> <br>
 
+Deepspeed是微软的大规模分布式训练工具。专门用于训练超大模型。增加的功能主要有：
+> 1. 3个维度并行化实现万亿参数模型训练
+> 2. ZeRO-Offload 使 GPU 单卡能够训练 10 倍大的模型
+> 3. 通过 DeepSpeed Sparse Attention 用6倍速度执行10倍长的序列
+> 4. 1 比特 Adam 减少 5 倍通信量
+
+DeepSpeed 是一个微软开发的开源深度学习优化库，它通过多种技术手段来加速训练，包括：<font color=#f00000>模型并行化、梯度累积、动态精度缩放、本地模式混合精度等。</font> DeepSpeed基于pytorch构建，只需要简单修改即可迁移。<br>
+
+**DeepSpeed主要包含三部分**：
+> 1. Apis：提供易用的api接口，训练、推理只需要简单调用几个api接口即可。<br>
+> 最重要的是initialize接口：用来初始化引擎，配置训练参数以及优化技术。配置参数一般保存在config.json文件中。
+> 2. runtime：是deepspeed管理、执行、性能优化的核心组件。是用python语言实现的。<br>
+> 例如：部署训练任务到分布式设备、数据分区、模型分区、系统优化、微调、故障检测、checkpoints保存和加载。
+> 3. ops：用c++和cuda实现底层内核，优化计算和通信。<br>
+
+---
+**核心技术**：ZeRO(零冗余优化器)<br>
+> 1. ZeRO克服数据并行和模型并行的局限性，同时实现两者的优点。
+> 2. 通过在数据并行进程之间，划分：<font color=#f00000>模型状态、梯度、优化器状态</font> 来消除数据并行进程中的内存冗余。
+> 3. 在训练期间使用 <font color=#f00000>动态通信调度</font> 来在分布式设备之间共享必要的状态
+---
+
 DeepSpeed的核心就在于：<font color=#f00000>GPU显存不够，CPU内存来凑</font>。比方说，我们只有一张10GB的GPU，那么我们很可能需要借助80GB的CPU，才能够训练一个大模型。<br>
+
 **具体点说**，DeepSpeed将当前时刻，训练模型用不到的参数，缓存到CPU中，等到要用到了，再从CPU挪到GPU。这里的“参数”，不仅指的是模型参数，还指optimizer、梯度等。<br>
+
 越多的参数挪到CPU上，GPU的负担就越小；但随之的代价就是，更为频繁的CPU，GPU交互，极大增加了训练推理的时间开销。因此，DeepSpeed使用的一个核心要义是：<font color=#f00000>时间开销和显存占用的权衡</font>。
 
 ### 1、使用DeepSpeed

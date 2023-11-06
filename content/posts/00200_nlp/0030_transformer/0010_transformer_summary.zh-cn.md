@@ -287,3 +287,51 @@ class TransformerDecoder(d2l.AttentionDecoder):
         return self._attention_weights
 ```
 
+
+## 三、参数量计算
+
+设：$V$ : 词表量；$H$ : embedding；$L$: Layers ；$S$：输入句子最大长度；$B$：batch size<br>
+
+$ \frak{L}$：损失函数 <br>
+
+$ FLOPs $ ： 计算量
+
+### 1、参数量
+
+1. Embedding 层： $VH$
+2. 每层Transformer Block: $ VH + L(12H^2+13H)$
+    * 两个layer normalization，总参数量为 : $4H$。<br>
+    层归一化的公式：$y = w \odot \frac{x-\mu}{\sqrt{\sigma^2+\varepsilon}} + b$ ，即：每个LN有两个 $H$ 维度的参数。<br>
+    需要计算3个梯度：$\frac{\partial\frak{L}}{\partial w}$，$\frac{\partial\frak{L}}{\partial b}$， $\frac{\partial\frak{L}}{\partial x}$
+    * attention部分有 $Q, K, V$ 和输出的权重矩阵以及偏置，总参数量 $4H^2+4H$
+    * MLP部分由两个线性层组成，分别从 $ H \rarr 4H$， $4H \rarr H$，总参数量为 $8H^2+5H$
+
+### 2、计算量
+
+已知：对于形状为 $m \times k, k \times n$ 的两个矩阵相乘，其浮点数运算次数为：$2mkn$
+
+1. 每个Tranformer Block的前向过程，有 $24BSH^2 + 4BS^2H$ 的$FLOPs$
+    * attention 中计算 $Q, K, V$，计算次数：$8BSH^2$
+    * 计算attention score时，$QK^T$，计算次数：$2BS^2H$
+    * attention score 作用到 $V$ 上，计算次数：$2BS^2H$
+    * MLP 的 两个全连接层，分别从 $ H \rarr 4H$， $4H \rarr H$，计算次数：$16BSH^2$
+
+2. 每个Transformer Block的反向过程，有 $48BSH^2 + 8BS^2H$ 的 $FLOPs$
+    * 简单来说，对于matmul和conv算子而言，它们额反向计算过程需要对两个输入求导，可以粗略估计反向的计算量就是前向的两倍。
+
+### 3、通信量
+
+1. 数据并行（Data Parallel）
+假设：
+    * 把数据分成 $dps$ 份。模型就会copy $dps$ 份，每次更新模型参数时，需要把更新值合并到主节点中，计算完后，然后再分发给各个节点中。<br>
+    * 模型大小为6B，且梯度为FP16模式，则模型的梯度大小一共为12GB。 <br>
+
+
+一次all_reduce的通信量：$\frac{model}{dps} \times (dps - 1) \times 2$：
+<br>
+   * 收集：每个节点，receive $dps-1$ 次数据，每次receive数据的大小 $\frac{model}{dps}$
+   * 分发：每个节点，receive $dps-1$ 次数据，每次receive数据的大小 $\frac{model}{dps}$
+
+2. Pipeline Parallel
+
+

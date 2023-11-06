@@ -106,3 +106,96 @@ class Solution(object):
 
 
 {{< /note >}}
+
+
+
+{{< note title="计算器" >}}
+
+<a href="https://leetcode.cn/problems/basic-calculator-iii/" target="bland">基本计算器 III</a> <br>
+
+**通用思路**：<br>
+
+双栈法，stack_num记录数字，stack_opt记录操作符。<br>
+首先来看一种最基本的计算操作：
+1. stack_num中pop出来两个数A，B, 
+2. stack_opt中pop出来一个操作符opt, 计算结果为B opt A, 将结果存到stack_num中。
+
+
+字符有以下几种情况：
+1. 空格，直接下一个字符。
+2. 数字，直接入stack_num栈。需要注意处理多位数。
+3. '(', 直接入stack_opt栈
+4. ')', 重复最基本的计算操作，直到stack_opt栈栈顶为 ')'。然后stack_opt栈pop出来 ')'。
+5. 操作符，
+    * 如果栈顶操作符的优先级大于等于当前操作符的优先级，则重复最基本的计算操作，直到stack_opt栈空或者其栈顶操作符的优先级小于当前操作符的优先级，再将当前操作符入stack_num栈。
+    * 优先级定义priorty = {'(':0,')':0,'+':1,'-':1,'*':2,'/':2}。数字越大，优先级与越高。
+
+最后计算：<br>
+在遍历完所有字符后，判断当前操作栈stack_opt是否为空，如果不为空，重复最基本的计算操作，直到操作栈为stack_opt为空。最后结果就是stack_num中剩余的唯一一个元素。
+
+```python
+class Solution(object):
+    def calc(self, num1, num2, opt):
+        if opt == '+':
+            return int(num1) + int(num2)
+        elif opt == '-':
+            return int(num1) - int(num2)
+        elif opt == '*':
+            return int(num1) * int(num2)
+        elif opt == '/':
+            return int(int(num1) / int(num2))
+
+    def calculate(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        stack_num = []
+        stack_opt = []
+        i = 0
+        priorty = {'(': 0, ')': 0, '+': 1, '-': 1, '*': 2, '/': 2}
+
+        while i < len(s):
+            if s[i] == ' ':
+                i += 1
+                continue
+            # 数
+            if '0' <= s[i] <= '9':
+                j = i 
+                while i+1 < len(s) and '0' <= s[i+1] <= '9':
+                    i += 1
+                num = int(s[j:i+1])
+                stack_num.append(num)
+            elif s[i] == '(':
+                stack_opt.append(s[i])
+            # 消除 ()
+            elif s[i] == ')':
+                while stack_opt[-1] != '(':
+                    opt = stack_opt.pop()
+                    B = stack_num.pop()
+                    A = stack_num.pop()
+                    res = self.calc(A, B, opt)
+                    stack_num.append(res)
+                stack_opt.pop()
+            # 计算优先级
+            else:
+                while stack_opt and priorty[stack_opt[-1]] >= priorty[s[i]]:
+                    opt = stack_opt.pop()
+                    B = stack_num.pop()
+                    A = stack_num.pop()
+                    res = self.calc(A, B, opt)
+                    stack_num.append(res)
+                stack_opt.append(s[i])
+            i += 1
+
+        while stack_opt:
+            opt = stack_opt.pop()
+            B = stack_num.pop()
+            A = stack_num.pop()
+            res = self.calc(A, B, opt)
+            stack_num.append(res)
+
+        return stack_num[-1]
+```
+
+{{< /note >}}

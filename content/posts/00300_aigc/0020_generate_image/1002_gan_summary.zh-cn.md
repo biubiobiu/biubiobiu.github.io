@@ -6,7 +6,7 @@ menu:
     name: GAN
     identifier: aigc-image-gan
     parent: aigc-image
-    weight: 1000
+    weight: 1002
 author:
   name: biubiobiu
   image: /images/author/john.png
@@ -17,8 +17,11 @@ math: true
 
 ## 一、简介
 
-It is coming soon.
 
-<mark>hello</mark>
+Discriminator
+
+Generator
+
+## 二、网络
 
 
