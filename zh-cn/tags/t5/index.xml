@@ -1,2 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>T5 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/t5/</link><description>Recent content in T5 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Tue, 08 Aug 2023 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/t5/index.xml" rel="self" type="application/rss+xml"/><item><title>T5综述</title><link>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0120_t5/0010_t5_summary/</link><pubDate>Tue, 08 Aug 2023 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0120_t5/0010_t5_summary/</guid><description>一、 T5
-二、</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>T5 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/t5/</link><description>Recent content in T5 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Tue, 08 Aug 2023 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/t5/index.xml" rel="self" type="application/rss+xml"/><item><title>T5综述</title><link>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0120_t5/0010_t5_summary/</link><pubDate>Tue, 08 Aug 2023 06:00:20 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0120_t5/0010_t5_summary/</guid><description>一、简介 T5 T5的主要贡献是：把NLP的不同任务，统一成一种任务形式：文本输入，文本输出。即：每个任务（包括翻译，问题解答和分类）都将模型文本作为输入，并对其进行训练以生成一些目标文本。这使我们可以在各种任务中使用相同的模型，损失函数，超参数等。“ T5”是指我们的模型，我们将其称为“文本到文本传输转换器”。
+数据： “Colossal Clean Crawled Corpus” (C4) 巨大的干净爬行的语料库，这是我们创建的基于常见爬网的数据集，它是未标记文本数据的来源。
+二、模型介绍 目前基于Transformer的模型架构主要有：
+Encoder-Decoder结构（传统的Transformer结构）：Seq2Seq 常用模型，在编码器输入中可以看到序列中包括自己的全部字符，在解码器的输出只能看到当前字符及之前的字符。 Language model结构（GPT的结构）：Encoder-Decoder结构 的Decoder部分，单向结构，每次只能看到当前以及之前的部分。 Prefix LM 结构（UniLM的结构）：前面一部分文本可以看到前缀部分所有内容，后面剩下的内容只能看到自己以及之前的内容。 1、T5模型结构 通过T5的实验发现Encoder-Decoder结构的模型效果最好，所以T5模型本质上来说是一个基于Transformer的Encoder-Decoder模型。
+2、位置编码 Transformer的 绝对位置编码，虽然有一定的外推性，但是没有方向性。
+T5采用了相对位置编码：根据token与token之间的位置关系来生成权重。比如：$w_{-3}, w_{-2}, w_{-1}, w_{0}, w_1, w_2$ 其中，$w_0$ 表示自己位置的权重，$w_1$ 表示下一个位置的权重
+3、自监督预训练方法 作者对比了3中训练方法：
+语言模型式：单向的从左到右一次预测，就是GPT模型的方式 bert-style: 相bert一样随机破坏掉一部分，然后还原 顺序还原：打乱文本的顺序，输出恢复原来顺序。 经过作者实验对比，发现：bert-style 的训练方式，效果最好。
+4、破坏策略 作者对比3中破坏策略：
+Mask法：随机破坏一个token，用一个特殊字符替换。 Replace Span (小段替换): 将一小段token破坏掉，用一个特殊字符替换。 Drop法：没有替换操作，直接丢弃。 经过作者实验对比，发现：Replace Span (小段替换)，效果最好。
+破坏比例，作者对比了：$10\%, 15\%, 25\%, 50\%$，实验发现：破坏 $15\%$，效果最好。
+Span长度，作者对比了：$2, 3, 5, 10$，实验发现：破坏长度 $span = 3$，效果最好。</description></item></channel></rss>

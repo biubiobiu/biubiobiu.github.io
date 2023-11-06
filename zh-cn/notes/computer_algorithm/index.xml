@@ -32,9 +32,10 @@ class BinarySearch(object): # 迭代 def search_iterative(self, nums, item): low
 随机访问，数组在内存中是连续的一整块，所以支持随机访问。 增/删操作，费事。增加元素时，如果内存不够一整块，还得整体迁移 链表： 可以存储在内存的任何地方。
 顺序访问，由于存在任何地方，每个元素都存储了下一个元素的地址，所以只能从头开始逐个查询。 增/删操作，不费事。只要修改一下 下一元素地址 就行。 栈 递归操作，就是使用的调用栈。即：把每个递归调用函数，都压入栈，完成一个弹出一个，直到空栈。
 优先考虑用栈的 “信号”
-有返回上一步的操作 成对匹配的问题，比如：（） 链表/list 的翻转问题，例如：K 个一组翻转链表 队列 队列(First In First Out)：先进先出的数据结构。
-图的广度优先搜索，就是先把1级元素压入队列，然后在一个一个出队遍历时，把其邻居压入队列 树 字典树
-字典树 ( Trie 树 ) 又称单词查找树， 是一种用于在 字符串集合 中 高效地 存储 和 查找 字符串 的 树形 数据结构。</description></item><item><title>滑动窗口</title><link>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0040_sliding_window/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0040_sliding_window/</guid><description>滑动窗口算法 参考
+有返回上一步的操作 成对匹配的问题，比如：（） 链表/list 的翻转问题，例如：K 个一组翻转链表 单调栈
+柱状图中最大的矩形 最大矩形 基于 柱状图中最大的矩形 的 思路：计算每列的柱状图：就是从该到左边界，连续的1的个数，就类似于柱状图 接雨水 : 思路： 位置i处的雨水量，取决于左右两边的最大值。
+队列 队列(First In First Out)：先进先出的数据结构。
+图的广度优先搜索，就是先把1级元素压入队列，然后在一个一个出队遍历时，把其邻居压入队列 树 字典树</description></item><item><title>滑动窗口</title><link>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0040_sliding_window/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0040_sliding_window/</guid><description>滑动窗口算法 参考
 个人理解，滑动窗口主要解决的问题特点：
 连续性，一定是连续序列或者字符串的最长/最短 的问题。 滑动窗口算法：是在给定特定窗口大小的数组或字符串上执行要求的操作，该技术可以将一部分问题中的嵌套循环转变为一个单循环，可以减少时间复杂度。即：在一个特定大小的字符串/数组上进行操作，而不是在整个字符串/数组上操作，这样就降低了问题的复杂度。
 滑动：说明这个窗口是移动的；

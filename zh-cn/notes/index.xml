@@ -63,9 +63,10 @@ Y[:] = X + Y 或者 Y += X 通过[:]把X+Y的结果写进Y对应的内存中。�
 随机访问，数组在内存中是连续的一整块，所以支持随机访问。 增/删操作，费事。增加元素时，如果内存不够一整块，还得整体迁移 链表： 可以存储在内存的任何地方。
 顺序访问，由于存在任何地方，每个元素都存储了下一个元素的地址，所以只能从头开始逐个查询。 增/删操作，不费事。只要修改一下 下一元素地址 就行。 栈 递归操作，就是使用的调用栈。即：把每个递归调用函数，都压入栈，完成一个弹出一个，直到空栈。
 优先考虑用栈的 “信号”
-有返回上一步的操作 成对匹配的问题，比如：（） 链表/list 的翻转问题，例如：K 个一组翻转链表 队列 队列(First In First Out)：先进先出的数据结构。
-图的广度优先搜索，就是先把1级元素压入队列，然后在一个一个出队遍历时，把其邻居压入队列 树 字典树
-字典树 ( Trie 树 ) 又称单词查找树， 是一种用于在 字符串集合 中 高效地 存储 和 查找 字符串 的 树形 数据结构。</description></item><item><title>常见算法思路</title><link>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0015_comm_ideas/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0015_comm_ideas/</guid><description>标题 -- 递归 Leigh Caldwell在Stack Overflow上说的一句话: “如果使用循环，程序的性能可能更高;如果使用递归，程序可能更容易理解。如何选择要看什么对你来说更重要。”
+有返回上一步的操作 成对匹配的问题，比如：（） 链表/list 的翻转问题，例如：K 个一组翻转链表 单调栈
+柱状图中最大的矩形 最大矩形 基于 柱状图中最大的矩形 的 思路：计算每列的柱状图：就是从该到左边界，连续的1的个数，就类似于柱状图 接雨水 : 思路： 位置i处的雨水量，取决于左右两边的最大值。
+队列 队列(First In First Out)：先进先出的数据结构。
+图的广度优先搜索，就是先把1级元素压入队列，然后在一个一个出队遍历时，把其邻居压入队列 树 字典树</description></item><item><title>常见算法思路</title><link>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0015_comm_ideas/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/notes/computer_algorithm/0015_comm_ideas/</guid><description>标题 -- 递归 Leigh Caldwell在Stack Overflow上说的一句话: “如果使用循环，程序的性能可能更高;如果使用递归，程序可能更容易理解。如何选择要看什么对你来说更重要。”
 编写递归函数时，必须告诉它何时停止递归。正因为如此，每个递归函数都有两部分:
 基线条件(base case)。指的是函数不再调用自己，从而避免形成无限循环。 递归条件(recursive case)。指的是函数调用自己。 二分查找 比如：从1~100的数字中，我认选一个，让你猜。我只会说：大了、小了、对了。需要猜多少次呢？
 二分查找：一半一半的猜，每次都排除一半。所以需要的次数是：log2N。（向上取整）

@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>训练框架 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/</link><description>Recent content in 训练框架 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Sat, 05 Aug 2023 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/index.xml" rel="self" type="application/rss+xml"/><item><title>大模型训练框架</title><link>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0010_aigc_train_p/</link><pubDate>Sat, 05 Aug 2023 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0010_aigc_train_p/</guid><description>一、简介 模型并行：将模型参数分布到多个GPU上
-张量并行：切分参数矩阵，每个GPU计算一部分。缺点是：需要额外通信，降低计算粒度 流水线并行：将网络分成多段并行。缺点是：引入流水线气泡 ZeRO-3：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信 为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸。
-1、混合精度(AMP) 混合精度 (Automatically Mixed Precision, AMP)
-为加速训练，模型的参数是以FP16半精度存储的； 然后，输入数据也是 FP16半精度，与模型参数 foreword计算，激活结果也是FP16半精度； 计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位 二、Deepspeed 使用文档 DeepSpeed的核心就在于：GPU显存不够，CPU内存来凑。比方说，我们只有一张10GB的GPU，那么我们很可能需要借助80GB的CPU，才能够训练一个大模型。
-具体点说，DeepSpeed将当前时刻，训练模型用不到的参数，缓存到CPU中，等到要用到了，再从CPU挪到GPU。这里的“参数”，不仅指的是模型参数，还指optimizer、梯度等。
-越多的参数挪到CPU上，GPU的负担就越小；但随之的代价就是，更为频繁的CPU，GPU交互，极大增加了训练推理的时间开销。因此，DeepSpeed使用的一个核心要义是：时间开销和显存占用的权衡。
-1、使用DeepSpeed deepspeed --master_port 29500 --num_gpus=2 run_s2s.py --deepspeed ds_config.json &amp;ndash;master_port：端口号。最好显示指定，默认为29500，可能会被占用（i.e., 跑了多个DeepSpeed进程）。
-&amp;ndash;num_gpus: GPU数目，默认会使用当前所见的所有GPU。
-&amp;ndash;deepspeed: 提供的config文件，用来指定许多DeepSpeed的重要参数。
-使用DeepSpeed的一个核心要点，就在于写一个config文件（可以是.json，也可以是类json格式的配置文件），在这个配置文件中，你可以指定你想要的参数，例如，权衡时间和显存。因此，上面几个参数里，最重要的便是&amp;ndash;deepspeed，即你提供的config文件，即ZeRO。
-2、ZeRO Zero Redundancy Optimizer (ZeRO)是DeepSpeed的workhorse. 用户可以提供不同的ZeRO config文件，来实现DeepSpeed的不同功能特性。
-即，传统的深度学习，模型训练并行，是将模型参数复制多份到多张GPU上，只将数据拆分（如，torch的Dataparallel），这样就会有大量的显存冗余浪费。而ZeRO就是为了消除这种冗余，提高对memory的利用率。注意，这里的“memory”不仅指多张GPU memory，还包括CPU。
-而ZeRO的实现方法，就是把参数占用，逻辑上分成三种类型。将这些类型的参数划分：
-optimizer states：即优化器的参数状态。例如，Adam的动量参数。 gradients：梯度缓存，对应于optimizer。 parameters：模型参数。 对应的，DeepSpeed的ZeRO config文件就可以分为如下几类：
-ZeRO Stage 1: 划分optimizer states。优化器参数被划分到多个memory上，每个momoey上的进程只负责更新它自己那部分参数。 ZeRO Stage 2: 划分gradient。每个memory，只保留它分配到的optimizer state所对应的梯度。这很合理，因为梯度和optimizer是紧密联系在一起的。只知道梯度，不知道optimizer state，是没有办法优化模型参数的。 ZeRO Stage 3: 划分模型参数，或者说，不同的layer.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>训练框架 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/</link><description>Recent content in 训练框架 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Sat, 05 Aug 2023 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/index.xml" rel="self" type="application/rss+xml"/><item><title>大模型训练框架</title><link>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0010_aigc_train_p/</link><pubDate>Sat, 05 Aug 2023 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0010_aigc_train_p/</guid><description>目前训练超大规模语言模型主要有两条技术路线：
+TPU + XLA + TensorFlow/JAX GPU + PyTorch + Megatron-LM + DeepSpeed。 前者由Google主导，由于TPU和自家云平台GCP深度绑定，对于非Googler来说， 只可远观而不可把玩，后者背后则有NVIDIA、Meta、MS大厂加持，社区氛围活跃，也更受到群众欢迎。
+一、简介 1、并行计算 模型并行：将模型参数分布到多个GPU上
+数据并行(Data parallelism, DP)：复制多份模型，每个副本被放置在不同设备上，并输入数据分片。该过程是并行完成的，所有模型副本在每个训练step结束时同步。 张量并行(Tensor parallelism, TP)：这种方式，我们不把整个激活张量或者梯度张量放在单个GPU上，而是切分参数矩阵，每个GPU计算一部分。该技术有时被称为水平并行或者层内模型并行。缺点是：需要额外通信，降低计算粒度 流水线并行(Pipeline parallelism, PP)：将网络分成多段并行。这有时也称为垂直并行。缺点是：引入流水线气泡 Zero Redundancy Optimizer(ZeRO)：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信 为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸。
+2、混合精度(AMP) 混合精度 (Automatically Mixed Precision, AMP)
+为加速训练，模型的参数是以FP16半精度存储的； 然后，输入数据也是 FP16半精度，与模型参数 foreword计算，激活结果也是FP16半精度； 计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位 3、训练时的空间量 a. 模型参数（parameter） 需要的空间大小：跟模型大小一致。
+b. 梯度（gradient） 需要的空间大小：跟模型大小一致。
+c. 中间状态 以线性层为例：
+Forword: $y = Wx$ Backword: $\nabla x = W^T \nabla y, \nabla W = \nabla y x^T$ 利用梯度更新模型参数时，需要用到：模型输入、输出。所以这些数据是要一直保存，直到参数更新完毕。 需要的空间大小：</description></item></channel></rss>

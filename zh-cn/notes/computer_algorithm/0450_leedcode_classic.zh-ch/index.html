@@ -64,6 +64,68 @@ biubiobiu's Blog</a>
                     que<span style=color:#f92672>.</span>append(it)
         
         <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+</code></pre></div></div></div></div></div><div class=note-card><div class=item><h5 class=note-title><span>计算器</span></h5><div class=card><div class=card-body><p><a href=https://leetcode.cn/problems/basic-calculator-iii/ target=bland>基本计算器 III</a><br></p><p><strong>通用思路</strong>：<br></p><p>双栈法，stack_num记录数字，stack_opt记录操作符。<br>首先来看一种最基本的计算操作：</p><ol><li>stack_num中pop出来两个数A，B,</li><li>stack_opt中pop出来一个操作符opt, 计算结果为B opt A, 将结果存到stack_num中。</li></ol><p>字符有以下几种情况：</p><ol><li>空格，直接下一个字符。</li><li>数字，直接入stack_num栈。需要注意处理多位数。</li><li>&lsquo;(&rsquo;, 直接入stack_opt栈</li><li>&lsquo;)&rsquo;, 重复最基本的计算操作，直到stack_opt栈栈顶为 &lsquo;)'。然后stack_opt栈pop出来 &lsquo;)'。</li><li>操作符，<ul><li>如果栈顶操作符的优先级大于等于当前操作符的优先级，则重复最基本的计算操作，直到stack_opt栈空或者其栈顶操作符的优先级小于当前操作符的优先级，再将当前操作符入stack_num栈。</li><li>优先级定义priorty = {'(':0,')':0,'+':1,'-':1,'*':2,'/':2}。数字越大，优先级与越高。</li></ul></li></ol><p>最后计算：<br>在遍历完所有字符后，判断当前操作栈stack_opt是否为空，如果不为空，重复最基本的计算操作，直到操作栈为stack_opt为空。最后结果就是stack_num中剩余的唯一一个元素。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Solution</span>(object):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>calc</span>(self, num1, num2, opt):
+        <span style=color:#66d9ef>if</span> opt <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;+&#39;</span>:
+            <span style=color:#66d9ef>return</span> int(num1) <span style=color:#f92672>+</span> int(num2)
+        <span style=color:#66d9ef>elif</span> opt <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;-&#39;</span>:
+            <span style=color:#66d9ef>return</span> int(num1) <span style=color:#f92672>-</span> int(num2)
+        <span style=color:#66d9ef>elif</span> opt <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;*&#39;</span>:
+            <span style=color:#66d9ef>return</span> int(num1) <span style=color:#f92672>*</span> int(num2)
+        <span style=color:#66d9ef>elif</span> opt <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;/&#39;</span>:
+            <span style=color:#66d9ef>return</span> int(int(num1) <span style=color:#f92672>/</span> int(num2))
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>calculate</span>(self, s):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :type s: str
+</span><span style=color:#e6db74>        :rtype: int
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        stack_num <span style=color:#f92672>=</span> []
+        stack_opt <span style=color:#f92672>=</span> []
+        i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+        priorty <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#39;(&#39;</span>: <span style=color:#ae81ff>0</span>, <span style=color:#e6db74>&#39;)&#39;</span>: <span style=color:#ae81ff>0</span>, <span style=color:#e6db74>&#39;+&#39;</span>: <span style=color:#ae81ff>1</span>, <span style=color:#e6db74>&#39;-&#39;</span>: <span style=color:#ae81ff>1</span>, <span style=color:#e6db74>&#39;*&#39;</span>: <span style=color:#ae81ff>2</span>, <span style=color:#e6db74>&#39;/&#39;</span>: <span style=color:#ae81ff>2</span>}
+
+        <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(s):
+            <span style=color:#66d9ef>if</span> s[i] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39; &#39;</span>:
+                i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+                <span style=color:#66d9ef>continue</span>
+            <span style=color:#75715e># 数</span>
+            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;0&#39;</span> <span style=color:#f92672>&lt;=</span> s[i] <span style=color:#f92672>&lt;=</span> <span style=color:#e6db74>&#39;9&#39;</span>:
+                j <span style=color:#f92672>=</span> i 
+                <span style=color:#66d9ef>while</span> i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span> <span style=color:#f92672>&lt;</span> len(s) <span style=color:#f92672>and</span> <span style=color:#e6db74>&#39;0&#39;</span> <span style=color:#f92672>&lt;=</span> s[i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>&lt;=</span> <span style=color:#e6db74>&#39;9&#39;</span>:
+                    i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+                num <span style=color:#f92672>=</span> int(s[j:i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>])
+                stack_num<span style=color:#f92672>.</span>append(num)
+            <span style=color:#66d9ef>elif</span> s[i] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;(&#39;</span>:
+                stack_opt<span style=color:#f92672>.</span>append(s[i])
+            <span style=color:#75715e># 消除 ()</span>
+            <span style=color:#66d9ef>elif</span> s[i] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;)&#39;</span>:
+                <span style=color:#66d9ef>while</span> stack_opt[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#39;(&#39;</span>:
+                    opt <span style=color:#f92672>=</span> stack_opt<span style=color:#f92672>.</span>pop()
+                    B <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+                    A <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+                    res <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>calc(A, B, opt)
+                    stack_num<span style=color:#f92672>.</span>append(res)
+                stack_opt<span style=color:#f92672>.</span>pop()
+            <span style=color:#75715e># 计算优先级</span>
+            <span style=color:#66d9ef>else</span>:
+                <span style=color:#66d9ef>while</span> stack_opt <span style=color:#f92672>and</span> priorty[stack_opt[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]] <span style=color:#f92672>&gt;=</span> priorty[s[i]]:
+                    opt <span style=color:#f92672>=</span> stack_opt<span style=color:#f92672>.</span>pop()
+                    B <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+                    A <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+                    res <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>calc(A, B, opt)
+                    stack_num<span style=color:#f92672>.</span>append(res)
+                stack_opt<span style=color:#f92672>.</span>append(s[i])
+            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+
+        <span style=color:#66d9ef>while</span> stack_opt:
+            opt <span style=color:#f92672>=</span> stack_opt<span style=color:#f92672>.</span>pop()
+            B <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+            A <span style=color:#f92672>=</span> stack_num<span style=color:#f92672>.</span>pop()
+            res <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>calc(A, B, opt)
+            stack_num<span style=color:#f92672>.</span>append(res)
+
+        <span style=color:#66d9ef>return</span> stack_num[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
 </code></pre></div></div></div></div></div></div></div></section></div><footer id=footer class="container-fluid text-center align-content-center footer pb-2"><div class="container pt-5"><div class="row text-left"><div class="col-md-4 col-sm-12"><h5>导航</h5><ul><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#about>关于</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#skills>技能</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#experiences>经验</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#projects>项目</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#education>教育</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#recent-posts>最新博客</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#accomplishments>造诣</a></li><li class=nav-item><a class=smooth-scroll href=https://biubiobiu.github.io/zh-cn/#achievements>业绩</a></li></ul></div><div class="col-md-4 col-sm-12"><h5>联系方式:</h5><ul><li><span>电话:</span> <span>+0123456789</span></li><li><span>邮箱:</span> <span>bsgshyn8@163.com</span></li></ul></div></div></div><hr><div class=container><p id=disclaimer><strong>免责声明:</strong> 这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经 作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。</p></div><hr><div class=container><div class="row text-left"><div class=col-md-4><a id=theme href=https://github.com/hossainemruz/toha target=_blank rel=noopener><img src=/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_2.png alt="Toha Theme Logo">
 Toha</a></div><div class="col-md-4 text-center">© 2021 Copyright.</div><div class="col-md-4 text-right"><a id=hugo href=https://gohugo.io/ target=_blank rel=noopener>Powered by
 <img src=/images/hugo-logo.svg alt="Hugo Logo" height=18></a></div></div></div></footer><script type=text/javascript src=/js/jquery-3.4.1.min.js></script><script type=text/javascript src=/js/popper.min.js></script><script type=text/javascript src=/js/bootstrap.min.js></script><script type=text/javascript src=/js/navbar.js></script><script type=text/javascript src=/js/plyr.js></script><script type=text/javascript src=/js/main.js></script><script type=text/javascript src=/js/darkreader.js></script><script type=text/javascript src=/js/darkmode-darkreader.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js></script><script src=/js/imagesloaded.pkgd.min.js></script><script src=/js/note.js></script><script>hljs.initHighlightingOnLoad();</script><link rel=stylesheet href=/katex/katex.min.css><script type=text/javascript defer src=/katex/katex.min.js></script><script type=text/javascript defer src=/katex/auto-render.min.js onload=renderMathInElement(document.body);></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});});</script></body></html>

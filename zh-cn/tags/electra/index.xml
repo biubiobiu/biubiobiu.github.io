@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ELECTRA on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/electra/</link><description>Recent content in ELECTRA on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Wed, 08 Sep 2021 06:00:20 +0600</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/electra/index.xml" rel="self" type="application/rss+xml"/><item><title>ELECTRA综述</title><link>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0200_electra/electra_summary/</link><pubDate>Wed, 08 Sep 2021 06:00:20 +0600</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00200_nlp/0200_electra/electra_summary/</guid><description>一、背景 二、ELECTRA ELECTRA的全称是Efficiently Learning an Encoder that Classifies Token Replacements Accurately。最主要的贡献是提出了新的预训练任务和框架，把生成式的Masked language model(MLM)预训练任务改成了判别式的Replaced token detection(RTD)任务，判断当前token是否被语言模型提换过。
-三、总结</description></item></channel></rss>
+之前的方法，都需要预测一些部分。或者是预测下一个单词，或者是预测被盖住的部分。其实预测的模型需要的训练量是很大的，ELECTRA不做预测，只回答是或者否。
+比如: 上面原来的句子是“the chef cooked the meal”，现在把“cooked”换成了“ate”。ELECTRA需要判断输入的单词中，哪些被替换了。
+这样的好处是：预测Y/N简单；并且每个输出都被用到，可以计算损失。不像训练BERT时，只要mask的部分才计算loss。
+ELECTRA的效果还比较不错，从上图可以看到，在同样的运算量下，它的表现比其他模型要好，并且能更快地达到较好的效果。
+结构
+类似GAN的思路，生成器：随机mask，把mask位置的token随机替换成其他的token。 优势：
+训练速度比bert快，充分训练后，准确率更高。比如：效果与RoBerta一致，计算量只用了1/4。 计算loss的时候，不但使用了mask部分，也使用了非mask的部分。 三、总结</description></item></channel></rss>

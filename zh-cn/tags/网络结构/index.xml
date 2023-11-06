@@ -1,11 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络结构 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/</link><description>Recent content in 网络结构 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Thu, 05 Aug 2021 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml"/><item><title>深度学习-结构</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</guid><description>一、激活函数 1、Sigmoid函数 logistic函数
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络结构 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/</link><description>Recent content in 网络结构 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><lastBuildDate>Thu, 05 Aug 2021 12:30:40 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml"/><item><title>深度学习-结构</title><link>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</link><pubDate>Thu, 05 Aug 2021 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/</guid><description>一、激活函数 为什么需要激活函数？
+例如：两个感知机。 $h_1 = W_1 x + b_1, h_2 = W_2 h_1 + b_2$ 如果没有激活函数这个 非线性变换，由于感知机的计算时线性变换，可以转换为：$h_2 = W_2 W_1 x + W_2 b_1 + b_2$ 就是说：如果没有激活函数，模型就做不了太深。两层的权重完全可以用一层的权重来表示。
+1、Sigmoid函数 logistic函数
 $$ \varphi(v) = \frac{1}{1+e^{-av}} $$
 tanh函数
 $$ \varphi(v) = tanh(v) = \frac{1-e^{-v}}{1+e^{-v}} $$
 分段线性函数
-$ \varphi(v) = \begin{cases} 1 &amp;amp;\text{if } v \geqslant \theta \\ kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \\ 0 &amp;amp;\text{if } v \leqslant 0 \end{cases}$
-概率型函数
-$$ P(1) = \frac{1}{1+e^{-\frac{x}{T}}} $$
-2、ReLU函数 relu函数有助于梯度收敛，收敛速度快了6倍。但仍然有缺陷：
-在x&amp;lt;0是，梯度为0，一旦变成负将无法影响训练，这种现象叫做死区。如果学习率较大，会发现40%的死区。如果有一个合适的学习率，死区会大大减少。
-$ ReLU(x) = max(0, x) = \begin{cases} x &amp;amp;\text{if } x \geqslant 0 \\ 0 &amp;amp;\text{if } x &amp;lt; 0 \end{cases}$</description></item></channel></rss>
+$ \varphi(v) = \begin{cases} 1 &amp;amp;\text{if } v \geqslant \theta \\ kv &amp;amp;\text{if } - \theta &amp;lt; v &amp;lt; \theta \\ 0 &amp;amp;\text{if } v \leqslant 0 \end{cases}$</description></item></channel></rss>
