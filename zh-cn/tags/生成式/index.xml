@@ -3,4 +3,7 @@
 整理训练集：在预训练期间减轻幻觉主要集中在预训练语料库的策划上 SFT：监督训练，构建训练数据是减轻幻觉的一种方法 RLHF：人类监督强化学习。让模型学习到：诚实性、 在推理阶段： 设计解码策略 利用外部知识来减轻LLMs中的幻觉 《Language Models (Mostly) Know What They Know》 这篇论文发现：模型够大后，说谎才会心虚。
 对于大模型，模型输出是正确的概率 VS 模型的自信度，这两个是相关的。当模型比较自信时，输出的结果是正确的概率就比较大。 对于小模型，模型输出是正确的概率 VS 模型的自信度，这两个是不相关的 其中，横轴：模型输出时的自信程度；纵轴：模型输出是正确的概率。黄色表示最大模型，自身表示最小模型。 三、数据问题 问题2：训练一个大模型，需要多少数据量呢？
 训练一个大模型，需要多少数据量呢？《When Do You Need Billions of Words of Pretraining Data?》 问题3：数据预处理，怎么过滤、去重?
-数据预处理：《Scaling Language Models: Methods, Analysis &amp;amp; Insights from Training Gopher》 过滤有害的内容，通过Google的审核接口 去掉一些 HTML 前端的一些tag 规则过滤，去掉低质量的文本。 去重 剔除测试数据 问题4：模型大小 与 数据大小 的关系？ 《Training Compute-Optimal Large Language Models》 这篇文章发现：</description></item></channel></rss>
+数据预处理：《Scaling Language Models: Methods, Analysis &amp;amp; Insights from Training Gopher》 过滤有害的内容，通过Google的审核接口 去掉一些 HTML 前端的一些tag 规则过滤，去掉低质量的文本。 去重 剔除测试数据 问题4：模型大小 与 数据大小 的关系？ 《Training Compute-Optimal Large Language Models》 这篇文章发现：</description></item><item><title>生成模型-评估</title><link>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0025_aigc_eval/</link><pubDate>Sat, 05 Aug 2023 12:30:40 +0800</pubDate><guid>https://biubiobiu.github.io/zh-cn/posts/00300_aigc/0005_summary/0025_aigc_eval/</guid><description>一、 测评指标：
+1、BLEU(Bilingual evaluation understudy) $$ BLEU = BP \times e^{\sum^n_{n=1}W_n \times \log P_n}, BP = e^{1-\frac{lr}{lc}} 如果 lc &amp;lt;= lr $$
+2、PPL(perplexity) 3、ROUGE(Recall-Oriented Understudy for Gisting Evaluation) 4、Distance-base Metrics Edit Dist
+二、</description></item></channel></rss>
