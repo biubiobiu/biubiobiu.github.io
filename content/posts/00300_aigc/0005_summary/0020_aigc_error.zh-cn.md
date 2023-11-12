@@ -97,3 +97,39 @@ enableEmoji: true
 1. 数据：构建边界数据集，比如：不知道
 2. 通过推理后的score值
 3. 人类反馈的强化学习
+
+
+### 1、文本生成
+
+问题：在用大模型做文本生成时，如果下一个token的生成，是基于softmax的最大值，生成的文案内容跟上文比较相关，但是语句可能不通顺。<br>
+
+#### 1）生成策略
+
+所以，在文本生成的时候，会有一些生成策略：
+1. Greedy decoding：选择softmax后score最大的。<br>
+问题：生成的文本可能不通顺，可能是重复的。
+2. beam search ：寻找最优的子序列，而不是取单个最优。<br>
+就是说：如果长度取k，这k个位置的预测，都会有score，这些score值之和最大的组合输出。
+3. sampling-based decoding：并不是选择softmax后score最大的，而是把score作为采样的概率，从词表中采样，这样就有了随机性。<br>
+采样方式有：
+    * pure sampling : 
+    * Top-n sampling : 为了避免score较小的被采样，只在score值的Top-n中采样。
+    * Top-p sampling : 另一种方式：比如：p=0.9，在所有score之和为p的候选集中采样。
+    * sample with temperature: 在做softmax之前，做 $\frac{inputs}{temperature}$，如果 $temperature > 1$，计算后分布就更加平均，采样的话随机性就更强；如果 $temperature < 1$，计算后分布的差异就更大，采样的话随机性就更弱，就更容易采样到score较大的token。 
+
+
+#### 2）修改softmax的分布
+
+{{< split 6 6>}}
+<p align="center"><img src="/datasets/posts/nlp/DEXPERTS.png" width=100% height=100%></p>
+---
+<a href="https://arxiv.org/pdf/2105.03023.pdf" target="bland">《DEXPERTS: Decoding-Time Controlled Text Generation
+with Experts and Anti-Experts》</a> <br>
+
+在生成的时候，在softmax之前，结合了两个模型的值，一个是天使模型，一个是恶魔模型，生成时要远离恶魔模型。所以：
+$$
+softmax(z_t + \alpha(z^+_t - z^-_t))
+$$
+这样在生成时就会避免生成一些违规的文案。
+
+{{< /split >}}

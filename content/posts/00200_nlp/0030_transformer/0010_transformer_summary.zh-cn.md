@@ -32,7 +32,7 @@ categories: ["Basic"]
 {{< split 6 6 >}}
 <p align="center"><img src="/datasets/posts/nlp/attention.png" width="80%" height="80%" title="attention" alt="attention"></p>
 ---
-<p align="center"><img src="https://s2.loli.net/2022/05/19/9nCzrTwESlBRfmy.jpg" width="100%" height="100%" title="attention" alt="attention"></p>
+<p align="center"><img src="/datasets/posts/nlp/9nCzrTwESlBRfmy.jpg" width="100%" height="100%" title="attention" alt="attention"></p>
 {{< /split >}}
 
 
@@ -120,7 +120,7 @@ class AddNorm(nn.Module):
         return self.ln(self.dropout(Y) + X)
 ```
 
-<p align="center"><img src="https://s2.loli.net/2022/05/19/PGuYO7FWjdUTIeE.jpg" width="50%" height="50%" title="layer NM" alt="layer NM"></p>
+<p align="center"><img src="/datasets/posts/nlp/PGuYO7FWjdUTIeE.png" width="50%" height="50%" title="layer NM" alt="layer NM"></p>
 
 
 ### 3、基于位置的前馈网络

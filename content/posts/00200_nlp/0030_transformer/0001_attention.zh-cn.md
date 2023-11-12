@@ -24,11 +24,11 @@ categories: ["Basic"]
 
 
 {{< split 6 6>}}
-<p align="center"><img src="https://s2.loli.net/2022/05/15/NG8ySY5hHvCODEL.jpg" width="80%" height="80%" title="attention" alt="attention"></p>
+<p align="center"><img src="/datasets/posts/nlp/NG8ySY5hHvCODEL.png" width="80%" height="80%" title="attention" alt="attention"></p>
 在不受自我意识控制的情况下，与环境差别最大的事物，就越显眼、易见。<br>
 在受到自我意识控制的情况下，意识偏向那个，就选择那个<br>
 ---
-<p align="center"><img src="https://s2.loli.net/2022/05/15/wr6U4eubTy3fqaJ.jpg" width="100%" height="100%" title="attention" alt="attention"></p>
+<p align="center"><img src="/datasets/posts/nlp/wr6U4eubTy3fqaJ.png" width="100%" height="100%" title="attention" alt="attention"></p>
 查询(query)：自主性提示，类似于自我意识。<br>
 键(key)：非自主提示，类似于事物的突出性、易见性。<br>
 值(value)：感官输入，类似于具体的事物-值。<br>
@@ -95,7 +95,7 @@ MHA(多头注意力Multi-Head Attention) 实现方式：多路融合的SDPA，�
 在seq2seq架构中，编码器生成各个时间步的上下文变量state，最后一时间步的state作为解码器的state。然而，有个问题：在解码器 解码某个词元时，并非所有输入词元都需要，或者说并非所有输入词元的贡献都一样，肯定是有的输入词元的贡献大一些。所以，在解码时能不能让贡献大的输入词元的state权重大一些呢？<br>
 
 <a href="https://arxiv.org/abs/1409.0473" target="blank">Bahdanau</a>等人提出了一个没有严格单向对齐限制的可微注意力模型。在预测词元时，如果不是跟所有输入词元都相关，模型使用`仅跟当前预测相关的部分输入序列`。
-<p align="center"><img src="https://s2.loli.net/2022/05/16/djMJCF9H3ZLY41x.jpg" width="60%" height="60%" title="MHA" alt="MHA"></p>
+<p align="center"><img src="/datasets/posts/nlp/djMJCF9H3ZLY41x.png" width="60%" height="60%" title="MHA" alt="MHA"></p>
 
 $$c_{t'} = \sum_{t=1}^T \alpha(s_{t'-1}, h_t) h_t$$
 在解码时，需要 上一时间步的隐状态 $s_{t'-1}$ 和 上一时间步的真实值。添加attention的话，就要修改 $s_{t'-1}$，让其是 编码器各个隐状态的加权和，这就是attention的操作，即：

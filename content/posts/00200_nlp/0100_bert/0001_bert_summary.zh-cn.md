@@ -59,7 +59,7 @@ def get_tokens_and_segments(tokens_a, tokens_b=None):
         segments += [1] * (len(tokens_b) + 1)
     return tokens, segments
 ```
-<p align="center"><img src="https://s2.loli.net/2022/05/21/fzAiG9ZIhB3X1c4.jpg" width="70%" height="70%" title="input" alt="input"></p>
+<p align="center"><img src="/datasets/posts/nlp/fzAiG9ZIhB3X1c4.png" width="70%" height="70%" title="input" alt="input"></p>
 
 
 ### 2、**MLM**

@@ -50,21 +50,23 @@ socialLinks:
 # Show your badges
 # You can show your verifiable certificates from https://www.credly.com.
 # You can also show a circular bar indicating the level of expertise on a certain skill
+# "https://s2.loli.net/2022/04/25/tJ3oanYhs2lbRxm.jpg"
+# "https://s2.loli.net/2022/04/25/4rIx8lVSKicsbEv.jpg"
 badges:
+- type: certification
+  name: pinduoduo
+  url: "https://en.pinduoduo.com/"
+  badge: "/datasets/YrEABojHfGFZDP8.png"
+
 - type: certification
   name: tshinghua
   url: "https://www.ee.tsinghua.edu.cn/index.htm"
-  badge: "https://s2.loli.net/2022/04/25/tJ3oanYhs2lbRxm.jpg"
+  badge: "/datasets/tJ3oanYhs2lbRxm.png"
 
 - type: certification
   name: xidian
   url: "https://see.xidian.edu.cn/"
-  badge: "https://s2.loli.net/2022/04/25/4rIx8lVSKicsbEv.jpg"
-
-- type: certification
-  name: pinduoduo
-  url: "https://en.pinduoduo.com/"
-  badge: "https://s2.loli.net/2022/04/25/YrEABojHfGFZDP8.jpg"
+  badge: "/datasets/4rIx8lVSKicsbEv.png"
 
 - type: soft-skill-indicator
   name: DeepLearning

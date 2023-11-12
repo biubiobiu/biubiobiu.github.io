@@ -21,7 +21,7 @@ experiences:
   - designation: 算法工程师
     start: 2018年7月
     # don't provide end date if you are currently working there. It will be replaced by "Present"
-    # end: Dec 2020
+    end: 2023年9月
     # give some points about what was your responsibilities at the company.
     responsibilities:
     - 利用AI技术生成图像、文本素材

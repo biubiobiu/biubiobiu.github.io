@@ -17,6 +17,13 @@ mermaid: true
 enableEmoji: true
 ---
 
+首先区分一下：fine-tuning、prompt-tuning、instruction-tuning
+1. fine-tuning: 一般是指：SFT（superviseed fine-tuning）全参数的微调。
+2. prompt-tuning: 原模型冻结，只训练部分参数
+3. instruction-tuning：原模型不冻结，训练全部参数
+
+<p align="center"><img src="/datasets/posts/nlp/p-tuning-0.png" width=100% height=100%></p>
+
 ## 一、简介
 
 要想训练一个针对特定领域的大模型，如果采用<font color=#f00000>全量参数微调（Full Parameter Futuing）</font>的方法，一方面需要大量的高质量数据集、另一方需要较高的算力，那么，有没有不需要大量算力就能在特定领域数据上对大模型进行微调的方法呢？<br>
@@ -60,16 +67,30 @@ github: <a href="https://github.com/google-research/adapter-bert" target="bland"
 <p align="center"><img src="/datasets/posts/nlp/prefix-tuning.png" width=100% height=100%></p>
 ---
 github: <a href="https://github.com/XiangLi1999/PrefixTuning" target="bland">PrefixTuning</a> <br>
-根据<a href="https://arxiv.org/pdf/2101.00190.pdf" target="bland">《Prefix-Tuning》</a> ，前缀调整实现了与微调所有层相当的建模性能，同时只需要训练 0.1% 的参数——实验基于 GPT-2 模型。此外，在许多情况下，前缀调整甚至优于所有层的微调，这可能是因为涉及的参数较少，这有助于减少较小​​目标数据集上的过度拟合。
+根据<a href="https://arxiv.org/pdf/2101.00190.pdf" target="bland">《Prefix-Tuning》</a> ，前缀调整实现了与微调所有层相当的建模性能，同时只需要训练 0.1% 的参数——实验基于 GPT-2 模型。此外，在许多情况下，前缀调整甚至优于所有层的微调，这可能是因为涉及的参数较少，这有助于减少较小​​目标数据集上的过度拟合。<br>
+思路：<font color=#f00000>在原来模型前面，训练一些参数，让这些权重学习到根据prompt来控制模型的输出</font>。
 
 {{< /split >}}
 
 ### 3、Prompt-tuning
 
+### 4、P-tuning
+
 github: <a href="https://github.com/THUDM/P-tuning" target="bland">P-tuning</a> <br>
 论文：<a href="https://arxiv.org/pdf/2103.10385.pdf" target="bland">《GPT Understands》</a> <br>
 
 <p align="center"><img src="/datasets/posts/nlp/prompt-1.png" width=100% height=100%></p>
+
+在原输入中添加Prompt，可能会因为添加了一些词，影响模型效果。所以作者用（BiLSTM+MLP）构建了一个prompt encoder
+
+经典的Prompt tuning方式不涉及对底层模型的任何参数更新。相反，它侧重于精心制作可以指导预训练模型生成所需输出的输入提示或模板。<br>
+主要结构是
+1. 利用了一个prompt encoder（BiLSTM+MLP），将一些pseudo prompt先encode（离散token）
+2. 再与input embedding进行拼接，同时利用LSTM进行 Reparamerization 加速训练，并引入少量自然语言提示的锚字符（Anchor，例如Britain）进一步提升效果。
+3. 然后结合（capital，Britain）生成得到结果，再优化生成的encoder部分。
+
+但是P-tuning v1有两个显著缺点：任务不通用和规模不通用。在一些复杂的自然语言理解NLU任务上效果很差，同时预训练模型的参数量不能过小。
+
 
 > 1. 先将一些为prompt输入到LSTM中，用LSTM输出的向量来替换原始的Prompt token
 > 2. 然后一起输入到 预训练模型中
@@ -81,11 +102,15 @@ github: <a href="https://github.com/THUDM/P-tuning-v2" target="bland">P-Tuning v
 
 <p align="center"><img src="/datasets/posts/nlp/prompt-2.png" width=100% height=100%></p>
 
+p-tuning存在的问题：
+1. 
+
 > p-tuning的改进版：不同层中的提示作为前缀token加入到输入序列中，并独立于其他层间(而不是由之前的transformer层计算)。<br>
+> 1. 在每一层都加入了Prompts tokens作为输入，而不是仅仅加在输入层。
 > 1. 一方面，通过这种方式，P-tuning v2有更多的可优化的特定任务参数(从0.01%到0.1%-3%)，以允许更多的每个任务容量，而它仍然比完整的预训练语言模型小得多。
 > 2. 另一方面，添加到更深层的提示可以对输出预测产生更直接和重大的影响，而中间的transformer层则更少
 
-### 4、LoRA
+### 5、LoRA
 {{< split 6 6>}}
 <p align="center"><img src="/datasets/posts/nlp/lora-0.png" width=100% height=100%></p>
 ---
@@ -99,7 +124,7 @@ github: <a href="https://github.com/microsoft/LoRA" target="bland">LoRA</a> <br>
 
 {{< /split >}}
 
-### 5、随便选一些参数
+### 6、随便选一些参数
 
 **实验**：随便选一些参数作为需要更新的，其他的参数冻结。<br>
 **结果**：发现这样的结果与 全参数训练的结果也差不多。<br>

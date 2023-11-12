@@ -28,6 +28,6 @@ categories: ["Basic"]
 
 其中，$F_t, I_t, O_t, C_t, H_t, \in \R^{n \times d}$
 
-<p align="center"><img src="https://s2.loli.net/2022/05/14/1kXM3OJbFujNL5o.jpg" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/1kXM3OJbFujNL5o.jpg" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
 

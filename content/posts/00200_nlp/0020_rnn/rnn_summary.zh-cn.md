@@ -58,11 +58,11 @@ $$\frac{1}{n}\sum_{t=1}^n-log P(x_t|x_{t-1},\dots,x_1)$$
 由于历史原因，喜欢用`困惑度perplexity`来表示：
 $$exp(\frac{1}{n}\sum_{t=1}^n-log P(x_t|x_{t-1},\dots,x_1))$$
 
-<p align="center"><img src="https://s2.loli.net/2022/05/09/4jyDt6vrRQZflUI.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/4jyDt6vrRQZflUI.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
 **RNNs的应用：** 文本生成、文本分类、问答/机器翻译、Tag生成；其输入/输出形式如下：
 
-<p align="center"><img src="https://s2.loli.net/2022/05/14/hODV3ZxIwt2KXmR.jpg" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/hODV3ZxIwt2KXmR.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
 ## 三、双向循环神经网络
 **场景**：填空题，”下文“传达了重要信息，这些重要信息关乎到选择那些词来填空。<br>
@@ -74,12 +74,12 @@ $$exp(\frac{1}{n}\sum_{t=1}^n-log P(x_t|x_{t-1},\dots,x_1))$$
   1. 在任意时间步t，存在某个隐变量 $h_t$，通过概率 $P(x_t|h_t)$ 控制观测到的 $x_t$。
   2. 任何 $h_t \rarr h_{t+1}$ 转移，都是由一些状态转移概率 $P(h_{t+1}|h_t)$ 给出。
 
-<p align="center"><img src="https://s2.loli.net/2022/05/09/73mVSQq5tFzaPJ9.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/73mVSQq5tFzaPJ9.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
   3. 前向递归(forward recursion)：$\pi_{t+1} = f(\pi_t, x_t)$ 其中 $f$ 表示一些可被学习的函数。看起来就像循环神经网络中，隐变量的更新过程。这是前向计算
   4. 后向递归(backward recursion)：$\rho_{t-1} = g(\rho_t, x_t)$ 其中 $g$ 表示一些可被学习的函数。这是后向计算，知道未来数据何时可用，对隐马尔科夫模型是有益的。
 
-<p align="center"><img src="https://s2.loli.net/2022/05/09/7YVUXcxF9sebqQL.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/7YVUXcxF9sebqQL.png" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
 双向循环神经网络(bidirectional RNNs)：添加了反向传递信息的隐藏层。
   1. 在训练阶段，能够利用过去、未来的数据来估计现在空缺的词；在测试阶段，只有过去的数据，因此精度将会很差

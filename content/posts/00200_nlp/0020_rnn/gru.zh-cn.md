@@ -30,6 +30,6 @@ $$Z_t = sigmoid(X_tW_{xz}+H_{t-1}W_{hz}+b_z)$$
 $$\tilde{H_t} = tanh(X_tW_{xh} + (R_t \odot H_{t-1})W_{hh} + b_h)$$
 $$H_t = Z_t \odot H_{t-1} + (1-Z_t)\odot \tilde{H_t}$$
 
-<p align="center"><img src="https://s2.loli.net/2022/05/14/JvhC21NaOfyGjFp.jpg" width="50%" height="50%" title="hmm" alt="hmm"></p>
+<p align="center"><img src="/datasets/posts/nlp/JvhC21NaOfyGjFp.jpg" width="50%" height="50%" title="hmm" alt="hmm"></p>
 
 其中，$R_t$ ：表示`在更新候选隐状态时，需要多少历史隐状态信息`，$Z_t$ ：表示`在算真正的隐状态时，需要多少新输入的`$X_t$`的信息`，这两个的维度与隐状态是一致的。
