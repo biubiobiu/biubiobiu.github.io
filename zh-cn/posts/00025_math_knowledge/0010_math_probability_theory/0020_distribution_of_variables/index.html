@@ -50,7 +50,11 @@ F(x, y) = P[(X&lt;=x) \cap (Y&lt;=y)] \overset{\underset{\mathrm{记作}}{}}{==}
 $$
 称为二维随机变量 $(X, Y)$ 的分布函数，或称为随机变量 $X$ 和 $Y$ 的联合分布函数。<br></p><p>二维随机变量 $(X, Y)$ 作为一个整体，具有分布函数 $F(x, y)$，而 $X$ 和 $Y$ 都是随机变量，各自也有分布函数，将它们分别记为 $F_X(x), F_Y(y)$，依次称为二维随机变量 $(X, Y)$ 关于 $X$ 和 $Y$ 的 <font color=#f00000>边缘分布函数</font>，边缘分布函数可以由 $(X, Y)$ 的分布函数 $F(x, y)$ 所确定
 $$
-F_X(x) = P(X&lt;=x) = P(X&lt;=x, Y &lt; \infty) = F(x, \infty) \<br>f_X(x) = \int^\infty_{-\infty} f(x, y) dy \<br>f_Y(y) = \int^\infty_{-\infty} f(x, y) dx
+F_X(x) = P(X&lt;=x) = P(X&lt;=x, Y &lt; \infty) = F(x, \infty)
+$$
+则：
+$$
+f_X(x) = \int^\infty_{-\infty} f(x, y) dy , f_Y(y) = \int^\infty_{-\infty} f(x, y) dx
 $$
 分别称 $f_X(x), f_Y(y)$ 为 $(X, Y)$ 关于 $X$ 和 $Y$ 的边缘概率密度</p><p><strong>条件分布</strong><br></p><ol><li><p>离散型 - 条件分布律<br>设 $(X, Y)$ 是二维离散型随机变量，对于固定的 $j$，若 $P(Y = y_j)$ > 0，则称
 $$
@@ -73,31 +77,33 @@ f_Y(y) = \frac{1}{\sqrt{2\pi \sigma_2}} e^{-\frac{(y-\mu_2)^2}{2\sigma_2^2}}, -\
 $$
 <font color=#f00000>可以看到二维正态分布的两个边缘分布都是一维正态分布，并且都不依赖于参数 $\rho$。</font><br>对于给定的$\mu_1, \mu_2, \sigma_1, \sigma_2$，不同的 $\rho$ 对应不同的二维正态分布，它们的边缘分布却都一样。这说明：<font color=#f00000>单由 $X$ 和 $Y$ 的边缘分布，一般来说不能确定随机变量 $X$ 和 $Y$ 的联合分布。</font></li></ol></strong></div><h2 id=四两个随机变量的函数>四、两个随机变量的函数</h2><p>两个随机变量组成的函数，是否也是个随机变量呢？</p><h3 id=1zxy-的分布>1、$Z=X+Y$ 的分布</h3><p>设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z=X+Y$ 仍然为连续型随机变量，其概率密度为：
 $$
-f_{X+Y}(z) = \int^\infty_{-\infty} f(z-y, y) dy \<br>f_{X+Y}(z) = \int^\infty_{-\infty} f(x, z-x) dy
+f_{X+Y}(z) = \int^\infty_{-\infty} f(z-y, y) dy = \int^\infty_{-\infty} f(x, z-x) dx
 $$
 如果 $X, Y$ 相互独立，设 $(X, Y)$ 关于 $X, Y$ 的边缘密度分别为 $f_X(x), f_Y(y)$，则
 $$
-f_{X+Y}(z) = \int^\infty_{-\infty} f_X(z-y) f_Y(y) dy \<br>f_{X+Y}(z) = \int^\infty_{-\infty} f_X(x)f_Y(z-x) dx
+f_{X+Y}(z) = \int^\infty_{-\infty} f_X(z-y) f_Y(y) dy = \int^\infty_{-\infty} f_X(x)f_Y(z-x) dx
 $$
 这两个公式称为 $f_X$ 和 $f_Y$ 的卷积公式，记为 $f_X * f_Y$ 即：
 $$
 f_X * f_Y = \int^\infty_{-\infty} f_X(z-y) f_Y(y) dy = \int^\infty_{-\infty} f_X(x)f_Y(z-x) dx
 $$
-<font color=#f00000>一般，设 $X, Y$ 相互独立，且 $X \sim N(\mu_1, \sigma_1^2), Y \sim N(mu_2, \sigma_2^2)$。由于 $Z=X+Y$ 仍然服从正态分布，且有 $Z \sim N(\mu_1+\mu_2, \sigma_1^2+\sigma_2^2)$。这个结论还能推广到 n 个独立正态随机变量之和的情况，即：若 $X_i \sim N(\mu_i, \sigma_i^2)$ 且它们相互独立，则 它们的和 $Z = X_1 + X_2 + &mldr; + X_n$ 仍然服从正态分布，且有 $Z \sim N(\mu_1+\mu_2+&mldr;+\mu_n, \sigma_1^2+\sigma_1^2+&mldr;+\sigma_n^2)$</font><br><font color=#a020f0>更一般：有限个相互独立的正态随机变量的线性组合，仍然服从正态分布。</font><br></p><p><font color=#f00000>如果是，$X, Y$ 都是 $\Gamma(\alpha, \theta)$ 分布，且相互独立</font>：<br>$X$ 的分布<br>$
-f(x) = \begin{cases}
-\frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \<br>0 & 其他
-\end{cases}
-$<br>$Y$ 的分布<br>$
-f(y) = \begin{cases}
-\frac{1}{\theta^\beta \Gamma(\beta)} y^{\beta-1} e^{-y/\theta} & x > 0, \beta > 0, \theta > 0 \<br>0 & 其他
-\end{cases}
-$<br>有结论：$Z = X + Y$ 服从参数为 $\alpha + \beta, \theta$ 的 $\Gamma$ 分布，即 $X+Y \sim \Gamma(\alpha+\beta, \theta)$<br>这个结论还能推广到 $n$ 个相互独立的 $\Gamma$ 分布变量之和的情况，这一性质称为 $\Gamma$ 分布的可加性。</p><h3 id=2zfracyx-zxy的分布>2、$Z=\frac{Y}{X}, Z=XY$的分布</h3><p>设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z = \frac{Y}{X}$，$Z = YX$ 仍为连续型随机变量，其概率密度分别为：
+<font color=#f00000>一般，设 $X, Y$ 相互独立，且 $X \sim N(\mu_1, \sigma_1^2), Y \sim N(mu_2, \sigma_2^2)$。由于 $Z=X+Y$ 仍然服从正态分布，且有 $Z \sim N(\mu_1+\mu_2, \sigma_1^2+\sigma_2^2)$。这个结论还能推广到 n 个独立正态随机变量之和的情况，即：若 $X_i \sim N(\mu_i, \sigma_i^2)$ 且它们相互独立，则 它们的和 $Z = X_1 + X_2 + &mldr; + X_n$ 仍然服从正态分布，且有 $Z \sim N(\mu_1+\mu_2+&mldr;+\mu_n, \sigma_1^2+\sigma_1^2+&mldr;+\sigma_n^2)$</font><br><font color=#a020f0>更一般：有限个相互独立的正态随机变量的线性组合，仍然服从正态分布。</font><br></p><p><font color=#f00000>如果是，$X, Y$ 都是 $\Gamma(\alpha, \theta)$ 分布，且相互独立</font>：<br>$X$ 的分布<br>$$
+f(x) = \begin{cases} \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\ 0 & 其他 \end{cases}
 $$
-f_{Y/X} = \int^\infty_{-\infty} |x| f(x, xz) dx \<br>f_{XY} = \int^\infty_{-\infty} \frac{1}{|x|} f(x, \frac{z}{x}) dx
+$Y$ 的分布<br>$$
+f(y) = \begin{cases} \frac{1}{\theta^\beta \Gamma(\beta)} y^{\beta-1} e^{-y/\theta} & x > 0, \beta > 0, \theta > 0 \\ 0 & 其他 \end{cases}
+$$
+有结论：$Z = X + Y$ 服从参数为 $\alpha + \beta, \theta$ 的 $\Gamma$ 分布，即 $X+Y \sim \Gamma(\alpha+\beta, \theta)$<br>这个结论还能推广到 $n$ 个相互独立的 $\Gamma$ 分布变量之和的情况，这一性质称为 $\Gamma$ 分布的可加性。</p><h3 id=2zfracyx-zxy的分布>2、$Z=\frac{Y}{X}, Z=XY$的分布</h3><p>设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z = \frac{Y}{X}$，$Z = YX$ 仍为连续型随机变量，其概率密度分别为：<br>除：
+$$
+f_{Y/X} = \int^\infty_{-\infty} |x| f(x, xz) dx
+$$
+乘：
+$$
+f_{XY} = \int^\infty_{-\infty} \frac{1}{|x|} f(x, \frac{z}{x}) dx
 $$</p><h3 id=3mmaxx-y-nminx-y的分布>3、$M=max(X, Y); N=min(X, Y)$的分布</h3><p>设 $X, Y$ 是两个相互独立的随机变量，它们的分布函数分别为 $F_X(x)$ 和 $F_Y(y)$，现在来求 $M=max(X, Y); N=min(X, Y)$ 的分布函数。<br>$$
-P(M &lt;= z) = P(X &lt;= z, Y &lt;= z) \overset{\mathrm{相互独立}}{===} P(X &lt;= z) P(Y &lt;= z) \<br>即: F_{max}(z) = F_X(z)F_Y(z)
+P(M &lt;= z) = P(X &lt;= z, Y &lt;= z) \overset{\mathrm{相互独立}}{===} P(X &lt;= z) P(Y &lt;= z)
 $$
-类似的：
+即: $F_{max}(z) = F_X(z)F_Y(z)$<br></p><p>类似的：
 $$
 F_{min}(z) = p(N&lt;=z) = 1-P(N>z) = 1 - [1-F_X(z)][1-F_Y(z)]
 $$</p><div class=row><div class="col col-sm-12 col-lg-6"><p align=center><img src=/datasets/posts/maths/dim2_fun.png width=60% height=60%></div><div class="col col-sm-12 col-lg-6">情况1：串联的情况： $Z = min(X, Y)$<br>情况2：并联的情况： $Z = max(X, Y)$<br>情况3：备用的情况： $Z = X+Y$</div></div><h2 id=五随机变量的数字特征>五、随机变量的数字特征</h2><p>虽然有分布函数、概率密度 可以完整地描述随机变量，但是某些实际的问题中，人们感兴趣于某些能描述随机变量某一种特征的常数，比如：运动员的平均身高、棉花纤维的平均长度、以及偏离程度。<br>所以，要介绍几个重要的数字特征：<font color=#f00000>数学期望、方差、相关系数、矩</font><br></p><h3 id=1数学期望>1、数学期望</h3><blockquote><p><strong>离散型</strong>：<br><strong>定义</strong>：设离散型随机变量 $X$ 的分布律 为
@@ -173,49 +179,33 @@ E([X-E(X)]^k [Y-E(Y)]^l), k,l = 1, 2, 3, &mldr;
 $$
 存在，称它为 $X, Y$ 的 <font color=#f00000>$k+l$ 阶混合中心矩</font>。<br></p><p>显然，$X$ 的数学期望 $E(X)$ 是 $X$ 的一阶原点矩，方差 $D(X)$ 是 $X$ 的二阶中心距，协方差 $Cov(X, Y)$ 是 $X, Y$ 的二阶混合中心距。<br></p><p>二维随机变量 $(X_1, X_2)$ 有四个二阶中心矩，设它们都存在，分别记为：<br>$c_{11} = E([X_1 - E(X_1)]^2)$<br>$c_{12} = E([X_1 - E(X_1)][X_2 - E(X_2)])$<br>$c_{21} = E([X_2 - E(X_2)][X_1 - E(X_1)])$<br>$c_{22} = E([X_2 - E(X_2)]^2)$<br>将它们排成矩阵的形式：
 $$
-\begin{pmatrix}
-c_{11} & c_{12} \<br>c_{21} & c_{22}
-\end{pmatrix}
+\begin{pmatrix} c_{11} & c_{12} \\ c_{21} & c_{22} \end{pmatrix}
 $$
 这个矩阵称为随机变量 $(X_1, X_2)$ 的 <font color=#f00000>协方差矩阵</font>。<br></p><p>更为一般的 $n$ 维随机变量 $X_1, X_2, &mldr;, X_n$ 的协方差矩阵：
 $$
-\begin{pmatrix}
-c_{11} & c_{12} & &mldr; & c_{1n} \<br>c_{21} & c_{22} & &mldr; & c_{2n} \<br>\vdots & \vdots & &mldr; & \vdots \<br>c_{n1} & c_{n2} & &mldr; & c_{nn}
-\end{pmatrix}
+\begin{pmatrix} c_{11} & c_{12} & &mldr; & c_{1n} \\ c_{21} & c_{22} & &mldr; & c_{2n} \\ \vdots & \vdots & &mldr; & \vdots \\ c_{n1} & c_{n2} & &mldr; & c_{nn} \end{pmatrix}
 $$
 由于 $c_{ij} = c_{ji}, i \ne j$，所以 上述矩阵式一个对称矩阵。<br></p><p><font color=#c020f0>一般，$n$ 维随机变量的分布是不知道的，或者太复杂，以至在数学上不易处理，因此，在实际应用中协方差矩阵就显得重要了。</font><br>比如：$n$ 维正态随机变量的概率密度：<br>先看二维正态随机变量的概率密度，改写成另一种形式，以便将它推广到 $n$ 维随机变量的场合中区。
 $$
 f(x_1, x_2) = \frac{1}{2\pi\sigma_1\sigma_2 \sqrt{1-\rho^2}} exp\{ -\frac{\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}}{2(1-\rho^2)} \}
+$$</p><p>写成矩阵形式：
 $$
-写成矩阵形式：
-$$
-\mathbf{X} = \begin{pmatrix}
-x_1 \<br>x_2
-\end{pmatrix}, \mathbf{\mu} = \begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix},
-\mathbf{C} = \begin{pmatrix} c_{11} & c_{12} \\ c_{21} & c_{22} \end{pmatrix} = \begin{pmatrix} \sigma_1^2 & \rho \sigma_1 \sigma_2 \\ \rho \sigma_1 \sigma_2 & \sigma_2^2 \end{pmatrix}
-$$
-行列式 $det \mathbf{C} = \sigma_1^2 \sigma_2^2 (1-\rho^2)$，$\mathbf{C}$ 的逆矩阵：
+\mathbf{X} = \begin{pmatrix} x_1 \\ x_2 \end{pmatrix}, \mathbf{\mu} = \begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}, \mathbf{C} = \begin{pmatrix} c_{11} & c_{12} \\ c_{21} & c_{22} \end{pmatrix} = \begin{pmatrix} \sigma_1^2 & \rho \sigma_1 \sigma_2 \\ \rho \sigma_1 \sigma_2 & \sigma_2^2 \end{pmatrix}
+$$</p><p>行列式 $det \mathbf{C} = \sigma_1^2 \sigma_2^2 (1-\rho^2)$，$\mathbf{C}$ 的逆矩阵：
 $$
 \mathbf{C^{-1}} = \frac{1}{det \mathbf{C}} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix}
+$$</p><p>开始变换矩阵形式：
 $$
-开始变换矩阵形式：
-$$
-(\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \<br>= \frac{1}{det \mathbf{C}} \begin{pmatrix} x_1 - \mu_1 & x_2 - \mu_2 \end{pmatrix} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix} \begin{pmatrix} x_1 - \mu_1 \\ x_2 - \mu_2 \end{pmatrix} \<br>= \frac{1}{1-\rho^2} [\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}]
-$$
-于是 $X_1, X_2$ 的概率密度可以写成：
+(\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \\ = \frac{1}{det \mathbf{C}} \begin{pmatrix} x_1 - \mu_1 & x_2 - \mu_2 \end{pmatrix} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix} \begin{pmatrix} x_1 - \mu_1 \\ x_2 - \mu_2 \end{pmatrix} \\ = \frac{1}{1-\rho^2} [\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}]
+$$</p><p>于是 $X_1, X_2$ 的概率密度可以写成：
 $$
 f(x_1, x_2) = \frac{1}{(2\pi)^{2/2} (det \mathbf{C})^{1/2}} exp\{ -\frac{1}{2} (\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \}
 $$</p><p><font color=#f00000>推广到 $n$ 维正态随机变量</font>：
 $$
 f(x_1, x_1, &mldr;, x_n) = \frac{1}{(2\pi)^{n/2} (det \mathbf{C})^{1/2}} exp\{ -\frac{1}{2} (\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \}
+$$</p><p>其中
 $$
-其中
-$$
-\mathbf{X} = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix},
-\mathbf{\mu} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix},
-\mathbf{C} = \begin{pmatrix}
-c_{11} & c_{12} & &mldr; & c_{1n} \<br>c_{21} & c_{22} & &mldr; & c_{2n} \<br>\vdots & \vdots & &mldr; & \vdots \<br>c_{n1} & c_{n2} & &mldr; & c_{nn}
-\end{pmatrix}
+\mathbf{X} = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}, \mathbf{\mu} = \begin{pmatrix} \mu_1 \\ \mu_2 \\ \vdots \\ \mu_n \end{pmatrix}, \mathbf{C} = \begin{pmatrix} c_{11} & c_{12} & &mldr; & c_{1n} \\ c_{21} & c_{22} & &mldr; & c_{2n} \\ \vdots & \vdots & &mldr; & \vdots \\ c_{n1} & c_{n2} & &mldr; & c_{nn} \end{pmatrix}
 $$</p></strong></div><hr><div class="alert alert-success"><strong><p>$n$ 维正态随机变量具有以下四条重要性质：</p><ol><li><p>$n$ 维正态随机变量 $X_1, X_2, &mldr;, X_n$ 的每一个分量 $X_i$ 都是正态随机变量，反之，若 $X_1, X_2, &mldr;, X_n$ 都是正态随机变量，且相互独立，则$X_1, X_2, &mldr;, X_n$ 是 $n$ 维正态随机变量。</p></li><li><p>$n$ 维正态随机变量 $X_1, X_2, &mldr;, X_n$ 服从 $n$ 维正态分布的充要条件是 $X_1, X_2, &mldr;, X_n$ 的任意的线性组合
 $$
 l_1 X_1 + l_2 X_2 + &mldr; + l_n X_n
