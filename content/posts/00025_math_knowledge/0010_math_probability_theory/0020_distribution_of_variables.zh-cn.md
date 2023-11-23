@@ -98,12 +98,10 @@ $$
 
 2. 指数分布 <font color=#f00000>期望：$\theta，方差：\theta^2$</font><br>
 若连续型随机变量 $X$ 的概率密度为：<br>
-$
-f(x) = \begin{cases}
-   \frac{1}{\theta} e^{-x/\theta} & x > 0 \\\
-   0 & 其他
-\end{cases}
-$  <br>
+$$
+f(x) = \begin{cases} \frac{1}{\theta} e^{-x/\theta} & x > 0 \\\ 0 & 其他 \end{cases}
+$$
+
 其中，$\theta > 0$ 为常数，则称 $X$ 服从参数为 $\theta$ 的指数分布。<br>
 <font color=#f00000>属性</font>：无记忆性。$P(X > s+t | X > s) = P(X > t)$，即：$X$ 表示一元件的寿命。已知元件已经使用 s 小时，它总共能使用至少 s+t 小时的条件概率，与从开始使用时算起它至少能使用 t 小时的概率相等。也就是说，元件对它已使用过 s 小时没有记忆。
 
@@ -120,12 +118,10 @@ $$
   <p align="center"><img src="/datasets/posts/maths/gass_n.png" width=100% height=100%></p>
 
 4. $\Gamma$ 分布 $\textcolor{#f00000} {X \sim \Gamma(\alpha, \theta)}$ <br>
-$
-f(x) = \begin{cases}
-   \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\\
-   0 & 其他
+$$
+f(x) = \begin{cases} \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\\ 0 & 其他
 \end{cases}
-$ 
+$$
 
 {{< /alert >}}
 
@@ -140,12 +136,9 @@ $
 {{< alert type="info" >}}
 **定理**：<br>
 设随机变量 $X$ 具有概率密度 $f_x(x), -\infty < x < \infty$，又设函数 $y = g(x)$ 处处可导且<font color=#f00000>恒有 $g'(x) > 0$ 或者 恒有 $g'(x) < 0$，</font>则 $Y = g(X)$ 是连续型随机变量，其概率密度为<br>
-$
-f_y(y) = \begin{cases}
-  f_x[h(y)]|h'(y)| & a < y < b> \\\
-   0 & 其他
-\end{cases}
-$ 
+$$
+f_y(y) = \begin{cases} f_x[h(y)]|h'(y)| & a < y < b> \\\ 0 & 其他 \end{cases}
+$$ 
 其中，$a = min(g(-\infty), g(\infty)), b = max(g(-\infty), g(\infty))$，$h(y)$ 是 $g(x)$ 的反函数。
 
 
