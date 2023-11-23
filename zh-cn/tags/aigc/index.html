@@ -14,7 +14,23 @@ ChatGLM2-6B： ChatGLM2-6B 是开源中英双语对话模型 ChatGLM-6B 的第�
 二、网络结构</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
 <a href=/zh-cn/posts/00300_aigc/0010_generate_text/0030_claude/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0010_generate_text/0035_cohere/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>Cohere</h5><p class="card-text post-summary">一、简介 二、网络结构</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
 <a href=/zh-cn/posts/00300_aigc/0010_generate_text/0035_cohere/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0020_generate_image/1010_dall_e/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>DALL-E</h5><p class="card-text post-summary">一、简介 It is coming soon.</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
-<a href=/zh-cn/posts/00300_aigc/0020_generate_image/1010_dall_e/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0020_generate_image/1020_diffusion/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>Diffusion</h5><p class="card-text post-summary">一、简介 It is coming soon.</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
+<a href=/zh-cn/posts/00300_aigc/0020_generate_image/1010_dall_e/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0020_generate_image/1020_diffusion/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>Diffusion</h5><p class="card-text post-summary">一、简介 Diffusion 过程：每一步添加一次noise，经过很多步后，图片就接近白噪声了。
+但是，我们的目的是：从白噪声中，根据输入的文字描述，生成一张图片。是上面Diffusion过程的逆过程。
+所以，根据Diffusion过程生成训练数据，然后训练一个：noise 生成器
+从noise中生成图片的过程，也是一步一步删除noise的过程。
+所以，训练一个noise 生成器，根据输入的图片、步数，生成图片中的噪声，然后减去输入图片中的这部分噪声，就是去除噪声的图片。
+为啥设计个 noise 生成器，而不是直接设计个图片生成器？
+noise 生成器：生成噪声，总比一步生成最终的优质图片要容易得多。 需要根据输入的文字描述，来生成相应的图片，那么文字特征是怎么输入的呢？
+在 noise 生成器 中添加一个文本输入。 二、Diffusion Model Diffusion 的常用范式：
+文本编码器 生成模型：产出中间产物（图片的压缩版本） 图像解码器：生成高质量的图片 文本编码器：
+可以是 《CLIP》 生成模型：
+在对图片做Diffusion时，是对图片不断地添加noise。
+对于生成模型，是对latent representation 不断地添加noise。
+所以，在真实的生成模块里，是对latent representation 不断地删除噪声，生成可用的中间产物。
+图像编码器：
+-- 图像编码器，可以是把低分辨率的小图，生成高分辨率的大图，如下图：
+也可以是，把中间产物，生成高分辨率的大图，如下图：
+1、Stable Diffusion 《Stable Diffusion》 2、DALL-E 《Hierarchical Text-Conditional Image Generation with CLIP Latents》 《Zero-Shot Text-to-Image Generation》 3、Imagen Imagen Home 《Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding》 三、评估指标 a.</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
 <a href=/zh-cn/posts/00300_aigc/0020_generate_image/1020_diffusion/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0010_generate_text/0040_falcon/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>Falcon</h5><p class="card-text post-summary">一、简介 二、网络结构</p></div><div class=card-footer><span class=float-left>August 5, 2023</span>
 <a href=/zh-cn/posts/00300_aigc/0010_generate_text/0040_falcon/ class="float-right btn btn-outline-info btn-sm">阅读</a></div></div></a></div><div class=post-card><a href=/zh-cn/posts/00300_aigc/0020_generate_image/1002_gan_summary/ class=post-card-link><div class=card><div class=card-head><img class=card-img-top src=/images/default-hero.jpg alt="Hero Image"></div><div class=card-body><h5 class=card-title>GAN</h5><p class="card-text post-summary">一、简介 Discriminator
 Generator
