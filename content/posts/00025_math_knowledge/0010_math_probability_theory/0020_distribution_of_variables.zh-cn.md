@@ -159,9 +159,11 @@ $$
 
 二维随机变量 $(X, Y)$ 作为一个整体，具有分布函数 $F(x, y)$，而 $X$ 和 $Y$ 都是随机变量，各自也有分布函数，将它们分别记为 $F_X(x), F_Y(y)$，依次称为二维随机变量 $(X, Y)$ 关于  $X$ 和 $Y$ 的 <font color=#f00000>边缘分布函数</font>，边缘分布函数可以由 $(X, Y)$ 的分布函数 $F(x, y)$ 所确定
 $$
-F_X(x) = P(X<=x) = P(X<=x, Y < \infty) = F(x, \infty) \\\
-f_X(x) = \int^\infty_{-\infty} f(x, y) dy \\\
-f_Y(y) = \int^\infty_{-\infty} f(x, y) dx
+F_X(x) = P(X<=x) = P(X<=x, Y < \infty) = F(x, \infty)
+$$
+则：
+$$
+f_X(x) = \int^\infty_{-\infty} f(x, y) dy , f_Y(y) = \int^\infty_{-\infty} f(x, y) dx 
 $$
 分别称 $f_X(x), f_Y(y)$ 为 $(X, Y)$ 关于 $X$ 和 $Y$ 的边缘概率密度
 
@@ -207,13 +209,11 @@ $$
 ### 1、$Z=X+Y$ 的分布
 设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z=X+Y$ 仍然为连续型随机变量，其概率密度为：
 $$
-f_{X+Y}(z) = \int^\infty_{-\infty} f(z-y, y) dy \\\
-f_{X+Y}(z) = \int^\infty_{-\infty} f(x, z-x) dy
+f_{X+Y}(z) = \int^\infty_{-\infty} f(z-y, y) dy  = \int^\infty_{-\infty} f(x, z-x) dx
 $$
 如果 $X, Y$ 相互独立，设 $(X, Y)$ 关于 $X, Y$ 的边缘密度分别为 $f_X(x), f_Y(y)$，则
 $$
-f_{X+Y}(z) = \int^\infty_{-\infty} f_X(z-y) f_Y(y) dy \\\
-f_{X+Y}(z) = \int^\infty_{-\infty} f_X(x)f_Y(z-x) dx
+f_{X+Y}(z) = \int^\infty_{-\infty} f_X(z-y) f_Y(y) dy  = \int^\infty_{-\infty} f_X(x)f_Y(z-x) dx
 $$
 这两个公式称为 $f_X$ 和 $f_Y$ 的卷积公式，记为 $f_X * f_Y$ 即：
 $$
@@ -224,26 +224,24 @@ $$
 
 <font color=#f00000>如果是，$X, Y$ 都是 $\Gamma(\alpha, \theta)$ 分布，且相互独立</font>：<br>
 $X$ 的分布 <br>
-$
-f(x) = \begin{cases}
-   \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\\
-   0 & 其他
-\end{cases}
-$ <br>
+$$
+f(x) = \begin{cases} \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\\ 0 & 其他 \end{cases}
+$$
 $Y$ 的分布 <br>
-$
-f(y) = \begin{cases}
-   \frac{1}{\theta^\beta \Gamma(\beta)} y^{\beta-1} e^{-y/\theta} & x > 0, \beta > 0, \theta > 0 \\\
-   0 & 其他
-\end{cases}
-$ <br>
+$$
+f(y) = \begin{cases} \frac{1}{\theta^\beta \Gamma(\beta)} y^{\beta-1} e^{-y/\theta} & x > 0, \beta > 0, \theta > 0 \\\ 0 & 其他 \end{cases}
+$$
 有结论：$Z = X + Y$ 服从参数为 $\alpha + \beta, \theta$ 的 $\Gamma$ 分布，即 $X+Y \sim \Gamma(\alpha+\beta, \theta)$ <br>
 这个结论还能推广到 $n$ 个相互独立的 $\Gamma$ 分布变量之和的情况，这一性质称为 $\Gamma$ 分布的可加性。
 
 ### 2、$Z=\frac{Y}{X}, Z=XY$的分布
-设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z = \frac{Y}{X}$，$Z = YX$ 仍为连续型随机变量，其概率密度分别为：
+设 $(X, Y)$ 是二维连续型随机变量，它具有概率密度 $f(x, y)$，则 $Z = \frac{Y}{X}$，$Z = YX$ 仍为连续型随机变量，其概率密度分别为：<br>
+除：
 $$
-f_{Y/X} = \int^\infty_{-\infty} |x| f(x, xz) dx \\\
+f_{Y/X} = \int^\infty_{-\infty} |x| f(x, xz) dx
+$$
+乘：
+$$
 f_{XY} = \int^\infty_{-\infty} \frac{1}{|x|} f(x, \frac{z}{x}) dx
 $$
 
@@ -251,9 +249,10 @@ $$
 ### 3、$M=max(X, Y); N=min(X, Y)$的分布
 设 $X, Y$ 是两个相互独立的随机变量，它们的分布函数分别为 $F_X(x)$ 和 $F_Y(y)$，现在来求 $M=max(X, Y); N=min(X, Y)$ 的分布函数。<br>
 $$
-P(M <= z) = P(X <= z, Y <= z) \overset{\mathrm{相互独立}}{===} P(X <= z) P(Y <= z) \\\
-即: F_{max}(z) = F_X(z)F_Y(z)
+P(M <= z) = P(X <= z, Y <= z) \overset{\mathrm{相互独立}}{===} P(X <= z) P(Y <= z)
 $$
+即: $F_{max}(z) = F_X(z)F_Y(z)$ <br>
+
 类似的：
 $$
 F_{min}(z) = p(N<=z) = 1-P(N>z) = 1 - [1-F_X(z)][1-F_Y(z)]
@@ -446,21 +445,13 @@ $c_{21} = E([X_2 - E(X_2)][X_1 - E(X_1)])$ <br>
 $c_{22} = E([X_2 - E(X_2)]^2)$ <br>
 将它们排成矩阵的形式：
 $$
-\begin{pmatrix}
-   c_{11} & c_{12} \\\
-   c_{21} & c_{22}
-\end{pmatrix}
+\begin{pmatrix} c_{11} & c_{12} \\\ c_{21} & c_{22} \end{pmatrix}
 $$
 这个矩阵称为随机变量 $(X_1, X_2)$ 的 <font color=#f00000>协方差矩阵</font>。 <br>
 
 更为一般的 $n$ 维随机变量 $X_1, X_2, ..., X_n$ 的协方差矩阵：
 $$
-\begin{pmatrix}
-   c_{11} & c_{12} & ... & c_{1n} \\\
-   c_{21} & c_{22} & ... & c_{2n} \\\
-   \vdots & \vdots & ... & \vdots \\\
-   c_{n1} & c_{n2} & ... & c_{nn}
-\end{pmatrix}
+\begin{pmatrix} c_{11} & c_{12} & ... & c_{1n} \\\ c_{21} & c_{22} & ... & c_{2n} \\\ \vdots & \vdots & ... & \vdots \\\ c_{n1} & c_{n2} & ... & c_{nn} \end{pmatrix}
 $$
 由于 $c_{ij} = c_{ji}, i \ne j$，所以 上述矩阵式一个对称矩阵。<br>
 
@@ -470,24 +461,22 @@ $$
 $$
 f(x_1, x_2) = \frac{1}{2\pi\sigma_1\sigma_2 \sqrt{1-\rho^2}} exp\\{ -\frac{\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}}{2(1-\rho^2)} \\}
 $$
+
 写成矩阵形式：
 $$
-\mathbf{X} = \begin{pmatrix}
-x_1 \\\
-x_2 
-\end{pmatrix}, \mathbf{\mu} = \begin{pmatrix} \mu_1 \\\ \mu_2 \end{pmatrix}, 
-\mathbf{C} = \begin{pmatrix} c_{11} & c_{12} \\\ c_{21} & c_{22} \end{pmatrix} = \begin{pmatrix} \sigma_1^2 & \rho \sigma_1 \sigma_2 \\\ \rho \sigma_1 \sigma_2 & \sigma_2^2 \end{pmatrix}
+\mathbf{X} = \begin{pmatrix} x_1 \\\ x_2 \end{pmatrix}, \mathbf{\mu} = \begin{pmatrix} \mu_1 \\\ \mu_2 \end{pmatrix}, \mathbf{C} = \begin{pmatrix} c_{11} & c_{12} \\\ c_{21} & c_{22} \end{pmatrix} = \begin{pmatrix} \sigma_1^2 & \rho \sigma_1 \sigma_2 \\\ \rho \sigma_1 \sigma_2 & \sigma_2^2 \end{pmatrix}
 $$
+
 行列式 $det \mathbf{C} = \sigma_1^2 \sigma_2^2 (1-\rho^2)$，$\mathbf{C}$ 的逆矩阵：
 $$
 \mathbf{C^{-1}} = \frac{1}{det \mathbf{C}} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix}
 $$
+
 开始变换矩阵形式：
 $$
-(\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \\\
-= \frac{1}{det \mathbf{C}} \begin{pmatrix} x_1 - \mu_1 & x_2 - \mu_2 \end{pmatrix} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix} \begin{pmatrix} x_1 - \mu_1 \\\ x_2 - \mu_2 \end{pmatrix} \\\
-= \frac{1}{1-\rho^2} [\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}]
+(\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \\\ = \frac{1}{det \mathbf{C}} \begin{pmatrix} x_1 - \mu_1 & x_2 - \mu_2 \end{pmatrix} \begin{pmatrix} \sigma_2^2 & -\rho \sigma_1 \sigma_2 \\\ -\rho \sigma_1 \sigma_2 & \sigma_1^2 \end{pmatrix} \begin{pmatrix} x_1 - \mu_1 \\\ x_2 - \mu_2 \end{pmatrix} \\\ = \frac{1}{1-\rho^2} [\frac{(x_1-\mu_1)^2}{\sigma_1^2} - 2\rho \frac{(x_1 - \mu_1)(x_2 - \mu_2)}{\sigma_1 \sigma_2} + \frac{(x_2 - \mu_2)^2}{\sigma_2^2}]
 $$
+
 于是 $X_1, X_2$ 的概率密度可以写成：
 $$
 f(x_1, x_2) = \frac{1}{(2\pi)^{2/2} (det \mathbf{C})^{1/2}} exp\\{ -\frac{1}{2} (\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \\}
@@ -497,16 +486,10 @@ $$
 $$
 f(x_1, x_1, ..., x_n) = \frac{1}{(2\pi)^{n/2} (det \mathbf{C})^{1/2}} exp\\{ -\frac{1}{2} (\mathbf{X - \mu})^T \mathbf{C}^{-1} (\mathbf{X - \mu}) \\}
 $$
+
 其中
 $$
-\mathbf{X} = \begin{pmatrix} x_1 \\\ x_2 \\\ \vdots \\\ x_n \end{pmatrix}, 
-\mathbf{\mu} = \begin{pmatrix} \mu_1 \\\ \mu_2 \\\ \vdots \\\ \mu_n \end{pmatrix}, 
-\mathbf{C} = \begin{pmatrix}
-   c_{11} & c_{12} & ... & c_{1n} \\\
-   c_{21} & c_{22} & ... & c_{2n} \\\
-   \vdots & \vdots & ... & \vdots \\\
-   c_{n1} & c_{n2} & ... & c_{nn}
-\end{pmatrix}
+\mathbf{X} = \begin{pmatrix} x_1 \\\ x_2 \\\ \vdots \\\ x_n \end{pmatrix},  \mathbf{\mu} = \begin{pmatrix} \mu_1 \\\ \mu_2 \\\ \vdots \\\ \mu_n \end{pmatrix}, \mathbf{C} = \begin{pmatrix} c_{11} & c_{12} & ... & c_{1n} \\\ c_{21} & c_{22} & ... & c_{2n} \\\ \vdots & \vdots & ... & \vdots \\\ c_{n1} & c_{n2} & ... & c_{nn} \end{pmatrix}
 $$
 
 {{< /alert >}}
