@@ -92,12 +92,9 @@ $$
 **常见连续型随机分布** <br>
 
 1. 均匀分布 $  \textcolor{#f00000} {X \sim U(a, b)，期望：\frac{a+b}{2}，方差：\frac{(b-a)^2}{12}}$<br>
-$
-f(x) = \begin{cases}
-   \frac{1}{b-a} &a<x<b \\\
-   0 & 其他
-\end{cases}
-$
+$$
+f(x) = \begin{cases} \frac{1}{b-a} & a<x<b \\\ 0 & 其他 \end{cases}
+$$
 
 2. 指数分布 <font color=#f00000>期望：$\theta，方差：\theta^2$</font><br>
 若连续型随机变量 $X$ 的概率密度为：<br>
