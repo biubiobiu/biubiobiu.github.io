@@ -122,6 +122,7 @@ $$
 f(x) = \begin{cases} \frac{1}{\theta^\alpha \Gamma(\alpha)} x^{\alpha-1} e^{-x/\theta} & x > 0, \alpha > 0, \theta > 0 \\\ 0 & 其他
 \end{cases}
 $$
+其中，数学期望：$E(X) = \alpha \theta$，方差：$Var(X) = \alpha \theta^2$
 
 {{< /alert >}}
 
