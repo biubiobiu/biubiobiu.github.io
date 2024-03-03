@@ -12,11 +12,11 @@ section:
 # Your experiences
 experiences:
 - company:
-    name: 拼多多
+    name: A Company
     url: "https://www.example.com"
     location: 中国 上海
     # company overview
-    overview: 拼多多 是一家拼购式电商公司。
+    overview: 一家电商公司。
   positions:
   - designation: 算法工程师
     start: 2018年7月

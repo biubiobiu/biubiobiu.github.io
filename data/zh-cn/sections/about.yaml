@@ -11,8 +11,8 @@ section:
 designation: 算法工程师
 # your company information
 company:
-  name: 拼多多
-  url: "https://en.pinduoduo.com/"
+  name: A Company
+  url: "https://www.example.com"
 
 # your resume. this file path should be relative to you "static" directory
 resume: "files/resume.pdf"
@@ -54,8 +54,8 @@ socialLinks:
 # "https://s2.loli.net/2022/04/25/4rIx8lVSKicsbEv.jpg"
 badges:
 - type: certification
-  name: pinduoduo
-  url: "https://en.pinduoduo.com/"
+  name: pdd
+  url: "https://www.example.com"
   badge: "/datasets/YrEABojHfGFZDP8.png"
 
 - type: certification
