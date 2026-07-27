@@ -1,0 +1,2869 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Word Embedding综述</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/css/layouts/main.css?v=20260727-5"/>
+<link rel="stylesheet" href="/css/navigators/navbar.css?v=20260727-7"/>
+<link rel="stylesheet" href="/css/plyr.css"/>
+<link rel="stylesheet" href="/css/flag-icon.min.css"/>
+
+
+<link rel="stylesheet" href="/fontawesome/css/all.min.css"/>
+
+
+
+<link rel="stylesheet" href="/css/colortheme/colortheme.css"/>
+
+
+
+
+
+  
+
+  
+  
+  
+    
+  
+  
+
+  <link rel="icon" type="image/png" href="/images/site/favicon_hu0d88336a9cbd3e68c7714efae786b0a9_38044_42x0_resize_box_3.png" />
+
+<meta property="og:title" content="Word Embedding综述" />
+<meta property="og:description" content="一、word embedding 词向量：是用来表示词的向量或者表征，也可被认为是词的特征向量。把词映射为实数域向量的技术 &ndash; 词嵌入(word embedding)
+最简单的方式：one-hot向量。
+词库里假设有N个词，对所有词排序，用0~N-1作为每个词的索引。 每个词的one-hot向量：长度为N，在该次索引的位置为1，其他位置都是0 缺点：one-hot向量，不能表征两个词的相似度。比如我们常用余弦相似度，one-hot的向量都是相互垂直的。
+词嵌入是一种无监督学习。机器通过阅读大量的文章来学习的单词的意思，通过上下文信息来理解一个单词。怎么挖掘上下文信息：
+Count-based method。认为如果两个单词一起出现的频率很高，那么它们的word embedding feature应该很接近彼此，二者的内积就越接近这两个的单词在同一篇文章中出现的次数。GloVe 就是一种count-based的算法。 prediction-based method. ski-gram 和 CBOW 就是这种算法。 二、Count-based method 1、GloVe 《GloVe: Global Vectors for Word Representation》 上下文窗口内的词共现可以携带丰富的语义信息。例如，在一个大型语料库中，“固体”比“气体”更有可能与“冰”共现，但“气体”一词与“蒸汽”的共现频率可能比与“冰”的共现频率更高。此外，可以预先计算此类共现的全局语料库统计数据：这可以提高训练效率。
+GloVe模型基于平方损失 (Pennington et al., 2014)对跳元模型做了三个修改：
+使用变量 $p_{ij} = x_{ij}$ 和 $q_{ij} = e^{(u^T_j v_i)}$ 而非概率分布，并取两者的对数。所以平方损失项是 $(log p_{ij} - log q_{ij})^2 = (u^T_j v_i - log x_{ij})^2$ 为每个词 $w_i$ 添加两个标量模型参数：中心词偏置 $b_i$ 和上下文词偏置 $c_i$。 用权重函数 $h(x_{ij})$ 替换每个损失项的权重，其中 $h(x)$ 在 $[0, 1]$ 的间隔内递增。 整合代码，训练GloVe是为了尽量降低以下损失函数： $$ \sum_{i \in V} \sum_{j \in V} h(x_{ij})(u^T_j v_i &#43; b_i &#43; c_j - log x_{ij})^2 $$" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://biubiobiu.github.io/zh-cn/posts/word-embedding%E7%BB%BC%E8%BF%B0/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2021-09-08T06:00:20+08:00" />
+<meta property="article:modified_time" content="2021-09-08T06:00:20+08:00" />
+
+
+
+    
+    
+<meta name="description" content="Word Embedding综述" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/css/layouts/single.css?v=20260727-3"/>
+<link rel="stylesheet" href="/css/navigators/sidebar.css?v=20260727-1">
+
+<link rel="stylesheet" href="/css/style.css"/>
+<link rel="stylesheet" href="/css/layouts/post-sidebar-resizer.css?v=20260727-3"/>
+
+
+
+    
+
+
+
+
+
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+  
+  
+    
+  
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/zh-cn">
+      
+        <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" alt="Logo">
+      biubiobiu&#39;s Blog</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link primary-nav-link nav-home" href="/zh-cn">主页</a>
+        </li>
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-about" href="/zh-cn#about">关于</a>
+              </li>
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-skills" href="/zh-cn#skills">技能</a>
+              </li>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-recent-posts" href="/zh-cn#recent-posts">最新博客</a>
+              </li>
+            
+          
+            
+          
+            
+          
+        
+
+        
+        
+          <div class="dropdown-divider" id="top-navbar-divider"></div>
+        
+
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-posts active" id="blog-link" href="/zh-cn/posts">博文</a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-notes" id="note-link" href="/zh-cn/notes">笔记</a>
+          </li>
+        
+        
+          
+            <li class="nav-item">
+              <a class="nav-link primary-nav-link nav-docs" href="/zh-cn/docs/">文档</a>
+            </li>
+          
+        
+
+      
+      
+        <li class="nav-item dropdown">
+
+<div id="theme-initialization" style="display: none;"
+  default-theme="system"></div>
+<a class="nav-link dropdown-toggle"  href="#" id="themeSelector" role="button"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <img id="navbar-theme-icon-svg" src="/icons/moon-svgrepo-com.svg" width=20>
+</a>
+<div class="dropdown-menu dropdown-menu-icons-only" aria-labelledby="themeSelector">
+  <a class="dropdown-item nav-link" href="#" onclick="enableLightTheme()">
+    <img class="menu-icon-center" src="/icons/sun-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="enableDarkTheme()">
+    <img class="menu-icon-center" src="/icons/moon-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="useSystemTheme()">
+    <img class="menu-icon-center" src="/icons/computer-svgrepo-com.svg" width=20>
+  </a>
+</div>
+</li>
+      
+      </ul>
+    </div>
+  </div>
+  
+  
+    <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" class="d-none" id="main-logo" alt="Logo">
+  
+  
+    <img src="/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_3.png" class="d-none" id="inverted-logo" alt="Inverted Logo">
+  
+</nav>
+
+
+
+      
+      
+  <section class="sidebar-section post-sidebar-resizable" id="sidebar-section">
+    <div class="sidebar-holder">
+      <div class="post-sidebar-toolbar">
+        <button
+          class="post-sidebar-toggle"
+          id="post-sidebar-toggle"
+          type="button"
+          aria-controls="post-sidebar-content"
+          aria-expanded="true"
+          aria-label="收起左侧目录"
+        >
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          <span>收起目录</span>
+        </button>
+      </div>
+      <div class="sidebar post-sidebar-content" id="post-sidebar-content">
+        <form class="mx-auto" method="get" action="/zh-cn/search">
+          <input type="text" name="keyword" value="" placeholder="搜索" data-search="" id="search-box" />
+        </form>
+        <div class="sidebar-tree">
+          <ul class="tree" id="tree">
+            <li id="list-heading"><a href="/zh-cn/posts" data-filter="all">博文</a></li>
+            <div class="subtree">
+                
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/toha-tutorial/">Toha教程</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/toha%E7%9A%84%E9%85%8D%E7%BD%AE/" title="Toha的配置">Toha的配置</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%92%B0%E5%86%99%E6%96%87%E7%AB%A0/" title="撰写文章">撰写文章</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/" title="MarkDown入门">MarkDown入门</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/katex%E5%85%AC%E5%BC%8F/" title="Katex公式">Katex公式</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%8C%BA%E5%9F%9F%E5%9D%97-%E5%AE%9E%E4%BE%8B/" title="区域块-实例">区域块-实例</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math/">数学知识</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-probability/">概率论</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/probability-basics/" title="基本概念">基本概念</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E5%8F%8A%E5%85%B6%E5%88%86%E5%B8%83/" title="随机变量及其分布">随机变量及其分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A4%A7%E6%95%B0%E5%AE%9A%E5%BE%8B/" title="大数定律">大数定律</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A0%B7%E6%9C%AC%E5%8F%8A%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83/" title="样本及抽样分布">样本及抽样分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" title="假设检验">假设检验</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E5%8F%8A%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" title="方差分析及回归分析">方差分析及回归分析</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="随机过程">随机过程</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE/" title="马尔科夫链">马尔科夫链</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B3%E7%A8%B3%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="平稳随机过程">平稳随机过程</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-convex/">凸优化</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/convex-optimization-basics/" title="基本概念">基本概念</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/deep-learning/">深度学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%BC%80%E7%AF%87/" title="深度学习开篇">深度学习开篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BB%93%E6%9E%84/" title="深度学习-结构">深度学习-结构</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BD%92%E4%B8%80%E5%8C%96/" title="归一化">归一化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9D%E5%A7%8B%E5%8C%96/" title="初始化">初始化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%94%BB%E5%9B%BE%E7%AF%87/" title="神经网络画图篇">神经网络画图篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cam/" title="CAM">CAM</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/reinforcement-learning/">强化学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/reinforce-overview/" title="综述">综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/programming/">编程语言</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python/">Python</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-env/">env</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/py-env/" title="py-env">py-env</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cuda/" title="cuda">cuda</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-internal/">Internal</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/" title="字符编码">字符编码</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/python-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97/" title="内置模块">内置模块</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/" title="进阶操作">进阶操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BC%82%E5%B8%B8/" title="异常">异常</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96/" title="文件读取">文件读取</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-sdk/">SDK</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B6%E8%A1%8C%E6%93%8D%E4%BD%9C/" title="并行操作">并行操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/importlib%E5%8C%85/" title="importlib">importlib</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ipdb%E5%8C%85/" title="ipdb">ipdb</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99/" title="正则-re">正则-re</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A0%86-heapq/" title="堆-heapq">堆-heapq</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/requests/" title="requests">requests</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/logging/" title="logging">logging</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/argparse/" title="argparse">argparse</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pil/" title="PIL">PIL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/opencv/" title="OpenCV">OpenCV</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow/">TensorFlow</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow-compat/">兼容1.x</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9D%99%E6%80%81%E5%9B%BE/" title="静态图">静态图</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensorflow-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/pytorch/">PyTorch</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/" title="数学计算">数学计算</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensor%E5%92%8C%E5%8F%98%E9%87%8F/" title="Tensor和变量">Tensor和变量</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet/">MxNet</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet-ndarray/">NdArray</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ndarray%E4%BD%BF%E7%94%A8/" title="NdArray使用">NdArray使用</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/database/">数据库</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mysql/" title="MySQL">MySQL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hive/">Hive</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9B%E5%BB%BA%E5%BA%93/%E8%A1%A8/" title="创建库/表">创建库/表</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0/" title="常见函数">常见函数</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="常用操作">常用操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="数据类型">数据类型</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/" title="正则匹配">正则匹配</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv/">CV</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-backbone/">基础</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cnn/" title="CNN">CNN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/optimizer/" title="optimizer">optimizer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/backbone-net/" title="backbone net">backbone net</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-contrastive-learning/">对比学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/contrastive-learning/" title="contrastive learning">contrastive learning</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-vision-transformer/">ViT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vision-transformer/" title="vision transformer">vision transformer</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-detect/">目标检测</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/object-detection-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-segment/">语义分割</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/semantic-segmentation-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-matting/">抠图</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/" title="抠图综述">抠图综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/animal-matting/" title="animal matting">animal matting</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/nlp/">NLP</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/word-embedding/">Word Embedding</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li><a class="active" href="/zh-cn/posts/word-embedding%E7%BB%BC%E8%BF%B0/" title="Word Embedding综述">Word Embedding综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/rnn/">RNN</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/rnn%E7%BB%BC%E8%BF%B0/" title="RNN综述">RNN综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gru%E7%BD%91%E7%BB%9C/" title="GRU网络">GRU网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/lstm%E7%BD%91%E7%BB%9C/" title="LSTM网络">LSTM网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%9E%B6%E6%9E%84/" title="编解码架构">编解码架构</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/transformer/">Transformer</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/attention/" title="Attention">Attention</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/transformer/" title="Transformer">Transformer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/" title="位置编码">位置编码</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/gpt/">GPT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt%E7%BB%BC%E8%BF%B0/" title="GPT综述">GPT综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt-1/" title="GPT-1">GPT-1</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bert/">Bert</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E7%BB%BC%E8%BF%B0/" title="Bert综述">Bert综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E5%AE%B6%E6%97%8F/" title="Bert家族">Bert家族</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/t5/">T5</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/t5%E7%BB%BC%E8%BF%B0/" title="T5综述">T5综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bart/">BART</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bart%E7%BB%BC%E8%BF%B0/" title="BART综述">BART综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/electra/">ELECTRA</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/electra%E7%BB%BC%E8%BF%B0/" title="ELECTRA综述">ELECTRA综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/code/">CODE</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/code%E8%A7%A3%E6%9E%90/" title="code解析">code解析</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc/">AIGC</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-summary/">AIGC综述</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/aigc-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llm-%E6%95%B0%E6%8D%AE%E9%9B%86/" title="LLM-数据集">LLM-数据集</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5/" title="模型应用策略">模型应用策略</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/" title="大模型训练框架">大模型训练框架</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83/" title="混合精度训练">混合精度训练</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%B0%8F%E5%9E%8B%E5%8C%96/" title="模型小型化">模型小型化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E5%BC%8F-%E9%97%AE%E9%A2%98/" title="生成式-问题">生成式-问题</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B-%E8%AF%84%E4%BC%B0/" title="生成模型-评估">生成模型-评估</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-text/">文本生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt/" title="GPT">GPT</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llama/" title="LLaMa">LLaMa</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/palm/" title="PaLM">PaLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/chatglm/" title="ChatGLM">ChatGLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/claude/" title="Claude">Claude</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cohere/" title="Cohere">Cohere</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/falcon/" title="Falcon">Falcon</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vicuna/" title="Vicuna">Vicuna</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-image/">图像生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/image-generation-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gan/" title="GAN">GAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/can/" title="CAN">CAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/dall-e/" title="DALL-E">DALL-E</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vqgan/" title="VQGAN">VQGAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/diffusion/" title="Diffusion">Diffusion</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/midjourney/" title="Midjourney">Midjourney</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/imagen/" title="Imagen">Imagen</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/vlp/">多模态</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/multimodal-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/clip/" title="CLIP">CLIP</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mllm/" title="MLLM">MLLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/qwen/">Qwen</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/qwen-image-edit/" title="总览图">总览图</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hunyuan/">混元</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-technical-report/" title="混元技术报告">混元技术报告</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-overview/" title="网络结构总览">网络结构总览</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vit/" title="ViT 网络结构详解">ViT 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vae/" title="VAE 网络结构详解">VAE 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-backbone/" title="主干网络结构详解">主干网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-flow-matching/" title="Flow Matching 详解">Flow Matching 详解</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/video/">视频理解</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/video-understanding-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button
+      class="post-sidebar-resizer"
+      id="post-sidebar-resizer"
+      type="button"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="调整左侧目录宽度"
+      aria-valuemin="220"
+      aria-valuemax="520"
+      aria-valuenow="320"
+    ></button>
+  </section>
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(/images/default-hero.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        <div class="author-profile ml-auto align-self-lg-center">
+          <img class="rounded-circle" src='/images/author/john_hu7f9991f5b5d471ecdfc6cff3db1a9fe6_6397_120x120_fit_box_3.png' alt="Author Image">
+          <h5 class="author-name">biubiobiu</h5>
+          <p>September 8, 2021</p>
+        </div>
+
+        <div class="title">
+          <h1>Word Embedding综述</h1>
+        </div>
+        
+        <div class="taxonomy-terms">
+            <ul>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/word-embedding" class="btn, btn-sm">word embedding</a></li>
+            
+          </ul>
+        </div>
+        
+        <div class="post-content" id="post-content">
+          <p align="center"><img src="/datasets/posts/nlp/word_embeding.png" width=80% height=80%></p>
+<h2 id="一word-embedding">一、word embedding</h2>
+<p>词向量：是用来表示词的向量或者表征，也可被认为是词的特征向量。把词映射为实数域向量的技术 &ndash; 词嵌入(word embedding)<br>
+最简单的方式：one-hot向量。</p>
+<ol>
+<li>词库里假设有N个词，对所有词排序，用0~N-1作为每个词的索引。</li>
+<li>每个词的one-hot向量：长度为N，在该次索引的位置为1，其他位置都是0</li>
+</ol>
+<p>缺点：one-hot向量，不能表征两个词的相似度。比如我们常用余弦相似度，one-hot的向量都是相互垂直的。</p>
+<p>词嵌入是一种无监督学习。机器通过阅读大量的文章来学习的单词的意思，通过上下文信息来理解一个单词。怎么挖掘上下文信息：</p>
+<ol>
+<li>Count-based method。认为如果两个单词一起出现的频率很高，那么它们的word embedding feature应该很接近彼此，二者的内积就越接近这两个的单词在同一篇文章中出现的次数。GloVe 就是一种count-based的算法。</li>
+<li>prediction-based method. ski-gram 和 CBOW 就是这种算法。</li>
+</ol>
+<h2 id="二count-based-method">二、Count-based method</h2>
+<h3 id="1glove">1、GloVe</h3>
+<p><a href="https://aclanthology.org/D14-1162.pdf" target="bland">《GloVe: Global Vectors for Word Representation》</a> <br>
+上下文窗口内的词共现可以携带丰富的语义信息。例如，在一个大型语料库中，“固体”比“气体”更有可能与“冰”共现，但“气体”一词与“蒸汽”的共现频率可能比与“冰”的共现频率更高。此外，可以预先计算此类共现的全局语料库统计数据：这可以提高训练效率。<br></p>
+<p>GloVe模型基于平方损失 (Pennington et al., 2014)对跳元模型做了三个修改：</p>
+<ol>
+<li>使用变量 $p_{ij} = x_{ij}$ 和 $q_{ij} = e^{(u^T_j v_i)}$ 而非概率分布，并取两者的对数。所以平方损失项是 $(log p_{ij} - log q_{ij})^2 = (u^T_j v_i - log x_{ij})^2$</li>
+<li>为每个词 $w_i$ 添加两个标量模型参数：中心词偏置 $b_i$ 和上下文词偏置 $c_i$。</li>
+<li>用权重函数 $h(x_{ij})$ 替换每个损失项的权重，其中 $h(x)$ 在 $[0, 1]$ 的间隔内递增。</li>
+</ol>
+<p>整合代码，训练GloVe是为了尽量降低以下损失函数：
+$$
+\sum_{i \in V} \sum_{j \in V} h(x_{ij})(u^T_j v_i + b_i + c_j - log x_{ij})^2
+$$</p>
+<h2 id="三prediction-based-method">三、prediction-based method</h2>
+<p>根据语言学家的理论：<font color=#f00000> 一个词的含义可以有其周围的词来决定。 </font></p>
+<p>word2vec工具，将每个词表示成一个定长的向量，并使得这些向量能较好地表达不同词之间的相似和类比关系。包含了两个模型，</p>
+<ol>
+<li><a href="https://arxiv.org/pdf/1310.4546.pdf" target="bland">跳字模型(skip-gram)</a></li>
+<li><a href="https://arxiv.org/pdf/1301.3781.pdf" target="bland">连续词袋模型(continuous bag of word, CBOW)</a></li>
+</ol>
+<p>对于在语义上有意义的表示，它们的训练依赖于条件概率，条件概率可以被看作使用语料库中一些词来预测另一些单词。由于是不带标签的数据，因此跳元模型和连续词袋都是自监督模型。</p>
+<h3 id="1跳字模型">1、跳字模型</h3>
+<p>跳元模型假设一个词可以用来在文本序列中生成其周围的单词。以文本序列 “the”“man”“loves”“his”“son” 为例。假设中心词选择 “loves”，并将上下文窗口设置为2，如图所示，给定中心词 “loves”，跳元模型考虑生成上下文词“the”“man”“him”“son”的条件概率：
+$$
+P(the, man, his, son | loves)
+$$
+假设上下文词是在给定中心词的情况下独立生成的（即条件独立性）。在这种情况下，上述条件概率可以重写为
+$$
+P(the | loves) · P(man | loves) · P(his | loves) · P(son | loves)
+$$</p>
+<p align="center"><img src="/datasets/posts/nlp/slip-gram.png" width=50% height=50%></p>
+<p>在跳元模型中，每个词都有两个 $d$ 维向量表示，用于计算条件概率。更具体地说，对于词典中索引为 $i$ 的任何词，分别用 $v_i \in \R^d$ 和 $u_i \in \R^d$ 表示其用作中心词和上下文词时的两个向量。给定中心词 $w_c$ （词典中的索引 $c$），生成任何上下文词 $w_o$（词典中的索引 $o$）的条件概率可以通过对向量点积的softmax操作来建模：
+$$
+P(w_o|w_c) = \frac{e^{u^T_o v_c}}{\sum_{i \in V}e^{u^T_i v_c}}
+$$</p>
+<p>其中词表索引集 $V = {0, 2, &hellip;, |V|-1}$。给定长度为 $T$ 的文本序列，其中时间步 $t$ 处的词表示为 $w^{(t)}$。假设上下文词是在给定任何中心词的情况下独立生成的。对于上下文窗口 $m$，跳元模型的似然函数是在给定任何中心词的情况下生成所有上下文词的概率：
+$$
+\prod^T_{t=1} \prod_{-m \le j \le m, j \ne 0} P(w^{(t+j)}|w^{(t)})
+$$
+其中可以省略小于1或大于 $T$的任何时间步。</p>
+<h3 id="2连续词袋模型">2、连续词袋模型</h3>
+<p>连续词袋（CBOW）模型类似于跳元模型。与跳元模型的主要区别在于，连续词袋模型假设中心词是基于其在文本序列中的周围上下文词生成的。例如，在文本序列“the”“man”“loves”“his”“son”中，在“loves”为中心词且上下文窗口为2的情况下，连续词袋模型考虑基于上下文词“the”“man”“him”“son”（如图所示）生成中心词“loves”的条件概率，即：</p>
+<p align="center"><img src="/datasets/posts/nlp/cbow_0.png" width=50% height=50%></p>
+由于连续词袋模型中存在多个上下文词，因此在计算条件概率时对这些上下文词向量进行平均。具体地说，对于字典中索引 $i$ 的任意词，分别用 $v_i \in \R^d$ 和 $u_i \in \R^d$ 表示用作上下文词和中心词的两个向量（符号与跳元模型中相反）。给定上下文词 $w_{o1}, ..., w_{o2m}$（在词表中索引是 $o_1, ..., o_{2m}$ ）生成任意中心词  $w_c$ （在词表中索引是  $c$）的条件概率可以由以下公式建模:
+$$
+P(w_c|w_{o1}, ..., w_{o2m}) = \frac{e^{\frac{1}{2m}u^T_c(v_{o1}+...+v_{o2m})}}{\sum_{i \in V}e^{\frac{1}{2m}u_i^T(v_{o1}+...+v_{o2m})}}
+$$
+给定长度为 $T$的文本序列，其中时间步 $t$ 处的词表示为 $w^{(t)}$。对于上下文窗口 $m$ ，连续词袋模型的似然函数是在给定其上下文词的情况下生成所有中心词的概率：
+$$
+\prod^T_{t=1} P(w^{(t)}|w^{(t-m)},...,w^{(t-1)},w^{(t+1)},...,w^{(t+m)})
+$$
+<h2 id="四word2vec训练">四、word2vec训练</h2>
+<p>不论是跳字模型还是连续词袋模型，由于条件概率使用了softmax运算，每一步的梯度计算都包含字典大小数目的项的累加。
+对含几十万或者上百万词的较大词典来说，每次的梯度计算开销可能过大。为了降低计算复杂度，使用两种近似训练方法：</p>
+<ol>
+<li>负采样(negative sampling)</li>
+<li>层序(hierarchical softmax)</li>
+</ol>
+<h2 id="五子词嵌入fasttext">五、子词嵌入/fastText</h2>
+<h3 id="1子词嵌入subword">1、子词嵌入（subword）</h3>
+<p>问题：通常w2v模型使用向量表示词信息，忽略了词构造(词性)特点，词词之间的信息没有被联系起来。</p>
+<p>编码方式介绍：</p>
+<blockquote>
+<ol>
+<li>传统方式：<br>
+用空格作为划分符，不利于模型学习词缀信息，不能处理 OOV（罕见词、训练集之外的词）问题。</li>
+<li>字节对编码(BPE)：<br>
+一种数据压缩方式，词库大小可控，对单词拆分。减少词数，可以加快训练。缺点：基于贪心算法和确定串的匹配，不能提供概率的多个分片结果。</li>
+<li>wordpiece：<br>
+BPE的变种，过程类似BPE，但是基于概率确定subword，而不是基于下一个最高频次字节对。在bert模型预处理中被使用。</li>
+<li>n-gram子词编码：<br>
+和wordpiece一样，利用模型语音建立subword</li>
+</ol>
+</blockquote>
+<p><a href="https://cloud.tencent.com/developer/article/1593466?areaSource=102001.3&traceId=P9zvRUxQMHvv5MPUUhjUB" target="bland">对比：BPE、wordpiece、</a> <br></p>
+<h4 id="abpebyte-pair-encoding">a、BPE(Byte Pair Encoding)</h4>
+<p><a href="https://zhuanlan.zhihu.com/p/424631681" target="bland">参考1</a> <br></p>
+<ol>
+<li>优点 <br>
+可以有效地平衡词汇表大小和对未知词的覆盖。</li>
+<li>缺点 <br>
+基于贪婪和确定的符号替换，不能提供带概率的多个分片结果。</li>
+</ol>
+<h4 id="bwordpiece">b、wordpiece</h4>
+<p>WordPiece算法可以看作是BPE的变种。不同点在于，WordPiece基于概率生成新的subword而不是下一最高频字节对。</p>
+<p>算法:</p>
+<ol>
+<li>准备足够大的训练语料</li>
+<li>确定期望的subword词表大小</li>
+<li>将单词拆分成字符序列</li>
+<li>基于第3步数据训练语言模型</li>
+<li>从所有可能的subword单元中选择加入语言模型后能最大程度地增加训练数据概率的单元作为新的单元</li>
+<li>重复第5步直到达到第2步设定的subword词表大小或概率增量低于某一阈值</li>
+</ol>
+<h4 id="culm">c、ULM</h4>
+<p>ULM是另外一种subword分隔算法，它能够输出带概率的多个子词分段。它引入了一个假设：所有subword的出现都是独立的，并且subword序列由subword出现概率的乘积产生。WordPiece和ULM都利用语言模型建立subword词表。</p>
+<p>ULM(unigram Language Model) 算法：</p>
+<ol>
+<li>准备足够大的训练语料</li>
+<li>确定期望的subword词表大小</li>
+<li>给定词序列优化下一个词出现的概率</li>
+<li>计算每个subword的损失</li>
+<li>基于损失对subword排序并保留前X%。为了避免OOV，建议保留字符级的单元</li>
+<li>重复第3至第5步直到达到第2步设定的subword词表大小或第5步的结果不再变化</li>
+</ol>
+<h3 id="2fasttext">2、FastText</h3>
+<p>FastText 是2013年Facebook开源的计算词向量及高效的文本分类工具。<br></p>
+<p>问题：在上述模型中，将形状不同的单词用不同的向量来表示。例如：dog和dogs分别用不同的向量表示，模型中没有直接表示这两个向量的关系。鉴于此，fastText提出了子词嵌入(subword embedding)的方法，从而试图将构词信息引入Word2vec中的跳字模型。</p>
+<p>改进：</p>
+<ol>
+<li>在fastText中，每个中心词：表示成子词的集合。 例如 用where来构建子词：
+<ul>
+<li>在单词的首尾添加特殊字符&lt;&gt;,以区分作为前后缀的子词</li>
+<li>将单词当成一个由字符构成的序列来提取n元语法。例如n=3，得到所有长度为3的子词：<code>&lt;wh  whe  her  ere  re&gt; </code></li>
+</ul>
+</li>
+<li>词典：所有词的子集的并集</li>
+<li>模型中词w作为中心词的向量 $v_w$  则表示成 $v_w = \sum_{g \in G_w} z_g$</li>
+</ol>
+<h2 id="六git工程">六、git工程</h2>
+<p>参考：</p>
+<ol>
+<li><a href="https://www.jianshu.com/p/d4de091d1367" target="bland">BPE、WordPiece和SentencePiece</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/86965595" target="bland">深入理解NLP Subword算法：BPE、WordPiece、ULM</a></li>
+</ol>
+<p>如果自己想添加自己的词表：可以用 <a href="https://github.com/taishan1994/sentencepiece_chinese_bpe" target="bland">使用sentencepiece中BPE训练中文词表</a> <br>
+然后，<a href="https://github.com/ymcui/Chinese-LLaMA-Alpaca/blob/main/scripts/merge_tokenizer/merge_tokenizers.py" target="bland">再添加到词表中</a></p>
+
+        </div>
+
+        
+        <div class="row pl-3 pr-3">
+        
+        <div class="col-md-6 share-buttons">
+        
+            <strong>分享:</strong>
+            
+            <a class="btn btn-sm facebook-btn" href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+            
+            
+                <a class="btn btn-sm twitter-btn" href="https://twitter.com/share?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f&text=Word%20Embedding%e7%bb%bc%e8%bf%b0&via=biubiobiu%27s%20Blog" target="_blank">
+                  <i class="fab fa-twitter"></i>
+                </a>
+            
+            
+                <a  class="btn btn-sm reddit-btn" href="https://reddit.com/submit?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f&title=Word%20Embedding%e7%bb%bc%e8%bf%b0" target="_blank">
+                  <i class="fab fa-reddit"></i>
+                </a>
+            
+            
+            
+            
+                <a class="btn btn-sm linkedin-btn" href="https://www.linkedin.com/shareArticle?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f&title=Word%20Embedding%e7%bb%bc%e8%bf%b0" target="_blank">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+            
+            
+             
+            
+                 <a class="btn btn-sm whatsapp-btn" href="https://api.whatsapp.com/send?text=Word%20Embedding%e7%bb%bc%e8%bf%b0 https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f" target="_blank">
+                  <i class="fab fa-whatsapp"></i>
+                </a>
+            
+            
+                <a class="btn btn-sm email-btn" href="mailto:?subject=Word%20Embedding%e7%bb%bc%e8%bf%b0&body=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fword-embedding%25E7%25BB%25BC%25E8%25BF%25B0%2f" target="_blank">
+                  <i class="fas fa-envelope-open-text"></i>
+                </a>
+            
+          
+          </div>
+
+        
+        
+        </div>
+
+
+
+      
+      <hr />
+        
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+    
+    
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+<div class="row next-prev-navigator">
+  
+    <div class="col-md-6 previous-article">
+      <a href="/zh-cn/posts/animal-matting/" title="animal matting" class="btn btn-outline-info">
+        <div><i class="fas fa-chevron-circle-left"></i> 上一篇</div>
+        <div class="next-prev-text">animal matting</div>
+      </a>
+    </div>
+  
+  
+      
+      
+        
+      
+      <div class="col-md-6 next-article">
+        <a href="/zh-cn/posts/rnn%E7%BB%BC%E8%BF%B0/" title="RNN综述" class="btn btn-outline-info">
+          <div>下一篇 <i class="fas fa-chevron-circle-right"></i></div>
+          <div class="next-prev-text">RNN综述</div>
+        </a>
+      </div>
+    
+</div>
+
+      <hr />
+
+      
+      
+
+      
+      
+
+      </div>
+    </div>
+  </div>
+  
+  <a id="scroll-to-top" class="btn"><i class="fas fa-chevron-circle-up"></i></a>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section post-toc-collapsible" id="toc-section">
+    
+    <div class="toc-holder">
+      <div class="post-toc-toolbar">
+        <h5 class="text-center pl-3">目录</h5>
+        <button
+          class="post-toc-toggle"
+          id="post-toc-toggle"
+          type="button"
+          aria-controls="post-toc-content"
+          aria-expanded="true"
+          aria-label="收起文章目录"
+        >
+          <span>收起目录</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <hr class="post-toc-divider">
+      <div class="toc post-toc-content" id="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一word-embedding">一、word embedding</a></li>
+    <li><a href="#二count-based-method">二、Count-based method</a>
+      <ul>
+        <li><a href="#1glove">1、GloVe</a></li>
+      </ul>
+    </li>
+    <li><a href="#三prediction-based-method">三、prediction-based method</a>
+      <ul>
+        <li><a href="#1跳字模型">1、跳字模型</a></li>
+        <li><a href="#2连续词袋模型">2、连续词袋模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#四word2vec训练">四、word2vec训练</a></li>
+    <li><a href="#五子词嵌入fasttext">五、子词嵌入/fastText</a>
+      <ul>
+        <li><a href="#1子词嵌入subword">1、子词嵌入（subword）</a>
+          <ul>
+            <li><a href="#abpebyte-pair-encoding">a、BPE(Byte Pair Encoding)</a></li>
+            <li><a href="#bwordpiece">b、wordpiece</a></li>
+            <li><a href="#culm">c、ULM</a></li>
+          </ul>
+        </li>
+        <li><a href="#2fasttext">2、FastText</a></li>
+      </ul>
+    </li>
+    <li><a href="#六git工程">六、git工程</a></li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+      
+    
+  
+
+
+  
+  
+  
+    
+  
+
+  
+  
+  
+
+  
+  
+  
+    
+  
+  
+
+  
+  
+  
+
+  <footer id="footer" class="container-fluid text-center align-content-center footer pb-2">
+    <div class="container pt-5">
+      <div class="row text-left">
+        
+        
+        <div class="col-12 footer-contact">
+          <div class="footer-contact-row">
+          <h5 class="footer-contact-title">联系方式:</h5>
+          <ul class="footer-contact-list">
+            
+              
+              
+                <li><a href="tel:&#43;0123456789">
+                  <span><i class="fas fa-phone-alt"></i></span>
+                  <span>电话：&#43;0123456789</span>
+                </a></li>
+              
+            
+              
+              
+                <li><a href="mailto:bsgshyn8@163.com" target="_blank" rel="noopener">
+                  <span><i class="fas fa-envelope"></i></span>
+                  <span>邮箱：bsgshyn8@163.com</span>
+                </a></li>
+              
+            
+          </ul>
+          </div>
+        </div>
+        
+        
+        
+      </div>
+    </div>
+    
+    <hr />
+    <div class="container">
+      <p id="disclaimer"><strong>免责声明:</strong> 这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经 作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。</p>
+    </div>
+    
+    
+    <hr />
+    <div class="container">
+      <div class="row text-left">
+        <div class="col-md-4">
+          <a id="theme" href="https://github.com/hossainemruz/toha" target="_blank" rel="noopener">
+            <img src="/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_3.png" alt="Toha Theme Logo">
+            Toha
+          </a>
+        </div>
+        <div class="col-md-4 text-center">© 2021 Copyright.</div>
+        <div class="col-md-4 text-right">
+          <a id="hugo" href="https://gohugo.io/" target="_blank" rel="noopener">Powered by
+          <img
+            src="/images/hugo-logo.svg"
+            alt="Hugo Logo"
+            height="18"
+          />
+          </a>
+        </div>
+      </div>
+    </div>
+    
+  </footer>
+
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/js/popper.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/js/navbar.js"></script>
+<script type="text/javascript" src="/js/plyr.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+<script type="text/javascript" src="/js/darkreader.js"></script>
+<script type="text/javascript" src="/js/darkmode-darkreader.js"></script>
+
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/js/single.js"></script>
+<script src="/js/post-sidebar-resizer.js?v=20260727-3"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+
+    <link rel="stylesheet" href="/katex/katex.min.css">
+<script type="text/javascript" defer src="/katex/katex.min.js"></script>
+<script type="text/javascript" defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);">
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+    
+</body>
+</html>

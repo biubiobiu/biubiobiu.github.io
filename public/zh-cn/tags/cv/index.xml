@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CV on biubiobiu&#39;s Blog</title>
+    <link>https://biubiobiu.github.io/zh-cn/tags/cv/</link>
+    <description>Recent content in CV on biubiobiu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Everything is mine</copyright>
+    <lastBuildDate>Thu, 09 Sep 2021 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/cv/index.xml" rel="self" type="application/rss+xml" /><item>
+      <title>animal matting</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/animal-matting/</link>
+      <pubDate>Thu, 09 Sep 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/animal-matting/</guid>
+      <description>Image Matting 《End-to-end Animal Image Matting》 1、先前算法的不足 流水线：全局分割和局部抠图
+其中前者的目标是trimap生成或前景/背景生成，后者是基于从前一阶段生成的trimap或其他先验的图像抠图。这种流水线的不足归因于它的顺序性
+因为它们可能产生错误的语义，该错误不能通过后续的抠图步骤来纠正。 两个阶段的单独训练方案可能由于它们之间的不匹配而导致次优解。 2、提出新结构 提出了一个新颖的 Glance and Focus Matting network (GFM)，它使用一个共享的编码器和两个独立的解码器来以协作的方式学习两个任务，用于端到端的动物图像抠图。
+该结构可以粗略地描述为一个粗略的分割阶段和抠图阶段。请注意，这两个阶段可能是交织在一起的，因为在第一个阶段会有来自第二阶段的反馈来纠正错误的决定,将它们集成到单个模型中并明确地为协作建模是合理的。
+网络结构是一个编码解码器的结构，编码器、两个平行的解码器（GD和FD）。
+然后，以不同的表征域（RoSTa），连接 GD 和 FD 的输出结果。
+最后，通过协同合作抠图（CM），将RoSTa中三个不同的表征域的结果，进行合并，获得最终的 alpha 预测
+编码器：
+以在 ImageNet 上预训练的 ResNet-34 或 DenseNet-121 作为编码器。将单个图像作为输入，通过五个 $E_0 - E_4$ 模块进行处理
+解码器：
+Glance Decoder（GD）：
+旨在识别容易的语义部分，而将其他部分作为未知区域。模型采用了 $D^G_4 &amp;ndash; D^G_0$ ，每层的输出与编码器一一对应。为了进一步扩大感受野，在 $E_4$ 之后增加了一个金字塔汇集模块(PPM)以提取全局上下文。其损失函数为：交叉熵。 $$ L_{CE} = - \sum_{c=1}^C G^c_g log(G_p^c) $$
+Focus Decoder (FD)：
+FD旨在提取低层结构特征，即：非常有用的过渡区域的细节。模型采用了 $D^F_4 &amp;ndash; D^F_0$ ，每层的输出与编码器一一对应。使用一个bridge block(BB)来代替 $E_4$ 之后的PPM，以在不同的感受野中利用local context。来自 $E_4$ 和 $BB$ 的特征被连接，并馈入 $D^F_4$，遵循U-net风格，在每个编码器块 $E_i$ 和解码器块 $D^F_i$ 之间添加一个快捷方式，以保留精细细节。</description>
+    </item>
+    
+    <item>
+      <title>简介</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/object-detection-overview/</link>
+      <pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/object-detection-overview/</guid>
+      <description>一、简介 It&amp;rsquo;s coming soon.
+二、网络 1、R-CNN 《Rich feature hierarchies for accurate object detection and semantic segmentation》(2013)
+2、SPPNet 《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》(2014)
+3、Fast R-CNN 《Fast R-CNN》(2015)
+4、Faster R-CNN 《Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks》(2016)
+5、FPN 《Feature Pyramid Networks for Object Detection》(2017)
+4、YOLO 《You Only Look Once: Unified, Real-Time Object Detection》(2016)
+5、YOLO V2 《YOLO9000: Better, Faster, Stronger》(2016)
+6、YOLO V3 《YOLOv3: An Incremental Improvement》(2018)</description>
+    </item>
+    
+    <item>
+      <title>简介</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/semantic-segmentation-overview/</link>
+      <pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/semantic-segmentation-overview/</guid>
+      <description>一、简介 It&amp;rsquo;s coming soon.
+二、网络-基于编码器-解码器 1、FCN 《Fully Convolutional Networks for Semantic Segmentation》(2015) 要说语义分割整体实现精度大的跨越还是在FCN（全卷积神经网络）提出之后。它完全改变了之前需要一个窗口来将语义分割任务转变为图片分类任务的观念，FCN完全丢弃了图片分类任务中全连接层，从头到尾都只使用到了卷积层。从FCN后，基于编码器解码器结构的经典网络结构如同雨后春笋般冒了出来
+2、U-Net 《U-Net: Convolutional Networks for Biomedical Image Segmentation》(2015) Unet网络是在医学影像分割中最常用的模型。它的典型特点是，它是U型对称结构，左侧是卷积层，右侧是上采样层（典型的编码器解码器结构）。
+另一个特点是，Unet网络的每个卷积层得到的特征图都会concatenate到对应的上采样层，从而实现对每层特征图都有效使用到后续计算中。也就是文中所说的skip-connection。这样，同其他的一些网络结构比如FCN比较，Unet避免了直接在高级feature map中进行监督和loss计算，而是结合了低级feature map中的特征，从而可以使得最终所得到的feature map中既包含了high-level 的feature，也包含很多的low-level的feature，实现了不同scale下feature的融合，提高模型的结果精确度。
+3、SegNet 《SegNet: A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation》(2015) 是一个由剑桥大学团队开发的图像分割的开源项目，该项目可以对图像中的物体所在区域进行分割，例如车，马路，行人等，并且精确到像素级别
+4、Deeplab V1 《Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs》(2015) 2015 年的ICLR上提出DeepLab V1是结合了深度卷积神经网络（DCNNs）和概率图模型（DenseCRFs）的方法。它将DenseCRFs作为网络的后处理方法。采用DenseCRFs作为后处理的方法，简单来说，就是对一个像素进行分类的时候，不仅考虑DCNN的输出，而且考虑该像素点周围像素点的值，这样语义分割结果边界清楚。
+5、Deeplab V2 《DeepLab: Semantic Image Segmentation with Deep Convolutional Nets, Atrous Convolution, and Fully Connected CRFs》(2017) 在实验中发现 DCNNs 做语义分割时精准度不够的问题，根本原因是重复的池化和下采样降低了分辨率。但是另一方面，重复的池化和下采样扩大了感受野，而感受野的扩大对语义分割任务来说也是至关重要的。针对这一问题，DeepLab v2采用的空洞卷积算法扩展感受野，与此同时不会降低特征图的分辨率。此外，deeplab v2基于空洞卷积，设计了ASPP模块。它组合了不同dilation rate的空洞卷积所产生的特征图。这样，不同空洞卷积产生的不同感受野的特征图被组合在了一起，从而获取了更加丰富的上下文信息。</description>
+    </item>
+    
+    <item>
+      <title>抠图综述</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/</link>
+      <pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/</guid>
+      <description>It&amp;rsquo;s coming soon. </description>
+    </item>
+    
+    
+  </channel>
+</rss>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MarkDown on biubiobiu&#39;s Blog</title>
+    <link>https://biubiobiu.github.io/zh-cn/tags/markdown/</link>
+    <description>Recent content in MarkDown on biubiobiu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Everything is mine</copyright>
+    <lastBuildDate>Tue, 08 Jun 2021 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/markdown/index.xml" rel="self" type="application/rss+xml" /><item>
+      <title>MarkDown入门</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Tue, 08 Jun 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/</guid>
+      <description>一、小技巧 颜色
+颜色
+颜色
+可以使用html的标签
+markdown中常用的html标签： 操作 标签 换行 测试&amp;lt;br&amp;gt;一下 标记 &amp;lt;mark&amp;gt;测试一下&amp;lt;/mark&amp;gt; 按钮 &amp;lt;kbd&amp;gt;测试一下&amp;lt;/kbd&amp;gt; 颜色 &amp;lt;font color=&amp;quot;#A020F0&amp;quot;&amp;gt;颜色&amp;lt;/font&amp;gt; 四号文字 &amp;lt;font size=&amp;quot;4&amp;quot;&amp;gt;四号文字&amp;lt;/font&amp;gt; 引用1 &amp;lt;cite&amp;gt;引用[^1]&amp;lt;/cite&amp;gt; 空格 &amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;&amp;amp;nbsp;测试一下 删除线 &amp;lt;s&amp;gt;测试一下&amp;lt;/s&amp;gt; 下划线 &amp;lt;u&amp;gt;测试一下&amp;lt;/u&amp;gt; 字体增大 &amp;lt;big&amp;gt;测试一下&amp;lt;/big&amp;gt; 字体减小 &amp;lt;small&amp;gt;测试一下&amp;lt;/small&amp;gt; 文字上标 测试&amp;lt;sup&amp;gt;一下&amp;lt;/sup&amp;gt; 文字下标 测试&amp;lt;sub&amp;gt;一下&amp;lt;/sub&amp;gt; 加n个空行 {{&amp;lt; vs n&amp;gt;}} 右对齐
+&amp;lt;p align=right&amp;gt;测试一下&amp;lt;/p&amp;gt; 文字居中 &amp;lt;center&amp;gt;测试一下&amp;lt;/center&amp;gt; 图片居中 &amp;lt;p align=&amp;quot;center&amp;quot;&amp;gt;&amp;lt;img src=&amp;quot;***.jpg&amp;quot; width=&amp;quot;60%&amp;quot;&amp;gt;&amp;lt;/p&amp;gt; 超链接 &amp;lt;a href=&amp;quot;center&amp;quot; target=&amp;quot;blank&amp;quot;&amp;gt;文本&amp;lt;/a&amp;gt; href指定跳转的目标路径；
+target属性指定超链接打开的位置，
+值blank: 表示在一个新的页面中打开；
+默认值self: 在当前页面中打开超链接 图片 &amp;lt;img src=&amp;quot;***.jpg&amp;quot; width=&amp;quot;60%&amp;quot; height=&amp;quot;图片高度(单位是像素级)&amp;quot; alt=&amp;quot;图片描述，当图片加载失败时显示&amp;quot;&amp;gt; 音频 &amp;lt;audio src=&amp;quot;音频的url&amp;quot; controls=&amp;quot;是否允许用户控制播放&amp;quot; autoplay=&amp;quot;音频文件是否自动播放&amp;quot; loop=&amp;quot;音频是否循环播放&amp;quot; preload=&amp;quot;音频在页面加载时进行加载-如果设置了autoplay则忽略该属性&amp;quot;&amp;gt; 视频 跟音频一样，只是多了width和height 操作 需求 Markdown只能识别一个空格(在半角输入状态下)。有两种方法插入更多空格</description>
+    </item>
+    
+    
+  </channel>
+</rss>

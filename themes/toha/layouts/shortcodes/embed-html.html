@@ -7,6 +7,23 @@
 {{- $source := readFile $src -}}
 {{- $frameID := printf "embedded-html-%s-%d" (md5 $src) .Ordinal -}}
 
+{{/* Let links inside srcdoc navigate the whole page instead of nesting a post in the iframe. */}}
+{{- $source = replace $source "<head>" "<head><base target=\"_top\">" -}}
+
+{{/*
+  Optionally inline a companion script. Files rendered through srcdoc cannot
+  reliably load a sibling script from the repository, so the post can pass
+  script="path/to/annotator.js".
+*/}}
+{{- $scriptPath := .Get "script" -}}
+{{- if $scriptPath -}}
+  {{- $scriptSource := readFile $scriptPath -}}
+  {{- $scriptSource = replace $scriptSource "</script>" "<\\/script>" -}}
+  {{- $source = replace $source "<script defer src=\"annotator.js\"></script>" "" -}}
+  {{- $inlineScript := printf "<script>%s</script>" $scriptSource -}}
+  {{- $source = replace $source "</body>" (printf "%s</body>" $inlineScript) -}}
+{{- end -}}
+
 <div class="embedded-html">
   <iframe
     id="{{ $frameID }}"

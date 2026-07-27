@@ -1,0 +1,2897 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>大模型训练框架</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/css/layouts/main.css?v=20260727-5"/>
+<link rel="stylesheet" href="/css/navigators/navbar.css?v=20260727-7"/>
+<link rel="stylesheet" href="/css/plyr.css"/>
+<link rel="stylesheet" href="/css/flag-icon.min.css"/>
+
+
+<link rel="stylesheet" href="/fontawesome/css/all.min.css"/>
+
+
+
+<link rel="stylesheet" href="/css/colortheme/colortheme.css"/>
+
+
+
+
+
+  
+
+  
+  
+  
+    
+  
+  
+
+  <link rel="icon" type="image/png" href="/images/site/favicon_hu0d88336a9cbd3e68c7714efae786b0a9_38044_42x0_resize_box_3.png" />
+
+<meta property="og:title" content="大模型训练框架" />
+<meta property="og:description" content="目前训练超大规模语言模型主要有两条技术路线：
+TPU &#43; XLA &#43; TensorFlow/JAX GPU &#43; PyTorch &#43; Megatron-LM &#43; DeepSpeed。 前者由Google主导，由于TPU和自家云平台GCP深度绑定，对于非Googler来说， 只可远观而不可把玩，后者背后则有NVIDIA、Meta、MS大厂加持，社区氛围活跃，也更受到群众欢迎。
+一、简介 1、并行计算 模型并行：将模型参数分布到多个GPU上
+数据并行(Data parallelism, DP)：复制多份模型，每个副本被放置在不同设备上，并输入数据分片。该过程是并行完成的，所有模型副本在每个训练step结束时同步。 张量并行(Tensor parallelism, TP)：这种方式，我们不把整个激活张量或者梯度张量放在单个GPU上，而是切分参数矩阵，每个GPU计算一部分。该技术有时被称为水平并行或者层内模型并行。缺点是：需要额外通信，降低计算粒度 流水线并行(Pipeline parallelism, PP)：将网络分成多段并行。这有时也称为垂直并行。缺点是：引入流水线气泡 Zero Redundancy Optimizer(ZeRO)：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信 为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸。
+2、混合精度(AMP) 混合精度 (Automatically Mixed Precision, AMP)
+为加速训练，模型的参数是以FP16半精度存储的； 然后，输入数据也是 FP16半精度，与模型参数 foreword计算，激活结果也是FP16半精度； 计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位 3、训练时的空间量 a. 模型参数（parameter） 需要的空间大小：跟模型大小一致。
+b. 梯度（gradient） 需要的空间大小：跟模型大小一致。
+c. 中间状态 以线性层为例：
+Forword: $y = Wx$ Backword: $\nabla x = W^T \nabla y, \nabla W = \nabla y x^T$ 利用梯度更新模型参数时，需要用到：模型输入、输出。所以这些数据是要一直保存，直到参数更新完毕。 需要的空间大小：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://biubiobiu.github.io/zh-cn/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-05T12:30:40+08:00" />
+<meta property="article:modified_time" content="2023-08-05T12:30:40+08:00" />
+
+
+
+    
+    
+<meta name="description" content="大模型训练框架" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/css/layouts/single.css?v=20260727-3"/>
+<link rel="stylesheet" href="/css/navigators/sidebar.css?v=20260727-1">
+
+<link rel="stylesheet" href="/css/style.css"/>
+<link rel="stylesheet" href="/css/layouts/post-sidebar-resizer.css?v=20260727-3"/>
+
+
+
+    
+
+
+
+
+
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+  
+  
+    
+  
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/zh-cn">
+      
+        <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" alt="Logo">
+      biubiobiu&#39;s Blog</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link primary-nav-link nav-home" href="/zh-cn">主页</a>
+        </li>
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-about" href="/zh-cn#about">关于</a>
+              </li>
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-skills" href="/zh-cn#skills">技能</a>
+              </li>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-recent-posts" href="/zh-cn#recent-posts">最新博客</a>
+              </li>
+            
+          
+            
+          
+            
+          
+        
+
+        
+        
+          <div class="dropdown-divider" id="top-navbar-divider"></div>
+        
+
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-posts active" id="blog-link" href="/zh-cn/posts">博文</a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-notes" id="note-link" href="/zh-cn/notes">笔记</a>
+          </li>
+        
+        
+          
+            <li class="nav-item">
+              <a class="nav-link primary-nav-link nav-docs" href="/zh-cn/docs/">文档</a>
+            </li>
+          
+        
+
+      
+      
+        <li class="nav-item dropdown">
+
+<div id="theme-initialization" style="display: none;"
+  default-theme="system"></div>
+<a class="nav-link dropdown-toggle"  href="#" id="themeSelector" role="button"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <img id="navbar-theme-icon-svg" src="/icons/moon-svgrepo-com.svg" width=20>
+</a>
+<div class="dropdown-menu dropdown-menu-icons-only" aria-labelledby="themeSelector">
+  <a class="dropdown-item nav-link" href="#" onclick="enableLightTheme()">
+    <img class="menu-icon-center" src="/icons/sun-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="enableDarkTheme()">
+    <img class="menu-icon-center" src="/icons/moon-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="useSystemTheme()">
+    <img class="menu-icon-center" src="/icons/computer-svgrepo-com.svg" width=20>
+  </a>
+</div>
+</li>
+      
+      </ul>
+    </div>
+  </div>
+  
+  
+    <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" class="d-none" id="main-logo" alt="Logo">
+  
+  
+    <img src="/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_3.png" class="d-none" id="inverted-logo" alt="Inverted Logo">
+  
+</nav>
+
+
+
+      
+      
+  <section class="sidebar-section post-sidebar-resizable" id="sidebar-section">
+    <div class="sidebar-holder">
+      <div class="post-sidebar-toolbar">
+        <button
+          class="post-sidebar-toggle"
+          id="post-sidebar-toggle"
+          type="button"
+          aria-controls="post-sidebar-content"
+          aria-expanded="true"
+          aria-label="收起左侧目录"
+        >
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          <span>收起目录</span>
+        </button>
+      </div>
+      <div class="sidebar post-sidebar-content" id="post-sidebar-content">
+        <form class="mx-auto" method="get" action="/zh-cn/search">
+          <input type="text" name="keyword" value="" placeholder="搜索" data-search="" id="search-box" />
+        </form>
+        <div class="sidebar-tree">
+          <ul class="tree" id="tree">
+            <li id="list-heading"><a href="/zh-cn/posts" data-filter="all">博文</a></li>
+            <div class="subtree">
+                
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/toha-tutorial/">Toha教程</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/toha%E7%9A%84%E9%85%8D%E7%BD%AE/" title="Toha的配置">Toha的配置</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%92%B0%E5%86%99%E6%96%87%E7%AB%A0/" title="撰写文章">撰写文章</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/" title="MarkDown入门">MarkDown入门</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/katex%E5%85%AC%E5%BC%8F/" title="Katex公式">Katex公式</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%8C%BA%E5%9F%9F%E5%9D%97-%E5%AE%9E%E4%BE%8B/" title="区域块-实例">区域块-实例</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math/">数学知识</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-probability/">概率论</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/probability-basics/" title="基本概念">基本概念</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E5%8F%8A%E5%85%B6%E5%88%86%E5%B8%83/" title="随机变量及其分布">随机变量及其分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A4%A7%E6%95%B0%E5%AE%9A%E5%BE%8B/" title="大数定律">大数定律</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A0%B7%E6%9C%AC%E5%8F%8A%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83/" title="样本及抽样分布">样本及抽样分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" title="假设检验">假设检验</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E5%8F%8A%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" title="方差分析及回归分析">方差分析及回归分析</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="随机过程">随机过程</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE/" title="马尔科夫链">马尔科夫链</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B3%E7%A8%B3%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="平稳随机过程">平稳随机过程</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-convex/">凸优化</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/convex-optimization-basics/" title="基本概念">基本概念</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/deep-learning/">深度学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%BC%80%E7%AF%87/" title="深度学习开篇">深度学习开篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BB%93%E6%9E%84/" title="深度学习-结构">深度学习-结构</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BD%92%E4%B8%80%E5%8C%96/" title="归一化">归一化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9D%E5%A7%8B%E5%8C%96/" title="初始化">初始化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%94%BB%E5%9B%BE%E7%AF%87/" title="神经网络画图篇">神经网络画图篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cam/" title="CAM">CAM</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/reinforcement-learning/">强化学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/reinforce-overview/" title="综述">综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/programming/">编程语言</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python/">Python</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-env/">env</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/py-env/" title="py-env">py-env</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cuda/" title="cuda">cuda</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-internal/">Internal</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/" title="字符编码">字符编码</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/python-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97/" title="内置模块">内置模块</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/" title="进阶操作">进阶操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BC%82%E5%B8%B8/" title="异常">异常</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96/" title="文件读取">文件读取</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-sdk/">SDK</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B6%E8%A1%8C%E6%93%8D%E4%BD%9C/" title="并行操作">并行操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/importlib%E5%8C%85/" title="importlib">importlib</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ipdb%E5%8C%85/" title="ipdb">ipdb</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99/" title="正则-re">正则-re</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A0%86-heapq/" title="堆-heapq">堆-heapq</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/requests/" title="requests">requests</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/logging/" title="logging">logging</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/argparse/" title="argparse">argparse</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pil/" title="PIL">PIL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/opencv/" title="OpenCV">OpenCV</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow/">TensorFlow</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow-compat/">兼容1.x</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9D%99%E6%80%81%E5%9B%BE/" title="静态图">静态图</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensorflow-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/pytorch/">PyTorch</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/" title="数学计算">数学计算</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensor%E5%92%8C%E5%8F%98%E9%87%8F/" title="Tensor和变量">Tensor和变量</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet/">MxNet</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet-ndarray/">NdArray</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ndarray%E4%BD%BF%E7%94%A8/" title="NdArray使用">NdArray使用</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/database/">数据库</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mysql/" title="MySQL">MySQL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hive/">Hive</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9B%E5%BB%BA%E5%BA%93/%E8%A1%A8/" title="创建库/表">创建库/表</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0/" title="常见函数">常见函数</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="常用操作">常用操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="数据类型">数据类型</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/" title="正则匹配">正则匹配</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv/">CV</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-backbone/">基础</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cnn/" title="CNN">CNN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/optimizer/" title="optimizer">optimizer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/backbone-net/" title="backbone net">backbone net</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-contrastive-learning/">对比学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/contrastive-learning/" title="contrastive learning">contrastive learning</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-vision-transformer/">ViT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vision-transformer/" title="vision transformer">vision transformer</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-detect/">目标检测</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/object-detection-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-segment/">语义分割</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/semantic-segmentation-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-matting/">抠图</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/" title="抠图综述">抠图综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/animal-matting/" title="animal matting">animal matting</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/nlp/">NLP</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/word-embedding/">Word Embedding</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/word-embedding%E7%BB%BC%E8%BF%B0/" title="Word Embedding综述">Word Embedding综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/rnn/">RNN</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/rnn%E7%BB%BC%E8%BF%B0/" title="RNN综述">RNN综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gru%E7%BD%91%E7%BB%9C/" title="GRU网络">GRU网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/lstm%E7%BD%91%E7%BB%9C/" title="LSTM网络">LSTM网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%9E%B6%E6%9E%84/" title="编解码架构">编解码架构</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/transformer/">Transformer</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/attention/" title="Attention">Attention</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/transformer/" title="Transformer">Transformer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/" title="位置编码">位置编码</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/gpt/">GPT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt%E7%BB%BC%E8%BF%B0/" title="GPT综述">GPT综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt-1/" title="GPT-1">GPT-1</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bert/">Bert</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E7%BB%BC%E8%BF%B0/" title="Bert综述">Bert综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E5%AE%B6%E6%97%8F/" title="Bert家族">Bert家族</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/t5/">T5</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/t5%E7%BB%BC%E8%BF%B0/" title="T5综述">T5综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bart/">BART</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bart%E7%BB%BC%E8%BF%B0/" title="BART综述">BART综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/electra/">ELECTRA</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/electra%E7%BB%BC%E8%BF%B0/" title="ELECTRA综述">ELECTRA综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/code/">CODE</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/code%E8%A7%A3%E6%9E%90/" title="code解析">code解析</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/aigc/">AIGC</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/aigc-summary/">AIGC综述</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/aigc-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llm-%E6%95%B0%E6%8D%AE%E9%9B%86/" title="LLM-数据集">LLM-数据集</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5/" title="模型应用策略">模型应用策略</a></li>
+  
+
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li><a class="active" href="/zh-cn/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/" title="大模型训练框架">大模型训练框架</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83/" title="混合精度训练">混合精度训练</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%B0%8F%E5%9E%8B%E5%8C%96/" title="模型小型化">模型小型化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E5%BC%8F-%E9%97%AE%E9%A2%98/" title="生成式-问题">生成式-问题</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B-%E8%AF%84%E4%BC%B0/" title="生成模型-评估">生成模型-评估</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-text/">文本生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt/" title="GPT">GPT</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llama/" title="LLaMa">LLaMa</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/palm/" title="PaLM">PaLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/chatglm/" title="ChatGLM">ChatGLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/claude/" title="Claude">Claude</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cohere/" title="Cohere">Cohere</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/falcon/" title="Falcon">Falcon</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vicuna/" title="Vicuna">Vicuna</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-image/">图像生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/image-generation-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gan/" title="GAN">GAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/can/" title="CAN">CAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/dall-e/" title="DALL-E">DALL-E</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vqgan/" title="VQGAN">VQGAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/diffusion/" title="Diffusion">Diffusion</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/midjourney/" title="Midjourney">Midjourney</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/imagen/" title="Imagen">Imagen</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/vlp/">多模态</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/multimodal-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/clip/" title="CLIP">CLIP</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mllm/" title="MLLM">MLLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/qwen/">Qwen</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/qwen-image-edit/" title="总览图">总览图</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hunyuan/">混元</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-technical-report/" title="混元技术报告">混元技术报告</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-overview/" title="网络结构总览">网络结构总览</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vit/" title="ViT 网络结构详解">ViT 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vae/" title="VAE 网络结构详解">VAE 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-backbone/" title="主干网络结构详解">主干网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-flow-matching/" title="Flow Matching 详解">Flow Matching 详解</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/video/">视频理解</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/video-understanding-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button
+      class="post-sidebar-resizer"
+      id="post-sidebar-resizer"
+      type="button"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="调整左侧目录宽度"
+      aria-valuemin="220"
+      aria-valuemax="520"
+      aria-valuenow="320"
+    ></button>
+  </section>
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(/images/default-hero.jpg);'>
+      </div>
+
+      
+      <div class="page-content">
+        <div class="author-profile ml-auto align-self-lg-center">
+          <img class="rounded-circle" src='/images/author/john_hu7f9991f5b5d471ecdfc6cff3db1a9fe6_6397_120x120_fit_box_3.png' alt="Author Image">
+          <h5 class="author-name">biubiobiu</h5>
+          <p>August 5, 2023</p>
+        </div>
+
+        <div class="title">
+          <h1>大模型训练框架</h1>
+        </div>
+        
+        <div class="taxonomy-terms">
+            <ul>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/aigc" class="btn, btn-sm">aigc</a></li>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B" class="btn, btn-sm">大模型</a></li>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6" class="btn, btn-sm">训练框架</a></li>
+            
+          </ul>
+        </div>
+        
+        <div class="post-content" id="post-content">
+          <p>目前训练超大规模语言模型主要有两条技术路线：</p>
+<ol>
+<li>TPU + XLA + TensorFlow/JAX</li>
+<li>GPU + PyTorch + Megatron-LM + DeepSpeed。</li>
+</ol>
+<p>前者由Google主导，由于TPU和自家云平台GCP深度绑定，对于非Googler来说， 只可远观而不可把玩，后者背后则有NVIDIA、Meta、MS大厂加持，社区氛围活跃，也更受到群众欢迎。</p>
+<h2 id="一简介">一、简介</h2>
+<h3 id="1并行计算">1、并行计算</h3>
+<p>模型并行：将模型参数分布到多个GPU上</p>
+<ol>
+<li>数据并行(Data parallelism, DP)：复制多份模型，每个副本被放置在不同设备上，并输入数据分片。该过程是并行完成的，所有模型副本在每个训练step结束时同步。</li>
+<li>张量并行(Tensor parallelism, TP)：这种方式，我们不把整个激活张量或者梯度张量放在单个GPU上，而是<font color=#f00000>切分参数矩阵，每个GPU计算一部分</font>。该技术有时被称为水平并行或者层内模型并行。缺点是：需要额外通信，降低计算粒度</li>
+<li>流水线并行(Pipeline parallelism, PP)：将网络分成多段并行。这有时也称为垂直并行。缺点是：引入流水线气泡</li>
+<li>Zero Redundancy Optimizer(ZeRO)：将参数分布到数据并行组中，计算之前先获取模型参数。缺点是：需要额外通信</li>
+</ol>
+<p>为了能够提升训练的效率，目前都采用混合精度训练，然而混合精度训练，是非常不稳定的，很容易导致梯度爆炸。这个原因是：<font color=#f00000>在做Forword或者Backword的时候，需要把FP32位，降低到FP16位。这个操作有可能会导致精度溢出，从而导致loss爆炸</font>。<br></p>
+<h3 id="2混合精度amp">2、混合精度(AMP)</h3>
+<p>混合精度 (Automatically Mixed Precision, AMP)</p>
+<ol>
+<li>为加速训练，模型的参数是以FP16半精度存储的；</li>
+<li>然后，输入数据也是 FP16半精度，与模型参数 foreword计算，激活结果也是FP16半精度；</li>
+<li>计算loss，然后backword。在backword之前，需要对loss进行缩放，让他变成Fp32位</li>
+</ol>
+<h3 id="3训练时的空间量">3、训练时的空间量</h3>
+<h4 id="a-模型参数parameter">a. 模型参数（parameter）</h4>
+<p>需要的空间大小：跟模型大小一致。</p>
+<h4 id="b-梯度gradient">b. 梯度（gradient）</h4>
+<p>需要的空间大小：跟模型大小一致。</p>
+<h4 id="c-中间状态">c. 中间状态</h4>
+<p>以线性层为例：</p>
+<ol>
+<li>Forword: $y = Wx$</li>
+<li>Backword: $\nabla x = W^T \nabla y, \nabla W = \nabla y x^T$ <br>
+利用梯度更新模型参数时，需要用到：模型输入、输出。所以这些数据是要一直保存，直到参数更新完毕。</li>
+</ol>
+<p>需要的空间大小：</p>
+<h4 id="d-优化器optimizer">d. 优化器（Optimizer）</h4>
+<p>例如：adam。需要保存</p>
+<ol>
+<li>模型梯度：$m_t = \beta_1 m_{t-1} + (1-\beta_1)g_t$</li>
+<li>模型梯度二次项相关的一些历史信息：$v_t = \beta_2 v_{t-1} + (1-\beta_2)g^2_t$</li>
+</ol>
+<p>需要的空间大小：至少2倍的模型参数量。</p>
+<h2 id="二deepspeed">二、Deepspeed</h2>
+<p><a href="https://deepspeed.readthedocs.io/en/latest/" target="bland">使用文档</a> <br></p>
+<p>Deepspeed是微软的大规模分布式训练工具。专门用于训练超大模型。增加的功能主要有：</p>
+<blockquote>
+<ol>
+<li>3个维度并行化实现万亿参数模型训练</li>
+<li>ZeRO-Offload 使 GPU 单卡能够训练 10 倍大的模型</li>
+<li>通过 DeepSpeed Sparse Attention 用6倍速度执行10倍长的序列</li>
+<li>1 比特 Adam 减少 5 倍通信量</li>
+</ol>
+</blockquote>
+<p>DeepSpeed 是一个微软开发的开源深度学习优化库，它通过多种技术手段来加速训练，包括：<font color=#f00000>模型并行化、梯度累积、动态精度缩放、本地模式混合精度等。</font> DeepSpeed基于pytorch构建，只需要简单修改即可迁移。<br></p>
+<p><strong>DeepSpeed主要包含三部分</strong>：</p>
+<blockquote>
+<ol>
+<li>Apis：提供易用的api接口，训练、推理只需要简单调用几个api接口即可。<br>
+最重要的是initialize接口：用来初始化引擎，配置训练参数以及优化技术。配置参数一般保存在config.json文件中。</li>
+<li>runtime：是deepspeed管理、执行、性能优化的核心组件。是用python语言实现的。<br>
+例如：部署训练任务到分布式设备、数据分区、模型分区、系统优化、微调、故障检测、checkpoints保存和加载。</li>
+<li>ops：用c++和cuda实现底层内核，优化计算和通信。<br></li>
+</ol>
+</blockquote>
+<hr>
+<p><strong>核心技术</strong>：ZeRO(零冗余优化器)<br></p>
+<blockquote>
+<ol>
+<li>ZeRO克服数据并行和模型并行的局限性，同时实现两者的优点。</li>
+<li>通过在数据并行进程之间，划分：<font color=#f00000>模型状态、梯度、优化器状态</font> 来消除数据并行进程中的内存冗余。</li>
+<li>在训练期间使用 <font color=#f00000>动态通信调度</font> 来在分布式设备之间共享必要的状态</li>
+</ol>
+</blockquote>
+<hr>
+<p>DeepSpeed的核心就在于：<font color=#f00000>GPU显存不够，CPU内存来凑</font>。比方说，我们只有一张10GB的GPU，那么我们很可能需要借助80GB的CPU，才能够训练一个大模型。<br></p>
+<p><strong>具体点说</strong>，DeepSpeed将当前时刻，训练模型用不到的参数，缓存到CPU中，等到要用到了，再从CPU挪到GPU。这里的“参数”，不仅指的是模型参数，还指optimizer、梯度等。<br></p>
+<p>越多的参数挪到CPU上，GPU的负担就越小；但随之的代价就是，更为频繁的CPU，GPU交互，极大增加了训练推理的时间开销。因此，DeepSpeed使用的一个核心要义是：<font color=#f00000>时间开销和显存占用的权衡</font>。</p>
+<h3 id="1使用deepspeed">1、使用DeepSpeed</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>deepspeed <span style="color:#f92672">--</span>master_port <span style="color:#ae81ff">29500</span> <span style="color:#f92672">--</span>num_gpus<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> run_s2s<span style="color:#f92672">.</span>py <span style="color:#f92672">--</span>deepspeed ds_config<span style="color:#f92672">.</span>json
+</span></span></code></pre></div><p><font color=#f00000>&ndash;master_port</font>：端口号。最好显示指定，默认为29500，可能会被占用（i.e., 跑了多个DeepSpeed进程）。<br>
+<font color=#f00000>&ndash;num_gpus</font>: GPU数目，默认会使用当前所见的所有GPU。<br>
+<font color=#f00000>&ndash;deepspeed</font>: 提供的config文件，用来指定许多DeepSpeed的重要参数。<br></p>
+<p>使用DeepSpeed的一个核心要点，就在于写一个config文件（可以是.json，也可以是类json格式的配置文件），在这个配置文件中，你可以指定你想要的参数，例如，权衡时间和显存。因此，上面几个参数里，最重要的便是&ndash;deepspeed，即你提供的config文件，即ZeRO。<br></p>
+<h3 id="2zero">2、ZeRO</h3>
+<p>Zero Redundancy Optimizer (ZeRO)是DeepSpeed的workhorse. 用户可以提供不同的ZeRO config文件，来实现DeepSpeed的不同功能特性。<br></p>
+<p>即，传统的深度学习，模型训练并行，是将模型参数复制多份到多张GPU上，只将数据拆分（如，torch的Dataparallel），这样就会有大量的显存冗余浪费。而ZeRO就是为了消除这种冗余，提高对memory的利用率。注意，这里的“memory”不仅指多张GPU memory，还包括CPU。<br></p>
+<p>而ZeRO的实现方法，就是把参数占用，逻辑上分成三种类型。将这些类型的参数划分：</p>
+<ol>
+<li><font color=#f00000>optimizer states</font>：即优化器的参数状态。例如，Adam的动量参数。</li>
+<li><font color=#f00000>gradients</font>：梯度缓存，对应于optimizer。</li>
+<li><font color=#f00000>parameters</font>：模型参数。</li>
+</ol>
+<p>对应的，DeepSpeed的ZeRO config文件就可以分为如下几类：</p>
+<ol>
+<li><font color=#f00000>ZeRO Stage 1</font>: 划分optimizer states。优化器参数被划分到多个memory上，每个momoey上的进程只负责更新它自己那部分参数。</li>
+<li><font color=#f00000>ZeRO Stage 2</font>: 划分gradient。每个memory，只保留它分配到的optimizer state所对应的梯度。这很合理，因为梯度和optimizer是紧密联系在一起的。只知道梯度，不知道optimizer state，是没有办法优化模型参数的。</li>
+<li><font color=#f00000>ZeRO Stage 3</font>: 划分模型参数，或者说，不同的layer. ZeRO-3会在forward和backward的时候，自动将模型参数分配到多个memory。</li>
+</ol>
+<p><strong>示例</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;bfloat16&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;fp16&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;enabled&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;loss_scale&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;loss_scale_window&#34;</span>: <span style="color:#ae81ff">1000</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;initial_scale_power&#34;</span>: <span style="color:#ae81ff">16</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;hysteresis&#34;</span>: <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;min_loss_scale&#34;</span>: <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;optimizer&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;AdamW&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;params&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;lr&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;betas&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;eps&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;weight_decay&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;scheduler&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;WarmupLR&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;params&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;warmup_min_lr&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;warmup_max_lr&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;warmup_num_steps&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;zero_optimization&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;stage&#34;</span>: <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;offload_optimizer&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;device&#34;</span>: <span style="color:#e6db74">&#34;cpu&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;pin_memory&#34;</span>: true
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;allgather_partitions&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;allgather_bucket_size&#34;</span>: <span style="color:#ae81ff">2e8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;overlap_comm&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;reduce_scatter&#34;</span>: true,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;reduce_bucket_size&#34;</span>: <span style="color:#ae81ff">2e8</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;contiguous_gradients&#34;</span>: true
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;gradient_accumulation_steps&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;gradient_clipping&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;train_batch_size&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;train_micro_batch_size_per_gpu&#34;</span>: <span style="color:#e6db74">&#34;auto&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;steps_per_print&#34;</span>: <span style="color:#ae81ff">1e5</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="三megatron-lm">三、Megatron-LM</h2>
+<p><a href="https://arxiv.org/pdf/1909.08053v4.pdf" target="bland">《Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism》</a> <br>
+Megatron 是一篇极具影响力的论文，介绍了高效的模型并行架构。Megatron引入了张量并行(tensor parallelism)，这是一种模型并行的变体，它将模型分割成多块，以实现层内模型并行，从而达到与单个GPU基准线76%效率相当的水平（尽管基准线只有峰值FLOPS的30%）。<br></p>
+<p>Megatron意识到如果，你有一个网络模型 $Y=f(XW)$，你沿着列拆分开了 $W=[W1, W2]$ ，然后 $Y=[f(XW1), f(XW2)]$，所以你不需要做任何操作来同步 $Y$，transformer中唯一需要同步（all-reduce）的点是：</p>
+<ol>
+<li>正向传播中，在MLP块后拼接模型激活值之前添加dropout时需要同步。</li>
+<li>反向传播中，在self-attention块的开始处需要进行同步。</li>
+</ol>
+<p>通过在这两个关键点进行同步操作，可以保证Transformer模型在计算过程中的正确性和一致性。</p>
+<p align="center"><img src="/datasets/posts/nlp/Megatron.png" width=60% height=60%></p>
+<p><a href="https://arxiv.org/pdf/2201.11990v3.pdf" target="bland">《Using DeepSpeed and Megatron to Train Megatron-Turing NLG 530B, A Large-Scale Generative Language Model》</a> <br></p>
+
+        </div>
+
+        
+        <div class="row pl-3 pr-3">
+        
+        <div class="col-md-6 share-buttons">
+        
+            <strong>分享:</strong>
+            
+            <a class="btn btn-sm facebook-btn" href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+            
+            
+                <a class="btn btn-sm twitter-btn" href="https://twitter.com/share?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f&text=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83%e6%a1%86%e6%9e%b6&via=biubiobiu%27s%20Blog" target="_blank">
+                  <i class="fab fa-twitter"></i>
+                </a>
+            
+            
+                <a  class="btn btn-sm reddit-btn" href="https://reddit.com/submit?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f&title=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83%e6%a1%86%e6%9e%b6" target="_blank">
+                  <i class="fab fa-reddit"></i>
+                </a>
+            
+            
+            
+            
+                <a class="btn btn-sm linkedin-btn" href="https://www.linkedin.com/shareArticle?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f&title=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83%e6%a1%86%e6%9e%b6" target="_blank">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+            
+            
+             
+            
+                 <a class="btn btn-sm whatsapp-btn" href="https://api.whatsapp.com/send?text=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83%e6%a1%86%e6%9e%b6 https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f" target="_blank">
+                  <i class="fab fa-whatsapp"></i>
+                </a>
+            
+            
+                <a class="btn btn-sm email-btn" href="mailto:?subject=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83%e6%a1%86%e6%9e%b6&body=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2f%25E5%25A4%25A7%25E6%25A8%25A1%25E5%259E%258B%25E8%25AE%25AD%25E7%25BB%2583%25E6%25A1%2586%25E6%259E%25B6%2f" target="_blank">
+                  <i class="fas fa-envelope-open-text"></i>
+                </a>
+            
+          
+          </div>
+
+        
+        
+        </div>
+
+
+
+      
+      <hr />
+        
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+    
+    
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+<div class="row next-prev-navigator">
+  
+    <div class="col-md-6 previous-article">
+      <a href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5/" title="模型应用策略" class="btn btn-outline-info">
+        <div><i class="fas fa-chevron-circle-left"></i> 上一篇</div>
+        <div class="next-prev-text">模型应用策略</div>
+      </a>
+    </div>
+  
+  
+      
+      
+        
+      
+      <div class="col-md-6 next-article">
+        <a href="/zh-cn/posts/%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83/" title="混合精度训练" class="btn btn-outline-info">
+          <div>下一篇 <i class="fas fa-chevron-circle-right"></i></div>
+          <div class="next-prev-text">混合精度训练</div>
+        </a>
+      </div>
+    
+</div>
+
+      <hr />
+
+      
+      
+
+      
+      
+
+      </div>
+    </div>
+  </div>
+  
+  <a id="scroll-to-top" class="btn"><i class="fas fa-chevron-circle-up"></i></a>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section post-toc-collapsible" id="toc-section">
+    
+    <div class="toc-holder">
+      <div class="post-toc-toolbar">
+        <h5 class="text-center pl-3">目录</h5>
+        <button
+          class="post-toc-toggle"
+          id="post-toc-toggle"
+          type="button"
+          aria-controls="post-toc-content"
+          aria-expanded="true"
+          aria-label="收起文章目录"
+        >
+          <span>收起目录</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <hr class="post-toc-divider">
+      <div class="toc post-toc-content" id="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一简介">一、简介</a>
+      <ul>
+        <li><a href="#1并行计算">1、并行计算</a></li>
+        <li><a href="#2混合精度amp">2、混合精度(AMP)</a></li>
+        <li><a href="#3训练时的空间量">3、训练时的空间量</a>
+          <ul>
+            <li><a href="#a-模型参数parameter">a. 模型参数（parameter）</a></li>
+            <li><a href="#b-梯度gradient">b. 梯度（gradient）</a></li>
+            <li><a href="#c-中间状态">c. 中间状态</a></li>
+            <li><a href="#d-优化器optimizer">d. 优化器（Optimizer）</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#二deepspeed">二、Deepspeed</a>
+      <ul>
+        <li><a href="#1使用deepspeed">1、使用DeepSpeed</a></li>
+        <li><a href="#2zero">2、ZeRO</a></li>
+      </ul>
+    </li>
+    <li><a href="#三megatron-lm">三、Megatron-LM</a></li>
+  </ul>
+</nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+      
+    
+  
+
+
+  
+  
+  
+    
+  
+
+  
+  
+  
+
+  
+  
+  
+    
+  
+  
+
+  
+  
+  
+
+  <footer id="footer" class="container-fluid text-center align-content-center footer pb-2">
+    <div class="container pt-5">
+      <div class="row text-left">
+        
+        
+        <div class="col-12 footer-contact">
+          <div class="footer-contact-row">
+          <h5 class="footer-contact-title">联系方式:</h5>
+          <ul class="footer-contact-list">
+            
+              
+              
+                <li><a href="tel:&#43;0123456789">
+                  <span><i class="fas fa-phone-alt"></i></span>
+                  <span>电话：&#43;0123456789</span>
+                </a></li>
+              
+            
+              
+              
+                <li><a href="mailto:bsgshyn8@163.com" target="_blank" rel="noopener">
+                  <span><i class="fas fa-envelope"></i></span>
+                  <span>邮箱：bsgshyn8@163.com</span>
+                </a></li>
+              
+            
+          </ul>
+          </div>
+        </div>
+        
+        
+        
+      </div>
+    </div>
+    
+    <hr />
+    <div class="container">
+      <p id="disclaimer"><strong>免责声明:</strong> 这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经 作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。</p>
+    </div>
+    
+    
+    <hr />
+    <div class="container">
+      <div class="row text-left">
+        <div class="col-md-4">
+          <a id="theme" href="https://github.com/hossainemruz/toha" target="_blank" rel="noopener">
+            <img src="/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_3.png" alt="Toha Theme Logo">
+            Toha
+          </a>
+        </div>
+        <div class="col-md-4 text-center">© 2021 Copyright.</div>
+        <div class="col-md-4 text-right">
+          <a id="hugo" href="https://gohugo.io/" target="_blank" rel="noopener">Powered by
+          <img
+            src="/images/hugo-logo.svg"
+            alt="Hugo Logo"
+            height="18"
+          />
+          </a>
+        </div>
+      </div>
+    </div>
+    
+  </footer>
+
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/js/popper.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/js/navbar.js"></script>
+<script type="text/javascript" src="/js/plyr.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+<script type="text/javascript" src="/js/darkreader.js"></script>
+<script type="text/javascript" src="/js/darkmode-darkreader.js"></script>
+
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/js/single.js"></script>
+<script src="/js/post-sidebar-resizer.js?v=20260727-3"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+
+    <link rel="stylesheet" href="/katex/katex.min.css">
+<script type="text/javascript" defer src="/katex/katex.min.js"></script>
+<script type="text/javascript" defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);">
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false},
+              {left: '\\(', right: '\\)', display: false},
+              {left: '\\[', right: '\\]', display: true}
+          ],
+          throwOnError : false
+        });
+    });
+</script>
+
+
+
+
+
+
+    <script src="/js/mermaid-8.14.0.min.js"></script>
+<script>
+    mermaid.initialize({
+        startOnLoad:true
+    });
+</script>
+
+
+
+
+
+    
+</body>
+</html>

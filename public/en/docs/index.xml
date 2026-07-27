@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docs on biubiobiu&#39;s Blog</title>
+    <link>https://biubiobiu.github.io/en/docs/</link>
+    <description>Recent content in Docs on biubiobiu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Everything is mine</copyright><atom:link href="https://biubiobiu.github.io/en/docs/index.xml" rel="self" type="application/rss+xml" /><item>
+      <title>Writing Documentation</title>
+      <link>https://biubiobiu.github.io/en/docs/writing-docs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://biubiobiu.github.io/en/docs/writing-docs/</guid>
+      <description>Documents and blog posts Document pages focus on content. They omit the blog cover, author profile, publication date, tags, and sharing controls.
+Add a document Create a Markdown file under content/docs/, add its title, slug, weight, and menu.docs configuration, then write the document body in Markdown.
+Navigation Use Markdown headings to generate the table of contents on the right. The menu.docs fields control the document tree on the left.</description>
+    </item>
+    
+    
+  </channel>
+</rss>

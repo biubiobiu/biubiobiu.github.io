@@ -1,0 +1,2981 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Qwen-Image-Edit 总览图</title>
+    <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+
+<link rel="stylesheet" href="/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/css/layouts/main.css?v=20260727-5"/>
+<link rel="stylesheet" href="/css/navigators/navbar.css?v=20260727-7"/>
+<link rel="stylesheet" href="/css/plyr.css"/>
+<link rel="stylesheet" href="/css/flag-icon.min.css"/>
+
+
+<link rel="stylesheet" href="/fontawesome/css/all.min.css"/>
+
+
+
+<link rel="stylesheet" href="/css/colortheme/colortheme.css"/>
+
+
+
+
+
+  
+
+  
+  
+  
+    
+  
+  
+
+  <link rel="icon" type="image/png" href="/images/site/favicon_hu0d88336a9cbd3e68c7714efae786b0a9_38044_42x0_resize_box_3.png" />
+
+<meta property="og:title" content="Qwen-Image-Edit 总览图" />
+<meta property="og:description" content=" " />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://biubiobiu.github.io/zh-cn/posts/qwen-image-edit/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-07-25T17:19:00+08:00" />
+<meta property="article:modified_time" content="2026-07-25T17:19:00+08:00" />
+
+
+
+    
+    
+<meta name="description" content="Qwen-Image-Edit 总览图" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="/css/layouts/single.css?v=20260727-3"/>
+<link rel="stylesheet" href="/css/navigators/sidebar.css?v=20260727-1">
+
+<link rel="stylesheet" href="/css/style.css"/>
+<link rel="stylesheet" href="/css/layouts/post-sidebar-resizer.css?v=20260727-3"/>
+
+
+
+    
+
+
+
+
+
+  </head>
+
+  <body data-spy="scroll" data-target="#TableOfContents" data-offset="80">
+    <div class="container-fluid bg-dimmed wrapper">
+      
+      
+    
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+  
+  
+    
+  
+  
+
+
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+  <div class="container">
+      <button class="navbar-toggler navbar-light" id="sidebar-toggler" type="button" onclick="toggleSidebar()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/zh-cn">
+      
+        <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" alt="Logo">
+      biubiobiu&#39;s Blog</a>
+    <button class="navbar-toggler navbar-light" id="toc-toggler" type="button" onclick="toggleTOC()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link primary-nav-link nav-home" href="/zh-cn">主页</a>
+        </li>
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-about" href="/zh-cn#about">关于</a>
+              </li>
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-skills" href="/zh-cn#skills">技能</a>
+              </li>
+            
+          
+            
+          
+            
+          
+            
+          
+            
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-recent-posts" href="/zh-cn#recent-posts">最新博客</a>
+              </li>
+            
+          
+            
+          
+            
+          
+        
+
+        
+        
+          <div class="dropdown-divider" id="top-navbar-divider"></div>
+        
+
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-posts active" id="blog-link" href="/zh-cn/posts">博文</a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-notes" id="note-link" href="/zh-cn/notes">笔记</a>
+          </li>
+        
+        
+          
+            <li class="nav-item">
+              <a class="nav-link primary-nav-link nav-docs" href="/zh-cn/docs/">文档</a>
+            </li>
+          
+        
+
+      
+      
+        <li class="nav-item dropdown">
+
+<div id="theme-initialization" style="display: none;"
+  default-theme="system"></div>
+<a class="nav-link dropdown-toggle"  href="#" id="themeSelector" role="button"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <img id="navbar-theme-icon-svg" src="/icons/moon-svgrepo-com.svg" width=20>
+</a>
+<div class="dropdown-menu dropdown-menu-icons-only" aria-labelledby="themeSelector">
+  <a class="dropdown-item nav-link" href="#" onclick="enableLightTheme()">
+    <img class="menu-icon-center" src="/icons/sun-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="enableDarkTheme()">
+    <img class="menu-icon-center" src="/icons/moon-svgrepo-com.svg" width=20>
+  </a>
+  <a class="dropdown-item nav-link" href="#" onclick="useSystemTheme()">
+    <img class="menu-icon-center" src="/icons/computer-svgrepo-com.svg" width=20>
+  </a>
+</div>
+</li>
+      
+      </ul>
+    </div>
+  </div>
+  
+  
+    <img src="/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_3.png" class="d-none" id="main-logo" alt="Logo">
+  
+  
+    <img src="/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_3.png" class="d-none" id="inverted-logo" alt="Inverted Logo">
+  
+</nav>
+
+
+
+      
+      
+  <section class="sidebar-section post-sidebar-resizable" id="sidebar-section">
+    <div class="sidebar-holder">
+      <div class="post-sidebar-toolbar">
+        <button
+          class="post-sidebar-toggle"
+          id="post-sidebar-toggle"
+          type="button"
+          aria-controls="post-sidebar-content"
+          aria-expanded="true"
+          aria-label="收起左侧目录"
+        >
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          <span>收起目录</span>
+        </button>
+      </div>
+      <div class="sidebar post-sidebar-content" id="post-sidebar-content">
+        <form class="mx-auto" method="get" action="/zh-cn/search">
+          <input type="text" name="keyword" value="" placeholder="搜索" data-search="" id="search-box" />
+        </form>
+        <div class="sidebar-tree">
+          <ul class="tree" id="tree">
+            <li id="list-heading"><a href="/zh-cn/posts" data-filter="all">博文</a></li>
+            <div class="subtree">
+                
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/toha-tutorial/">Toha教程</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/toha%E7%9A%84%E9%85%8D%E7%BD%AE/" title="Toha的配置">Toha的配置</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%92%B0%E5%86%99%E6%96%87%E7%AB%A0/" title="撰写文章">撰写文章</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/" title="MarkDown入门">MarkDown入门</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/katex%E5%85%AC%E5%BC%8F/" title="Katex公式">Katex公式</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%8C%BA%E5%9F%9F%E5%9D%97-%E5%AE%9E%E4%BE%8B/" title="区域块-实例">区域块-实例</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math/">数学知识</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-probability/">概率论</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/probability-basics/" title="基本概念">基本概念</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E5%8F%8A%E5%85%B6%E5%88%86%E5%B8%83/" title="随机变量及其分布">随机变量及其分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A4%A7%E6%95%B0%E5%AE%9A%E5%BE%8B/" title="大数定律">大数定律</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A0%B7%E6%9C%AC%E5%8F%8A%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83/" title="样本及抽样分布">样本及抽样分布</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/" title="假设检验">假设检验</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E5%8F%8A%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/" title="方差分析及回归分析">方差分析及回归分析</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="随机过程">随机过程</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE/" title="马尔科夫链">马尔科夫链</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B3%E7%A8%B3%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/" title="平稳随机过程">平稳随机过程</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/math-convex/">凸优化</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/convex-optimization-basics/" title="基本概念">基本概念</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/deep-learning/">深度学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%BC%80%E7%AF%87/" title="深度学习开篇">深度学习开篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BB%93%E6%9E%84/" title="深度学习-结构">深度学习-结构</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BD%92%E4%B8%80%E5%8C%96/" title="归一化">归一化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9D%E5%A7%8B%E5%8C%96/" title="初始化">初始化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%94%BB%E5%9B%BE%E7%AF%87/" title="神经网络画图篇">神经网络画图篇</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cam/" title="CAM">CAM</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/reinforcement-learning/">强化学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/reinforce-overview/" title="综述">综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/programming/">编程语言</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python/">Python</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-env/">env</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/py-env/" title="py-env">py-env</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cuda/" title="cuda">cuda</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-internal/">Internal</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/" title="字符编码">字符编码</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/python-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97/" title="内置模块">内置模块</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/" title="进阶操作">进阶操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%BC%82%E5%B8%B8/" title="异常">异常</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96/" title="文件读取">文件读取</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/python-sdk/">SDK</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B9%B6%E8%A1%8C%E6%93%8D%E4%BD%9C/" title="并行操作">并行操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/importlib%E5%8C%85/" title="importlib">importlib</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ipdb%E5%8C%85/" title="ipdb">ipdb</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99/" title="正则-re">正则-re</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A0%86-heapq/" title="堆-heapq">堆-heapq</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/requests/" title="requests">requests</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/logging/" title="logging">logging</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/argparse/" title="argparse">argparse</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pil/" title="PIL">PIL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/opencv/" title="OpenCV">OpenCV</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow/">TensorFlow</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/tensorflow-compat/">兼容1.x</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E9%9D%99%E6%80%81%E5%9B%BE/" title="静态图">静态图</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensorflow-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/pytorch/">PyTorch</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-basics/" title="基础操作">基础操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/" title="数学计算">数学计算</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/tensor%E5%92%8C%E5%8F%98%E9%87%8F/" title="Tensor和变量">Tensor和变量</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/pytorch-model-training/" title="模型训练">模型训练</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet/">MxNet</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/mxnet-ndarray/">NdArray</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/ndarray%E4%BD%BF%E7%94%A8/" title="NdArray使用">NdArray使用</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/database/">数据库</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mysql/" title="MySQL">MySQL</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hive/">Hive</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%88%9B%E5%BB%BA%E5%BA%93/%E8%A1%A8/" title="创建库/表">创建库/表</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0/" title="常见函数">常见函数</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="常用操作">常用操作</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" title="数据类型">数据类型</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/" title="正则匹配">正则匹配</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv/">CV</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-backbone/">基础</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cnn/" title="CNN">CNN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/optimizer/" title="optimizer">optimizer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/backbone-net/" title="backbone net">backbone net</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-contrastive-learning/">对比学习</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/contrastive-learning/" title="contrastive learning">contrastive learning</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-vision-transformer/">ViT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vision-transformer/" title="vision transformer">vision transformer</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-detect/">目标检测</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/object-detection-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-segment/">语义分割</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/semantic-segmentation-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/cv-image-matting/">抠图</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/" title="抠图综述">抠图综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/animal-matting/" title="animal matting">animal matting</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/nlp/">NLP</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/word-embedding/">Word Embedding</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/word-embedding%E7%BB%BC%E8%BF%B0/" title="Word Embedding综述">Word Embedding综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/rnn/">RNN</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/rnn%E7%BB%BC%E8%BF%B0/" title="RNN综述">RNN综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gru%E7%BD%91%E7%BB%9C/" title="GRU网络">GRU网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/lstm%E7%BD%91%E7%BB%9C/" title="LSTM网络">LSTM网络</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%9E%B6%E6%9E%84/" title="编解码架构">编解码架构</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/transformer/">Transformer</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/attention/" title="Attention">Attention</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/transformer/" title="Transformer">Transformer</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/" title="位置编码">位置编码</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/gpt/">GPT</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt%E7%BB%BC%E8%BF%B0/" title="GPT综述">GPT综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt-1/" title="GPT-1">GPT-1</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bert/">Bert</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E7%BB%BC%E8%BF%B0/" title="Bert综述">Bert综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bert%E5%AE%B6%E6%97%8F/" title="Bert家族">Bert家族</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/t5/">T5</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/t5%E7%BB%BC%E8%BF%B0/" title="T5综述">T5综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/bart/">BART</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/bart%E7%BB%BC%E8%BF%B0/" title="BART综述">BART综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/electra/">ELECTRA</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/electra%E7%BB%BC%E8%BF%B0/" title="ELECTRA综述">ELECTRA综述</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/code/">CODE</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/code%E8%A7%A3%E6%9E%90/" title="code解析">code解析</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc/">AIGC</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-summary/">AIGC综述</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/aigc-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llm-%E6%95%B0%E6%8D%AE%E9%9B%86/" title="LLM-数据集">LLM-数据集</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5/" title="模型应用策略">模型应用策略</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/" title="大模型训练框架">大模型训练框架</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83/" title="混合精度训练">混合精度训练</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%B0%8F%E5%9E%8B%E5%8C%96/" title="模型小型化">模型小型化</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E5%BC%8F-%E9%97%AE%E9%A2%98/" title="生成式-问题">生成式-问题</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B-%E8%AF%84%E4%BC%B0/" title="生成模型-评估">生成模型-评估</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-text/">文本生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gpt/" title="GPT">GPT</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/llama/" title="LLaMa">LLaMa</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/palm/" title="PaLM">PaLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/chatglm/" title="ChatGLM">ChatGLM</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/claude/" title="Claude">Claude</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/cohere/" title="Cohere">Cohere</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/falcon/" title="Falcon">Falcon</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vicuna/" title="Vicuna">Vicuna</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/aigc-image/">图像生成</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/image-generation-overview/" title="综述">综述</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/gan/" title="GAN">GAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/can/" title="CAN">CAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/dall-e/" title="DALL-E">DALL-E</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/vqgan/" title="VQGAN">VQGAN</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/diffusion/" title="Diffusion">Diffusion</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/midjourney/" title="Midjourney">Midjourney</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/imagen/" title="Imagen">Imagen</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/vlp/">多模态</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/multimodal-overview/" title="简介">简介</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/clip/" title="CLIP">CLIP</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/mllm/" title="MLLM">MLLM</a></li>
+  
+
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li>
+      <i class="fas fa-minus-circle"></i><a class="active" href="/zh-cn/topics/qwen/">Qwen</a>
+      
+      <ul class="active">
+        
+  
+  
+  
+  
+    
+    
+  
+  
+    
+    <li><a class="active" href="/zh-cn/posts/qwen-image-edit/" title="总览图">总览图</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/hunyuan/">混元</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-technical-report/" title="混元技术报告">混元技术报告</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-overview/" title="网络结构总览">网络结构总览</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vit/" title="ViT 网络结构详解">ViT 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-vae/" title="VAE 网络结构详解">VAE 网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-backbone/" title="主干网络结构详解">主干网络结构详解</a></li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/hunyuan-image-3-flow-matching/" title="Flow Matching 详解">Flow Matching 详解</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+      </ul>
+    </li>
+  
+
+  
+  
+  
+  
+  
+    
+    <li>
+      <i class="fas fa-plus-circle"></i><a class="" href="/zh-cn/topics/video/">视频理解</a>
+      
+      <ul class="">
+        
+  
+  
+  
+  
+  
+    
+    <li><a class="" href="/zh-cn/posts/video-understanding-overview/" title="简介">简介</a></li>
+  
+
+
+      </ul>
+    </li>
+  
+
+
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button
+      class="post-sidebar-resizer"
+      id="post-sidebar-resizer"
+      type="button"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="调整左侧目录宽度"
+      aria-valuemin="220"
+      aria-valuemax="520"
+      aria-valuenow="320"
+    ></button>
+  </section>
+
+
+      
+      
+<section class="content-section" id="content-section">
+  <div class="content">
+    <div class="container p-0 read-area">
+      
+      <div class="hero-area col-sm-12" id="hero-area" style='background-image: url(/datasets/posts/mmlm/qwen/qwen.png);'>
+      </div>
+
+      
+      <div class="page-content">
+        <div class="author-profile ml-auto align-self-lg-center">
+          <img class="rounded-circle" src='/images/author/john_hu7f9991f5b5d471ecdfc6cff3db1a9fe6_6397_120x120_fit_box_3.png' alt="Author Image">
+          <h5 class="author-name">biubiobiu</h5>
+          <p>July 25, 2026</p>
+        </div>
+
+        <div class="title">
+          <h1>Qwen-Image-Edit 总览图</h1>
+        </div>
+        
+        <div class="taxonomy-terms">
+            <ul>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/qwen" class="btn, btn-sm">Qwen</a></li>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/%E5%A4%9A%E6%A8%A1%E6%80%81" class="btn, btn-sm">多模态</a></li>
+            
+            
+            <li class="rounded"><a href="/zh-cn/tags/%E5%9B%BE%E5%83%8F%E7%BC%96%E8%BE%91" class="btn, btn-sm">图像编辑</a></li>
+            
+          </ul>
+        </div>
+        
+        <div class="post-content" id="post-content">
+          <div class="embedded-html">
+  <iframe
+    id="embedded-html-af361be46d82782535a098f80204437a-0"
+    class="embedded-html-frame"
+    title="Qwen-Image-Edit-2511 全流程总览图"
+    srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&#34;zh-CN&#34;&gt;
+&lt;head&gt;&lt;base target=&#34;_top&#34;&gt;
+&lt;meta charset=&#34;UTF-8&#34;&gt;
+&lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, initial-scale=1.0&#34;&gt;
+&lt;title&gt;Qwen-Image-Edit 全流程总览图&lt;/title&gt;
+&lt;style&gt;
+  :root {
+    --ink: #1f2933; --ink-soft: #52606d; --line: #e4e7eb; --bg: #f8f9fb; --card: #ffffff;
+    --accent: #2563eb; --accent-soft: #eff6ff; --green: #059669; --green-soft: #ecfdf5;
+    --amber: #b45309; --amber-soft: #fffbeb; --purple: #7c3aed; --purple-soft: #f5f3ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, &#34;PingFang SC&#34;, &#34;Hiragino Sans GB&#34;, &#34;Microsoft YaHei&#34;, sans-serif;
+    font-size: 15px; line-height: 1.75; }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 26px; margin: 8px 0 4px; }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px; margin: 14px 0; }
+  .callout-key { border-left: 4px solid var(--green); background: var(--green-soft); }
+  code { background: #eef1f4; padding: 1px 6px; border-radius: 4px; font-family: &#34;SF Mono&#34;, Menlo, Consolas, monospace; font-size: 12.5px; }
+  a { color: var(--accent); }
+  .fig { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; overflow-x: auto; }
+  .fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .fig .cap { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+  ul { padding-left: 22px; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;main&gt;
+
+&lt;h1&gt;Qwen-Image-Edit-2511 全流程总览图&lt;/h1&gt;
+&lt;div class=&#34;meta&#34;&gt;一张图串起 Text Encoder（含 ViT）、VAE、DiT（40 步循环 &#43; 四输入组装）· 贯穿示例：两张参考图 &#43; 「生成这两个人的合影」→ 1024×1024 合影&lt;/div&gt;
+
+&lt;div class=&#34;card callout-key&#34;&gt;
+  &lt;b&gt;读图主线&lt;/b&gt;：参考图&lt;b&gt;兵分两路&lt;/b&gt;（低清走 ViT 给语义、高清走 VAE 给像素）→ 与指令一起在 Text Encoder 里融合成需求文档 → DiT 带着四个输入循环 40 步，每步预测一个「修改方向」→ 干净 latent 最后由 VAE Decoder 一次性翻译成像素。蓝❄ = 冻结，绿🔥 = 训练时唯一更新的部分。
+&lt;/div&gt;
+
+&lt;div class=&#34;fig&#34;&gt;
+&lt;svg viewBox=&#34;0 0 1200 1560&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; font-family=&#34;-apple-system,&#39;PingFang SC&#39;,sans-serif&#34;&gt;
+  &lt;defs&gt;
+    &lt;marker id=&#34;g&#34; markerWidth=&#34;9&#34; markerHeight=&#34;9&#34; refX=&#34;7&#34; refY=&#34;4.5&#34; orient=&#34;auto&#34;&gt;&lt;path d=&#34;M0,0 L8,4.5 L0,9 z&#34; fill=&#34;#52606d&#34;/&gt;&lt;/marker&gt;
+    &lt;marker id=&#34;gb&#34; markerWidth=&#34;9&#34; markerHeight=&#34;9&#34; refX=&#34;7&#34; refY=&#34;4.5&#34; orient=&#34;auto&#34;&gt;&lt;path d=&#34;M0,0 L8,4.5 L0,9 z&#34; fill=&#34;#2563eb&#34;/&gt;&lt;/marker&gt;
+    &lt;marker id=&#34;gp&#34; markerWidth=&#34;9&#34; markerHeight=&#34;9&#34; refX=&#34;7&#34; refY=&#34;4.5&#34; orient=&#34;auto&#34;&gt;&lt;path d=&#34;M0,0 L8,4.5 L0,9 z&#34; fill=&#34;#7c3aed&#34;/&gt;&lt;/marker&gt;
+    &lt;marker id=&#34;gg&#34; markerWidth=&#34;9&#34; markerHeight=&#34;9&#34; refX=&#34;7&#34; refY=&#34;4.5&#34; orient=&#34;auto&#34;&gt;&lt;path d=&#34;M0,0 L8,4.5 L0,9 z&#34; fill=&#34;#059669&#34;/&gt;&lt;/marker&gt;
+    &lt;marker id=&#34;ga&#34; markerWidth=&#34;9&#34; markerHeight=&#34;9&#34; refX=&#34;7&#34; refY=&#34;4.5&#34; orient=&#34;auto&#34;&gt;&lt;path d=&#34;M0,0 L8,4.5 L0,9 z&#34; fill=&#34;#b45309&#34;/&gt;&lt;/marker&gt;
+  &lt;/defs&gt;
+
+  &lt;text x=&#34;600&#34; y=&#34;30&#34; text-anchor=&#34;middle&#34; font-size=&#34;17&#34; font-weight=&#34;800&#34;&gt;Qwen-Image-Edit：从「指令 &#43; 参考图」到「成品图」的完整旅程&lt;/text&gt;
+
+  &lt;!-- ═══════════ 输入区 ═══════════ --&gt;
+  &lt;rect x=&#34;60&#34; y=&#34;56&#34; width=&#34;340&#34; height=&#34;64&#34; rx=&#34;10&#34; fill=&#34;#fff&#34; stroke=&#34;#1f2933&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;230&#34; y=&#34;83&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;700&#34;&gt;用户指令&lt;/text&gt;
+  &lt;text x=&#34;230&#34; y=&#34;104&#34; text-anchor=&#34;middle&#34; font-size=&#34;12&#34; fill=&#34;#52606d&#34;&gt;「生成这两个人的合影」&lt;/text&gt;
+
+  &lt;rect x=&#34;560&#34; y=&#34;56&#34; width=&#34;250&#34; height=&#34;64&#34; rx=&#34;10&#34; fill=&#34;#f5f3ff&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.5&#34; stroke-dasharray=&#34;6,4&#34;/&gt;
+  &lt;text x=&#34;685&#34; y=&#34;83&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;700&#34; fill=&#34;#7c3aed&#34;&gt;参考图 1（人物 A）&lt;/text&gt;
+  &lt;text x=&#34;685&#34; y=&#34;104&#34; text-anchor=&#34;middle&#34; font-size=&#34;11&#34; fill=&#34;#52606d&#34;&gt;同一张图将走两条路 ↓&lt;/text&gt;
+
+  &lt;rect x=&#34;850&#34; y=&#34;56&#34; width=&#34;250&#34; height=&#34;64&#34; rx=&#34;10&#34; fill=&#34;#f5f3ff&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.5&#34; stroke-dasharray=&#34;6,4&#34;/&gt;
+  &lt;text x=&#34;975&#34; y=&#34;83&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;700&#34; fill=&#34;#7c3aed&#34;&gt;参考图 2（人物 B）&lt;/text&gt;
+  &lt;text x=&#34;975&#34; y=&#34;104&#34; text-anchor=&#34;middle&#34; font-size=&#34;11&#34; fill=&#34;#52606d&#34;&gt;同一张图将走两条路 ↓&lt;/text&gt;
+
+  &lt;!-- ═══════════ Text Encoder 容器 ═══════════ --&gt;
+  &lt;rect x=&#34;40&#34; y=&#34;200&#34; width=&#34;560&#34; height=&#34;516&#34; rx=&#34;14&#34; fill=&#34;#fbfdff&#34; stroke=&#34;#2563eb&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;320&#34; y=&#34;228&#34; text-anchor=&#34;middle&#34; font-size=&#34;14&#34; font-weight=&#34;800&#34; fill=&#34;#2563eb&#34;&gt;Text Encoder：Qwen2.5-VL-7B ❄ 冻结 —— 语义通路（听懂要干什么）&lt;/text&gt;
+
+  &lt;rect x=&#34;70&#34; y=&#34;244&#34; width=&#34;500&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#fff&#34; stroke=&#34;#94a3b8&#34;/&gt;
+  &lt;text x=&#34;320&#34; y=&#34;266&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34;&gt;① Chat 模板包装&lt;/text&gt;
+  &lt;text x=&#34;320&#34; y=&#34;286&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;system 引导词 &#43; Picture 1: ⟨占位符⟩ Picture 2: ⟨占位符⟩ &#43; 指令（每图只占 1 个占位符）&lt;/text&gt;
+
+  &lt;rect x=&#34;70&#34; y=&#34;326&#34; width=&#34;235&#34; height=&#34;90&#34; rx=&#34;8&#34; fill=&#34;#eff6ff&#34; stroke=&#34;#2563eb&#34;/&gt;
+  &lt;text x=&#34;187&#34; y=&#34;348&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#2563eb&#34;&gt;② 切词 &#43; 查 embedding 表&lt;/text&gt;
+  &lt;text x=&#34;187&#34; y=&#34;368&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;占位符复制成 196 个坑位/图&lt;/text&gt;
+  &lt;text x=&#34;187&#34; y=&#34;386&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;⇒ (1, 482, 3584)&lt;/text&gt;
+  &lt;text x=&#34;187&#34; y=&#34;404&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;其中 392 个位置是空坑 ▢&lt;/text&gt;
+
+  &lt;rect x=&#34;335&#34; y=&#34;326&#34; width=&#34;235&#34; height=&#34;164&#34; rx=&#34;8&#34; fill=&#34;#f5f3ff&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;452&#34; y=&#34;348&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;700&#34; fill=&#34;#7c3aed&#34;&gt;③ ViT 视觉塔（32 层）&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;370&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;缩放 ~384² → 对齐 392²&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;388&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;切 14×14 像素 patch → 784 块(1280维)&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;406&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;窗口注意力 112px 为主&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;424&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;第 7/15/23/31 层全局注意力&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;442&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;出口 2×2 合并 &#43; MLP 投到 3584&lt;/text&gt;
+  &lt;text x=&#34;452&#34; y=&#34;464&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; font-weight=&#34;600&#34; fill=&#34;#7c3aed&#34;&gt;⇒ 每图 (196, 3584)「视觉词」&lt;/text&gt;
+
+  &lt;rect x=&#34;70&#34; y=&#34;440&#34; width=&#34;235&#34; height=&#34;76&#34; rx=&#34;8&#34; fill=&#34;#fffbeb&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;187&#34; y=&#34;462&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#b45309&#34;&gt;④ 挖坑填空 ★&lt;/text&gt;
+  &lt;text x=&#34;187&#34; y=&#34;482&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;ViT 输出按位覆盖 392 个坑&lt;/text&gt;
+  &lt;text x=&#34;187&#34; y=&#34;500&#34; text-anchor=&#34;middle&#34; font-size=&#34;10&#34; fill=&#34;#52606d&#34;&gt;⇒ 图文交错序列 (1, 482, 3584)&lt;/text&gt;
+
+  &lt;rect x=&#34;70&#34; y=&#34;544&#34; width=&#34;500&#34; height=&#34;72&#34; rx=&#34;8&#34; fill=&#34;#eff6ff&#34; stroke=&#34;#2563eb&#34;/&gt;
+  &lt;text x=&#34;320&#34; y=&#34;566&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#2563eb&#34;&gt;⑤ 28 层语言主干（GQA · SwiGLU · M-RoPE 三维坐标）&lt;/text&gt;
+  &lt;text x=&#34;320&#34; y=&#34;586&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;文字与视觉 token 逐层互相注意力——「合影」吸收两张图的长相信息&lt;/text&gt;
+  &lt;text x=&#34;320&#34; y=&#34;604&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;每层输出 (1, 482, 3584) 形状不变，内容越来越「懂上下文」&lt;/text&gt;
+
+  &lt;rect x=&#34;70&#34; y=&#34;640&#34; width=&#34;500&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#ecfdf5&#34; stroke=&#34;#059669&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;320&#34; y=&#34;662&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#059669&#34;&gt;⑥ 取最后一层 hidden states（不生成文字），丢模板前缀 64 个&lt;/text&gt;
+  &lt;text x=&#34;320&#34; y=&#34;682&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;⇒ prompt_emb (1, 418, 3584) ——「需求文档」完成&lt;/text&gt;
+
+  &lt;!-- TE 内部箭头 --&gt;
+  &lt;line x1=&#34;187&#34; y1=&#34;300&#34; x2=&#34;187&#34; y2=&#34;324&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;line x1=&#34;187&#34; y1=&#34;416&#34; x2=&#34;187&#34; y2=&#34;438&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;path d=&#34;M335,478 L307,478&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#gp)&#34;/&gt;
+  &lt;path d=&#34;M187,516 L187,530 L320,530 L320,542&#34; fill=&#34;none&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;line x1=&#34;320&#34; y1=&#34;616&#34; x2=&#34;320&#34; y2=&#34;638&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+
+  &lt;!-- ═══════════ VAE Encoder 容器 ═══════════ --&gt;
+  &lt;rect x=&#34;640&#34; y=&#34;200&#34; width=&#34;520&#34; height=&#34;240&#34; rx=&#34;14&#34; fill=&#34;#fdfbff&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;228&#34; text-anchor=&#34;middle&#34; font-size=&#34;14&#34; font-weight=&#34;800&#34; fill=&#34;#7c3aed&#34;&gt;VAE Encoder ❄ 冻结 —— 像素通路（保住长什么样）&lt;/text&gt;
+
+  &lt;rect x=&#34;670&#34; y=&#34;246&#34; width=&#34;460&#34; height=&#34;72&#34; rx=&#34;8&#34; fill=&#34;#fff&#34; stroke=&#34;#94a3b8&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;270&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34;&gt;参考图保持高清 ~1024×1024 → 3D 卷积 Encoder，8× 空间下采样&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;290&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;1024×1024×3 像素 → 逐通道标准化 ⇒ &lt;tspan font-weight=&#34;700&#34;&gt;每图 latent (16, 128, 128)&lt;/tspan&gt;&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;308&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;干净、全程不加噪 —— 这是「素材原件」&lt;/text&gt;
+
+  &lt;rect x=&#34;670&#34; y=&#34;342&#34; width=&#34;460&#34; height=&#34;72&#34; rx=&#34;8&#34; fill=&#34;#f5f3ff&#34; stroke=&#34;#7c3aed&#34; stroke-dasharray=&#34;4,3&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;366&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;与 ViT 通路互补：ViT 给「这是谁、在干嘛」（语义，196 token/图）&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;386&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;VAE 给「每一块皮肤发丝长什么样」（像素，之后变 4096 token/图）&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;406&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;缺 ViT → 看不懂指令里的「这两个人」；缺 VAE → 合影里换了张脸&lt;/text&gt;
+
+  &lt;!-- ═══════════ 采样准备容器 ═══════════ --&gt;
+  &lt;rect x=&#34;640&#34; y=&#34;470&#34; width=&#34;520&#34; height=&#34;246&#34; rx=&#34;14&#34; fill=&#34;#fffdf7&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;498&#34; text-anchor=&#34;middle&#34; font-size=&#34;14&#34; font-weight=&#34;800&#34; fill=&#34;#b45309&#34;&gt;采样准备 —— 画布与进度表&lt;/text&gt;
+
+  &lt;rect x=&#34;670&#34; y=&#34;514&#34; width=&#34;460&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#fff&#34; stroke=&#34;#94a3b8&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;538&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34;&gt;随机高斯噪声 = 初始画布 (1, 16, 128, 128)&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;558&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;26 万个随机数，零信息 —— 每次抽的不同，所以同一指令能出不同的图&lt;/text&gt;
+
+  &lt;rect x=&#34;670&#34; y=&#34;600&#34; width=&#34;460&#34; height=&#34;96&#34; rx=&#34;8&#34; fill=&#34;#fff&#34; stroke=&#34;#94a3b8&#34;/&gt;
+  &lt;text x=&#34;900&#34; y=&#34;622&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34;&gt;调度器排好 40 个停靠站：σ 从 1 → 0（t = σ×1000）&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;642&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;按分辨率指数 shift（1024² 时 μ≈0.69），高噪声区站点更密&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;662&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;每站：t → 正弦编码(256 维「指纹」) → MLP ⇒ temb (1, 3072)&lt;/text&gt;
+  &lt;text x=&#34;900&#34; y=&#34;682&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#b45309&#34;&gt;temb 不进 token 序列，专走「调制」通道 ↓&lt;/text&gt;
+
+  &lt;!-- ═══════════ DiT 容器 ═══════════ --&gt;
+  &lt;rect x=&#34;40&#34; y=&#34;756&#34; width=&#34;1120&#34; height=&#34;590&#34; rx=&#34;14&#34; fill=&#34;#f7fdfa&#34; stroke=&#34;#059669&#34; stroke-width=&#34;2.5&#34;/&gt;
+  &lt;text x=&#34;600&#34; y=&#34;786&#34; text-anchor=&#34;middle&#34; font-size=&#34;14.5&#34; font-weight=&#34;800&#34; fill=&#34;#059669&#34;&gt;DiT · 20B 🔥 唯一被训练的部分 —— 以下流程循环 40 步，每步一次（CFG 下正/负提示各前向一遍）&lt;/text&gt;
+
+  &lt;!-- 四输入组装 --&gt;
+  &lt;rect x=&#34;70&#34; y=&#34;806&#34; width=&#34;330&#34; height=&#34;80&#34; rx=&#34;8&#34; fill=&#34;#eff6ff&#34; stroke=&#34;#2563eb&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;235&#34; y=&#34;828&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#2563eb&#34;&gt;文本流（输入③：需求文档）&lt;/text&gt;
+  &lt;text x=&#34;235&#34; y=&#34;848&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;prompt_emb → RMSNorm → txt_in(3584→3072)&lt;/text&gt;
+  &lt;text x=&#34;235&#34; y=&#34;868&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;⇒ 418 个 token&lt;/text&gt;
+
+  &lt;rect x=&#34;430&#34; y=&#34;806&#34; width=&#34;440&#34; height=&#34;80&#34; rx=&#34;8&#34; fill=&#34;#ecfdf5&#34; stroke=&#34;#059669&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;650&#34; y=&#34;828&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#059669&#34;&gt;图像流（输入①画布 &#43; 输入④素材）&lt;/text&gt;
+  &lt;text x=&#34;650&#34; y=&#34;848&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;[带噪画布 | 参考图1 | 参考图2] 各 2×2 patch → img_in(64→3072)&lt;/text&gt;
+  &lt;text x=&#34;650&#34; y=&#34;868&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;⇒ 4096&#43;4096&#43;4096 = 12288 token（RoPE 帧号 0 / 1 / 2 区分）&lt;/text&gt;
+
+  &lt;rect x=&#34;900&#34; y=&#34;806&#34; width=&#34;230&#34; height=&#34;80&#34; rx=&#34;8&#34; fill=&#34;#fffbeb&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;1015&#34; y=&#34;828&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#b45309&#34;&gt;时间（输入②：进度）&lt;/text&gt;
+  &lt;text x=&#34;1015&#34; y=&#34;848&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;temb → 每层调制旋钮&lt;/text&gt;
+  &lt;text x=&#34;1015&#34; y=&#34;868&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;画布用 t 版 / 参考图用 t=0 版&lt;/text&gt;
+
+  &lt;!-- 60层 --&gt;
+  &lt;rect x=&#34;70&#34; y=&#34;920&#34; width=&#34;1060&#34; height=&#34;118&#34; rx=&#34;10&#34; fill=&#34;#fff&#34; stroke=&#34;#059669&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;600&#34; y=&#34;944&#34; text-anchor=&#34;middle&#34; font-size=&#34;12.5&#34; font-weight=&#34;700&#34; fill=&#34;#059669&#34;&gt;× 60 层双流 Transformer Block（两条流参数各一套，只在注意力交汇）&lt;/text&gt;
+  &lt;text x=&#34;600&#34; y=&#34;968&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#b45309&#34;&gt;调制 AdaLN：LayerNorm(x)·(1&#43;scale)&#43;shift，子层输出 ×gate —— t 的「广播喇叭」，逐层调整工作模式&lt;/text&gt;
+  &lt;text x=&#34;600&#34; y=&#34;990&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;联合注意力：418&#43;12288 = 12706 个 token 全员互见 —— 画布→文本（读需求）、画布→参考图（搬脸）、画布→画布（自洽）一次算完&lt;/text&gt;
+  &lt;text x=&#34;600&#34; y=&#34;1012&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;FFN 3072→12288→3072 · 3D RoPE：(帧,高,宽) 三维坐标，「画布(0,30,40)」与「参1(1,30,40)」同位跨帧对照&lt;/text&gt;
+
+  &lt;!-- 出口 --&gt;
+  &lt;rect x=&#34;70&#34; y=&#34;1072&#34; width=&#34;620&#34; height=&#34;96&#34; rx=&#34;8&#34; fill=&#34;#fff&#34; stroke=&#34;#94a3b8&#34;/&gt;
+  &lt;text x=&#34;380&#34; y=&#34;1096&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34;&gt;出口：norm_out(temb 最后一次调制) → proj_out(3072→64)&lt;/text&gt;
+  &lt;text x=&#34;380&#34; y=&#34;1118&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;→ 只切画布前 4096 个 token（参考图/文本只读不产出）→ 反 patch 化&lt;/text&gt;
+  &lt;text x=&#34;380&#34; y=&#34;1140&#34; text-anchor=&#34;middle&#34; font-size=&#34;11&#34; font-weight=&#34;700&#34; fill=&#34;#dc2626&#34;&gt;⇒ v̂ (1,16,128,128)：本步「修改方向」——不是图！&lt;/text&gt;
+
+  &lt;rect x=&#34;720&#34; y=&#34;1072&#34; width=&#34;410&#34; height=&#34;96&#34; rx=&#34;8&#34; fill=&#34;#eff6ff&#34; stroke=&#34;#2563eb&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;925&#34; y=&#34;1096&#34; text-anchor=&#34;middle&#34; font-size=&#34;11.5&#34; font-weight=&#34;600&#34; fill=&#34;#2563eb&#34;&gt;Euler 走一步：x ← x &#43; v̂·(σ_next − σ)&lt;/text&gt;
+  &lt;text x=&#34;925&#34; y=&#34;1118&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;CFG：v̂ = v_空 &#43; 4.0×(v_正 − v_空)，强化对指令的服从&lt;/text&gt;
+  &lt;text x=&#34;925&#34; y=&#34;1140&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;画布向成品靠近一小格&lt;/text&gt;
+
+  &lt;!-- 循环回路 --&gt;
+  &lt;path d=&#34;M925,1168 L925,1220 L1150,1220 L1150,846 L1132,846&#34; fill=&#34;none&#34; stroke=&#34;#2563eb&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;7,5&#34; marker-end=&#34;url(#gb)&#34;/&gt;
+  &lt;text x=&#34;1043&#34; y=&#34;1210&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#2563eb&#34;&gt;未满 40 步：带新画布 &#43; 下一个 t 回到组装区&lt;/text&gt;
+  &lt;text x=&#34;1168&#34; y=&#34;1030&#34; font-size=&#34;10.5&#34; fill=&#34;#2563eb&#34; transform=&#34;rotate(90 1168 1030)&#34;&gt;t: 990 → 973 → … → 20（40 个停靠站）&lt;/text&gt;
+
+  &lt;!-- 40步走完 --&gt;
+  &lt;rect x=&#34;70&#34; y=&#34;1230&#34; width=&#34;620&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#ecfdf5&#34; stroke=&#34;#059669&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;380&#34; y=&#34;1256&#34; text-anchor=&#34;middle&#34; font-size=&#34;12&#34; font-weight=&#34;700&#34; fill=&#34;#059669&#34;&gt;40 步走完：干净 latent x₀ (1, 16, 128, 128)&lt;/text&gt;
+  &lt;text x=&#34;380&#34; y=&#34;1278&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;σ≈0，DiT 全部工作结束 —— 但它仍然不是像素&lt;/text&gt;
+
+  &lt;!-- DiT 内部箭头 --&gt;
+  &lt;path d=&#34;M235,886 L235,904 L600,904 L600,918&#34; fill=&#34;none&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;path d=&#34;M650,886 L650,904&#34; fill=&#34;none&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;path d=&#34;M1015,886 L1015,904 L600,904&#34; fill=&#34;none&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;1.5&#34; stroke-dasharray=&#34;4,3&#34;/&gt;
+  &lt;line x1=&#34;380&#34; y1=&#34;1038&#34; x2=&#34;380&#34; y2=&#34;1070&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.5&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;line x1=&#34;690&#34; y1=&#34;1120&#34; x2=&#34;718&#34; y2=&#34;1120&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;line x1=&#34;380&#34; y1=&#34;1168&#34; x2=&#34;380&#34; y2=&#34;1228&#34; stroke=&#34;#059669&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#gg)&#34;/&gt;
+  &lt;text x=&#34;300&#34; y=&#34;1200&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#059669&#34;&gt;第 40 步之后 ↓&lt;/text&gt;
+
+  &lt;!-- ═══════════ 输出区 ═══════════ --&gt;
+  &lt;rect x=&#34;430&#34; y=&#34;1390&#34; width=&#34;330&#34; height=&#34;72&#34; rx=&#34;10&#34; fill=&#34;#fdfbff&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;595&#34; y=&#34;1416&#34; text-anchor=&#34;middle&#34; font-size=&#34;12.5&#34; font-weight=&#34;700&#34; fill=&#34;#7c3aed&#34;&gt;VAE Decoder ❄（全程仅调用这一次）&lt;/text&gt;
+  &lt;text x=&#34;595&#34; y=&#34;1438&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;反标准化 → 三次 2× 上采样 → (3, 1024, 1024)&lt;/text&gt;
+
+  &lt;rect x=&#34;830&#34; y=&#34;1390&#34; width=&#34;300&#34; height=&#34;72&#34; rx=&#34;10&#34; fill=&#34;#ecfdf5&#34; stroke=&#34;#059669&#34; stroke-width=&#34;2.5&#34;/&gt;
+  &lt;text x=&#34;980&#34; y=&#34;1420&#34; text-anchor=&#34;middle&#34; font-size=&#34;13.5&#34; font-weight=&#34;800&#34; fill=&#34;#059669&#34;&gt;✓ 最终图片：两人的合影&lt;/text&gt;
+  &lt;text x=&#34;980&#34; y=&#34;1442&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;1024×1024，值域 [-1,1] → PIL 保存&lt;/text&gt;
+
+  &lt;path d=&#34;M380,1294 L380,1426 L428,1426&#34; fill=&#34;none&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;line x1=&#34;760&#34; y1=&#34;1426&#34; x2=&#34;828&#34; y2=&#34;1426&#34; stroke=&#34;#059669&#34; stroke-width=&#34;2&#34; marker-end=&#34;url(#gg)&#34;/&gt;
+
+  &lt;!-- ═══════════ 跨区大箭头 ═══════════ --&gt;
+  &lt;!-- 指令 → TE --&gt;
+  &lt;line x1=&#34;230&#34; y1=&#34;120&#34; x2=&#34;230&#34; y2=&#34;242&#34; stroke=&#34;#52606d&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#g)&#34;/&gt;
+  &lt;text x=&#34;180&#34; y=&#34;180&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#52606d&#34;&gt;原样进模板&lt;/text&gt;
+
+  &lt;!-- 参考图 → ViT（低清） --&gt;
+  &lt;path d=&#34;M660,120 L610,160 L500,160 L470,324&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#gp)&#34;/&gt;
+  &lt;path d=&#34;M900,120 L880,160 L520,160&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.8&#34;/&gt;
+  &lt;text x=&#34;570&#34; y=&#34;150&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#7c3aed&#34; font-weight=&#34;600&#34;&gt;路①低清 ~384²（给语义）&lt;/text&gt;
+
+  &lt;!-- 参考图 → VAE（高清） --&gt;
+  &lt;path d=&#34;M710,120 L740,180 L830,244&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#gp)&#34;/&gt;
+  &lt;path d=&#34;M1000,120 L980,180 L940,244&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;1.8&#34; marker-end=&#34;url(#gp)&#34;/&gt;
+  &lt;text x=&#34;1010&#34; y=&#34;176&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#7c3aed&#34; font-weight=&#34;600&#34;&gt;路②高清 ~1024²（给像素）&lt;/text&gt;
+
+  &lt;!-- TE 输出 → DiT 文本流 --&gt;
+  &lt;path d=&#34;M320,696 L320,740 L235,740 L235,804&#34; fill=&#34;none&#34; stroke=&#34;#2563eb&#34; stroke-width=&#34;2&#34; marker-end=&#34;url(#gb)&#34;/&gt;
+  &lt;text x=&#34;255&#34; y=&#34;762&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#2563eb&#34; font-weight=&#34;600&#34;&gt;(1, 418, 3584)&lt;/text&gt;
+
+  &lt;!-- VAE latents → DiT 图像流 --&gt;
+  &lt;path d=&#34;M760,440 L760,730 L700,730 L700,804&#34; fill=&#34;none&#34; stroke=&#34;#7c3aed&#34; stroke-width=&#34;2&#34; marker-end=&#34;url(#gp)&#34;/&gt;
+  &lt;text x=&#34;792&#34; y=&#34;740&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#7c3aed&#34; font-weight=&#34;600&#34;&gt;2 × (16,128,128)&lt;/text&gt;
+
+  &lt;!-- 噪声 → DiT 图像流 --&gt;
+  &lt;path d=&#34;M670,546 L620,546 L620,730 L580,730 L580,804&#34; fill=&#34;none&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;2&#34; marker-end=&#34;url(#ga)&#34;/&gt;
+  &lt;text x=&#34;592&#34; y=&#34;712&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#b45309&#34; font-weight=&#34;600&#34;&gt;画布（第 1 步 = 纯噪声）&lt;/text&gt;
+
+  &lt;!-- 调度器 → temb --&gt;
+  &lt;path d=&#34;M1015,696 L1015,804&#34; fill=&#34;none&#34; stroke=&#34;#b45309&#34; stroke-width=&#34;2&#34; marker-end=&#34;url(#ga)&#34;/&gt;
+  &lt;text x=&#34;1062&#34; y=&#34;742&#34; text-anchor=&#34;middle&#34; font-size=&#34;10.5&#34; fill=&#34;#b45309&#34; font-weight=&#34;600&#34;&gt;每步一个 temb&lt;/text&gt;
+
+  &lt;!-- 图例 --&gt;
+  &lt;text x=&#34;600&#34; y=&#34;1520&#34; text-anchor=&#34;middle&#34; font-size=&#34;11&#34; fill=&#34;#52606d&#34;&gt;图例：❄ 冻结（VAE / Text Encoder，训练时一动不动）· 🔥 训练（DiT，LoRA 加在这里）· 紫 = 参考图相关 · 橙 = 时间/噪声控制 · 蓝 = 文本/循环&lt;/text&gt;
+  &lt;text x=&#34;600&#34; y=&#34;1544&#34; text-anchor=&#34;middle&#34; font-size=&#34;11&#34; fill=&#34;#52606d&#34;&gt;token 总账（本例）：Text Encoder 内 482 · DiT 联合注意力 12706（文本 418 &#43; 画布 4096 &#43; 参考图 8192）· DiT 共前向 40×2 = 80 次，VAE Decoder 仅 1 次&lt;/text&gt;
+&lt;/svg&gt;
+&lt;div class=&#34;cap&#34;&gt;Qwen-Image-Edit-2511 完整数据流。参考图兵分两路（ViT 语义 / VAE 像素），四个输入在 DiT 汇合并循环 40 步，最终由 VAE Decoder 一次性译回像素。&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;/main&gt;
+&lt;script defer src=&#34;annotator.js&#34;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"
+    loading="lazy"
+  ></iframe>
+</div>
+
+<style>
+  .embedded-html {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .embedded-html-frame {
+    display: block;
+    width: 100%;
+    min-height: 720px;
+    border: 0;
+    background: #f8f9fb;
+  }
+</style>
+
+<script>
+  (function () {
+    var frame = document.getElementById("embedded-html-af361be46d82782535a098f80204437a-0");
+    if (!frame) {
+      return;
+    }
+
+    function resizeFrame() {
+      if (!frame.contentDocument) {
+        return;
+      }
+      var documentElement = frame.contentDocument.documentElement;
+      var body = frame.contentDocument.body;
+      var height = Math.max(
+        documentElement ? documentElement.scrollHeight : 0,
+        body ? body.scrollHeight : 0
+      );
+      if (height > 0) {
+        frame.style.height = height + "px";
+      }
+    }
+
+    frame.addEventListener("load", function () {
+      resizeFrame();
+      if (window.ResizeObserver && frame.contentDocument && frame.contentDocument.body) {
+        var observer = new ResizeObserver(resizeFrame);
+        observer.observe(frame.contentDocument.body);
+      }
+    });
+    window.addEventListener("resize", resizeFrame);
+  })();
+</script>
+
+
+        </div>
+
+        
+        <div class="row pl-3 pr-3">
+        
+        <div class="col-md-6 share-buttons">
+        
+            <strong>分享:</strong>
+            
+            <a class="btn btn-sm facebook-btn" href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f" target="_blank">
+              <i class="fab fa-facebook"></i>
+            </a>
+            
+            
+                <a class="btn btn-sm twitter-btn" href="https://twitter.com/share?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f&text=Qwen-Image-Edit%20%e6%80%bb%e8%a7%88%e5%9b%be&via=biubiobiu%27s%20Blog" target="_blank">
+                  <i class="fab fa-twitter"></i>
+                </a>
+            
+            
+                <a  class="btn btn-sm reddit-btn" href="https://reddit.com/submit?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f&title=Qwen-Image-Edit%20%e6%80%bb%e8%a7%88%e5%9b%be" target="_blank">
+                  <i class="fab fa-reddit"></i>
+                </a>
+            
+            
+            
+            
+                <a class="btn btn-sm linkedin-btn" href="https://www.linkedin.com/shareArticle?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f&title=Qwen-Image-Edit%20%e6%80%bb%e8%a7%88%e5%9b%be" target="_blank">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+            
+            
+             
+            
+                 <a class="btn btn-sm whatsapp-btn" href="https://api.whatsapp.com/send?text=Qwen-Image-Edit%20%e6%80%bb%e8%a7%88%e5%9b%be https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f" target="_blank">
+                  <i class="fab fa-whatsapp"></i>
+                </a>
+            
+            
+                <a class="btn btn-sm email-btn" href="mailto:?subject=Qwen-Image-Edit%20%e6%80%bb%e8%a7%88%e5%9b%be&body=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fqwen-image-edit%2f" target="_blank">
+                  <i class="fas fa-envelope-open-text"></i>
+                </a>
+            
+          
+          </div>
+
+        
+        
+        </div>
+
+
+
+      
+      <hr />
+        
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+    
+    
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+<div class="row next-prev-navigator">
+  
+    <div class="col-md-6 previous-article">
+      <a href="/zh-cn/posts/mllm/" title="MLLM" class="btn btn-outline-info">
+        <div><i class="fas fa-chevron-circle-left"></i> 上一篇</div>
+        <div class="next-prev-text">MLLM</div>
+      </a>
+    </div>
+  
+  
+      
+      
+        
+      
+      <div class="col-md-6 next-article">
+        <a href="/zh-cn/posts/hunyuan-image-3-technical-report/" title="混元技术报告" class="btn btn-outline-info">
+          <div>下一篇 <i class="fas fa-chevron-circle-right"></i></div>
+          <div class="next-prev-text">混元技术报告</div>
+        </a>
+      </div>
+    
+</div>
+
+      <hr />
+
+      
+      
+
+      
+      
+
+      </div>
+    </div>
+  </div>
+  
+  <a id="scroll-to-top" class="btn"><i class="fas fa-chevron-circle-up"></i></a>
+  
+</section>
+
+
+      
+      
+  <section class="toc-section post-toc-collapsible" id="toc-section">
+    
+    <div class="toc-holder">
+      <div class="post-toc-toolbar">
+        <h5 class="text-center pl-3">目录</h5>
+        <button
+          class="post-toc-toggle"
+          id="post-toc-toggle"
+          type="button"
+          aria-controls="post-toc-content"
+          aria-expanded="true"
+          aria-label="收起文章目录"
+        >
+          <span>收起目录</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <hr class="post-toc-divider">
+      <div class="toc post-toc-content" id="post-toc-content">
+        <nav id="TableOfContents"></nav>
+      </div>
+    </div>
+    
+  </section>
+
+    </div>
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+  
+
+  
+  
+    
+    
+      
+    
+  
+
+
+  
+  
+  
+    
+  
+
+  
+  
+  
+
+  
+  
+  
+    
+  
+  
+
+  
+  
+  
+
+  <footer id="footer" class="container-fluid text-center align-content-center footer pb-2">
+    <div class="container pt-5">
+      <div class="row text-left">
+        
+        
+        <div class="col-12 footer-contact">
+          <div class="footer-contact-row">
+          <h5 class="footer-contact-title">联系方式:</h5>
+          <ul class="footer-contact-list">
+            
+              
+              
+                <li><a href="tel:&#43;0123456789">
+                  <span><i class="fas fa-phone-alt"></i></span>
+                  <span>电话：&#43;0123456789</span>
+                </a></li>
+              
+            
+              
+              
+                <li><a href="mailto:bsgshyn8@163.com" target="_blank" rel="noopener">
+                  <span><i class="fas fa-envelope"></i></span>
+                  <span>邮箱：bsgshyn8@163.com</span>
+                </a></li>
+              
+            
+          </ul>
+          </div>
+        </div>
+        
+        
+        
+      </div>
+    </div>
+    
+    <hr />
+    <div class="container">
+      <p id="disclaimer"><strong>免责声明:</strong> 这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经 作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。</p>
+    </div>
+    
+    
+    <hr />
+    <div class="container">
+      <div class="row text-left">
+        <div class="col-md-4">
+          <a id="theme" href="https://github.com/hossainemruz/toha" target="_blank" rel="noopener">
+            <img src="/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_3.png" alt="Toha Theme Logo">
+            Toha
+          </a>
+        </div>
+        <div class="col-md-4 text-center">© 2021 Copyright.</div>
+        <div class="col-md-4 text-right">
+          <a id="hugo" href="https://gohugo.io/" target="_blank" rel="noopener">Powered by
+          <img
+            src="/images/hugo-logo.svg"
+            alt="Hugo Logo"
+            height="18"
+          />
+          </a>
+        </div>
+      </div>
+    </div>
+    
+  </footer>
+
+
+    <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="/js/popper.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/js/navbar.js"></script>
+<script type="text/javascript" src="/js/plyr.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+<script type="text/javascript" src="/js/darkreader.js"></script>
+<script type="text/javascript" src="/js/darkmode-darkreader.js"></script>
+
+
+
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="/js/single.js"></script>
+<script src="/js/post-sidebar-resizer.js?v=20260727-3"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+
+
+
+
+
+    
+</body>
+</html>

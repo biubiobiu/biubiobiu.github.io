@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HunyuanImage-3 · ViT 通路深度剖析（SigLIP2 + Aligner）</title>
+<style>
+  :root {
+    --ink: #1f2933; --ink-soft: #52606d; --line: #e4e7eb; --bg: #f8f9fb; --card: #ffffff;
+    --accent: #2563eb; --accent-soft: #eff6ff; --green: #059669; --green-soft: #ecfdf5;
+    --amber: #b45309; --amber-soft: #fffbeb; --purple: #7c3aed; --purple-soft: #f5f3ff;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.75; }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 26px; margin: 8px 0 4px; }
+  h2 { font-size: 20px; margin: 36px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px; margin: 14px 0; }
+  .callout-key { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout-warn { border-left: 4px solid var(--amber); background: var(--amber-soft); }
+  code { background: #eef1f4; padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  a { color: var(--accent); }
+  .fig { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; overflow-x: auto; }
+  .fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .fig .cap { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 7px 12px; text-align: left; }
+  th { background: #f1f5f9; }
+  .src { color: var(--ink-soft); font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>ViT 通路深度剖析：NaFlex 预处理 → SigLIP2 → 2 层 MLP</h1>
+<div class="meta">HunyuanImage-3.0-Instruct 深挖专题 ① · 贯穿示例：1024×1024 参考图 · 所有数值来自官方 checkpoint config（<code>vit</code> / <code>vit_processor</code> / <code>vit_aligner</code>）与 <code>siglip2.py</code> / <code>image_processor.py</code> 代码 · <a href="/zh-cn/posts/hunyuan-image-3-overview/">← 返回总览</a></div>
+
+<div class="card callout-key">
+  <b>一句话总结</b>：ViT 通路把<b>任意尺寸</b>的参考图自动缩放到 <b>≈1024 个 16×16 patch</b>（NaFlex，不裁剪、近似保比例、小图放大大图缩小），过一个 <b>27 层、400M 参数的 SigLIP2-so400m 双向 Transformer</b>（d=1152），再经 <b>Linear 1152→4096 → GELU → Linear 4096→4096</b> 对齐到主干维度——输出恒为 <b>(1024, 4096)</b> 的「视觉词」，scatter 进统一序列中参考图 joint 段 <code>&lt;joint_img_sep&gt;</code> 之后的 1024 个 <code>&lt;img&gt;</code> 坑位。全程无时间步参与、权重冻结 ❄。
+</div>
+
+<h2>一、数据流总览图（示例：1024×1024 参考图）</h2>
+
+<div class="fig">
+<svg viewBox="0 0 1240 2010" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC',sans-serif">
+  <defs>
+    <marker id="g"  markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#52606d"/></marker>
+    <marker id="gb" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#2563eb"/></marker>
+    <marker id="gp" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#7c3aed"/></marker>
+    <marker id="gg" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#059669"/></marker>
+  </defs>
+
+  <text x="620" y="30" text-anchor="middle" font-size="17" font-weight="800">ViT 通路：从「一张任意尺寸的图」到「1024 个 4096 维视觉词」</text>
+
+  <!-- 输入 -->
+  <rect x="440" y="56" width="360" height="64" rx="10" fill="#fff" stroke="#1f2933" stroke-width="1.5"/>
+  <text x="620" y="83" text-anchor="middle" font-size="13" font-weight="700">参考图（PIL，任意尺寸任意比例）</text>
+  <text x="620" y="104" text-anchor="middle" font-size="12" fill="#52606d">示例：1024×1024 RGB —— 无任何硬性尺寸要求</text>
+
+  <!-- ═══════════ NaFlex 预处理 ═══════════ -->
+  <rect x="40" y="160" width="740" height="480" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="410" y="188" text-anchor="middle" font-size="14" font-weight="800" fill="#7c3aed">NaFlex 预处理：Siglip2ImageProcessorFast（max_num_patches=1024, patch=16）</text>
+
+  <rect x="70" y="208" width="680" height="88" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="410" y="230" text-anchor="middle" font-size="11.5" font-weight="600">① 算目标尺寸：二分搜索缩放系数 s</text>
+  <text x="410" y="250" text-anchor="middle" font-size="10.5" fill="#52606d">约束：⌈H·s/16⌉ × ⌈W·s/16⌉ ≤ 1024，且取满足约束的最大 s（H、W 各自 ceil 成 16 的倍数）</text>
+  <text x="410" y="270" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ 小图放大、大图缩小，patch 数总是「顶格」逼近 1024 · 只 resize 不裁剪（bilinear）</text>
+  <text x="410" y="290" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">本例：1024×1024 → s=0.5 → 512×512（恰好 32×32=1024 个 patch）</text>
+
+  <rect x="70" y="316" width="330" height="76" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="235" y="338" text-anchor="middle" font-size="11.5" font-weight="600">② 数值归一化</text>
+  <text x="235" y="358" text-anchor="middle" font-size="10.5" fill="#52606d">÷255 → (x − 0.5) / 0.5，值域 [-1, 1]</text>
+  <text x="235" y="378" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ (3, 512, 512) float</text>
+
+  <rect x="420" y="316" width="330" height="76" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="585" y="338" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7c3aed">③ patch 化（提前摊平，非卷积）</text>
+  <text x="585" y="358" text-anchor="middle" font-size="10.5" fill="#52606d">切 16×16 块 → 每块摊平 16×16×3 = 768 维</text>
+  <text x="585" y="378" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ pixel_values (1024, 768)</text>
+
+  <rect x="70" y="412" width="680" height="96" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="410" y="434" text-anchor="middle" font-size="11.5" font-weight="600">④ pad 到定长 1024 + 记录元信息（本例恰好占满，pad=0）</text>
+  <text x="410" y="454" text-anchor="middle" font-size="10.5" fill="#52606d">pixel_values (1024, 768)：真实 patch 在前，不足处补 0</text>
+  <text x="410" y="474" text-anchor="middle" font-size="10.5" fill="#52606d">spatial_shapes (2,) = (32, 32)：patch 网格的 (行数, 列数)，后面恢复 2D 结构全靠它</text>
+  <text x="410" y="494" text-anchor="middle" font-size="10.5" fill="#52606d">pixel_attention_mask (1024,)：真实 patch=1 / pad=0（ViT 内部注意力屏蔽 pad）</text>
+
+  <rect x="70" y="532" width="680" height="84" rx="8" fill="#fffbeb" stroke="#b45309" stroke-dasharray="4,3"/>
+  <text x="410" y="554" text-anchor="middle" font-size="11" font-weight="600" fill="#b45309">对照示例：1280×720 输入（非方图）</text>
+  <text x="410" y="574" text-anchor="middle" font-size="10.5" fill="#52606d">s≈0.525 → 672×384（42×24 = 1008 个真实 patch ≤ 1024）→ pad 16 个</text>
+  <text x="410" y="594" text-anchor="middle" font-size="10.5" fill="#52606d">spatial_shapes=(24, 42)，mask 前 1008 位=1 —— 比例基本保留（ceil 到 16 倍数有微小形变）</text>
+
+  <!-- 右侧注记：与 VAE 路对比 -->
+  <rect x="820" y="208" width="380" height="180" rx="10" fill="#fff" stroke="#94a3b8" stroke-dasharray="6,4"/>
+  <text x="1010" y="232" text-anchor="middle" font-size="11.5" font-weight="700" fill="#52606d">与 VAE 路预处理的差异</text>
+  <text x="1010" y="256" text-anchor="middle" font-size="10.5" fill="#52606d">VAE 路：resize + center-crop 到分辨率组</text>
+  <text x="1010" y="276" text-anchor="middle" font-size="10.5" fill="#52606d">（base 1024，比例硬对齐，会裁掉边缘）</text>
+  <text x="1010" y="296" text-anchor="middle" font-size="10.5" fill="#52606d">ViT 路：只 resize 不裁剪，全图内容保留</text>
+  <text x="1010" y="316" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ 语义信息完整（NaFlex 的意义所在）</text>
+  <text x="1010" y="336" text-anchor="middle" font-size="10.5" fill="#52606d">同一张原图分别走两套预处理，</text>
+  <text x="1010" y="356" text-anchor="middle" font-size="10.5" fill="#52606d">两路看到的图并不完全相同</text>
+
+  <!-- ═══════════ SigLIP2 主体 ═══════════ -->
+  <rect x="40" y="680" width="1160" height="950" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2.5"/>
+  <text x="620" y="710" text-anchor="middle" font-size="14.5" font-weight="800" fill="#7c3aed">SigLIP2-so400m-patch16-naflex ❄ 冻结 · ≈412M 参数 · d=1152 · 全程双向注意力（无因果 mask、无 CLS token）</text>
+
+  <!-- 嵌入层 -->
+  <rect x="70" y="730" width="1100" height="110" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="620" y="754" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">⑤ Siglip2VisionEmbeddings：patch 嵌入 + 可变形位置编码</text>
+  <text x="620" y="776" text-anchor="middle" font-size="10.5" fill="#52606d">patch_embedding = Linear(768 → 1152)（对已摊平的 patch 做线性投影，等价 16×16 conv）⇒ (1024, 1152)</text>
+  <text x="620" y="796" text-anchor="middle" font-size="10.5" fill="#52606d">position_embedding = Embedding(256, 1152)：可学习 16×16 网格 → reshape (16,16,1152) → 按 spatial_shapes 双线性插值(antialias)到 32×32 → 摊平 (1024, 1152)</text>
+  <text x="620" y="818" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">相加 ⇒ hidden (1024, 1152) —— 位置码随图像形状自适应缩放，这是 NaFlex 支持任意比例的关键</text>
+
+  <!-- Encoder 层 -->
+  <rect x="70" y="864" width="1100" height="630" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="620" y="890" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c3aed">⑥ × 27 层 Siglip2EncoderLayer（LN 前置 + 残差）· 每层 ≈15.2M 参数 · 形状恒为 (1024, 1152)</text>
+
+  <!-- ── 子块 A：注意力（左列，竖向流程） ── -->
+  <text x="340" y="912" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">子块 A：多头自注意力（16 头 × head_dim 72，SDPA 实现）</text>
+
+  <rect x="250" y="922" width="180" height="36" rx="8" fill="#fff" stroke="#1f2933" stroke-width="1.5"/>
+  <text x="340" y="945" text-anchor="middle" font-size="11" font-weight="700">x (1024, 1152)</text>
+
+  <rect x="210" y="976" width="260" height="40" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="340" y="1001" text-anchor="middle" font-size="10.5" font-weight="600">LayerNorm₁(1152) ⇒ (1024, 1152)</text>
+
+  <rect x="165" y="1036" width="110" height="52" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="220" y="1057" text-anchor="middle" font-size="10.5" font-weight="600">q_proj</text>
+  <text x="220" y="1076" text-anchor="middle" font-size="9.5" fill="#52606d">Linear 1152→1152</text>
+  <rect x="285" y="1036" width="110" height="52" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="340" y="1057" text-anchor="middle" font-size="10.5" font-weight="600">k_proj</text>
+  <text x="340" y="1076" text-anchor="middle" font-size="9.5" fill="#52606d">Linear 1152→1152</text>
+  <rect x="405" y="1036" width="110" height="52" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="460" y="1057" text-anchor="middle" font-size="10.5" font-weight="600">v_proj</text>
+  <text x="460" y="1076" text-anchor="middle" font-size="9.5" fill="#52606d">Linear 1152→1152</text>
+
+  <rect x="170" y="1106" width="340" height="38" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="340" y="1130" text-anchor="middle" font-size="10.5" font-weight="600">reshape 拆 16 头 ⇒ Q, K, V 各 (16, 1024, 72)</text>
+
+  <rect x="150" y="1160" width="380" height="54" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="340" y="1181" text-anchor="middle" font-size="10.5" font-weight="600">scores = Q·Kᵀ / √72 ⇒ (16, 1024, 1024)</text>
+  <text x="340" y="1200" text-anchor="middle" font-size="9.5" fill="#52606d">pad 位加 −∞（pixel_attention_mask）→ softmax（fp32 升精）⇒ P</text>
+
+  <rect x="170" y="1230" width="340" height="40" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="340" y="1255" text-anchor="middle" font-size="10.5" font-weight="600">P·V ⇒ (16, 1024, 72) → 拼回 (1024, 1152)</text>
+
+  <rect x="225" y="1286" width="230" height="38" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="340" y="1310" text-anchor="middle" font-size="10.5" font-weight="600">out_proj：Linear(1152→1152)</text>
+
+  <circle cx="340" cy="1358" r="14" fill="#fff" stroke="#b45309" stroke-width="2"/>
+  <text x="340" y="1364" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">+</text>
+  <text x="340" y="1394" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">x₁ = x + Attn(LN₁(x)) ⇒ (1024, 1152)</text>
+
+  <!-- A 内部主流箭头 -->
+  <line x1="340" y1="958" x2="340" y2="974" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1016" x2="220" y2="1032" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1016" x2="340" y2="1032" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1016" x2="460" y2="1032" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="220" y1="1088" x2="332" y2="1103" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1088" x2="340" y2="1103" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="460" y1="1088" x2="348" y2="1103" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1144" x2="340" y2="1158" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1214" x2="340" y2="1228" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1270" x2="340" y2="1284" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="340" y1="1324" x2="340" y2="1342" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <!-- A 残差捷径（左侧旁路） -->
+  <path d="M250,940 L130,940 L130,1358 L324,1358" fill="none" stroke="#b45309" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#ga)"/>
+  <text x="118" y="1150" text-anchor="middle" font-size="10" fill="#b45309" transform="rotate(90 118 1150)">残差捷径：直接送 + x</text>
+
+  <!-- ── A → B 衔接箭头 ── -->
+  <path d="M354,1358 L620,1358 L620,940 L806,940" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="633" y="1150" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed" transform="rotate(90 633 1150)">x₁ (1024, 1152) 流向子块 B</text>
+
+  <!-- ── 子块 B：MLP（右列，竖向流程） ── -->
+  <text x="900" y="912" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">子块 B：MLP（普通两层稠密，非 SwiGLU / 非 MoE）</text>
+
+  <rect x="810" y="922" width="180" height="36" rx="8" fill="#fff" stroke="#1f2933" stroke-width="1.5"/>
+  <text x="900" y="945" text-anchor="middle" font-size="11" font-weight="700">x₁ (1024, 1152)</text>
+
+  <rect x="770" y="976" width="260" height="40" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="900" y="1001" text-anchor="middle" font-size="10.5" font-weight="600">LayerNorm₂(1152) ⇒ (1024, 1152)</text>
+
+  <rect x="760" y="1034" width="280" height="48" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="900" y="1054" text-anchor="middle" font-size="10.5" font-weight="600">fc1：Linear(1152 → 4304)</text>
+  <text x="900" y="1073" text-anchor="middle" font-size="9.5" fill="#52606d">⇒ (1024, 4304)（升维 ≈3.74×）</text>
+
+  <rect x="790" y="1100" width="220" height="36" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="900" y="1123" text-anchor="middle" font-size="10.5" font-weight="600">GELU（gelu_pytorch_tanh）</text>
+
+  <rect x="760" y="1154" width="280" height="48" rx="8" fill="#f5f3ff" stroke="#7c3aed"/>
+  <text x="900" y="1174" text-anchor="middle" font-size="10.5" font-weight="600">fc2：Linear(4304 → 1152)</text>
+  <text x="900" y="1193" text-anchor="middle" font-size="9.5" fill="#52606d">⇒ (1024, 1152)（降回原维）</text>
+
+  <circle cx="900" cy="1240" r="14" fill="#fff" stroke="#b45309" stroke-width="2"/>
+  <text x="900" y="1246" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">+</text>
+  <text x="900" y="1278" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">x₂ = x₁ + MLP(LN₂(x₁)) ⇒ (1024, 1152)</text>
+
+  <!-- B 内部主流箭头 -->
+  <line x1="900" y1="958" x2="900" y2="974" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="900" y1="1016" x2="900" y2="1032" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="900" y1="1082" x2="900" y2="1098" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="900" y1="1136" x2="900" y2="1152" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="900" y1="1202" x2="900" y2="1224" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <!-- B 残差捷径（右侧旁路） -->
+  <path d="M990,940 L1120,940 L1120,1240 L916,1240" fill="none" stroke="#b45309" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#ga)"/>
+  <text x="1132" y="1090" text-anchor="middle" font-size="10" fill="#b45309" transform="rotate(90 1132 1090)">残差捷径：直接送 + x₁</text>
+
+  <!-- ×27 循环回路 -->
+  <path d="M900,1292 L900,1420 L90,1420 L90,928" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="7,5" marker-end="url(#gp)"/>
+  <text x="495" y="1412" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">x₂ 作为下一层的输入 x，重复 ×27 次；1024 个 token 全程不增不减</text>
+
+  <text x="620" y="1452" text-anchor="middle" font-size="10.5" fill="#52606d">参数账/层：注意力 q/k/v/out 4×1152² ≈ 5.3M ＋ MLP 2×1152×4304 ≈ 9.9M ⇒ 每层 ≈15.2M，27 层共 ≈411M</text>
+  <text x="620" y="1474" text-anchor="middle" font-size="10.5" fill="#52606d">对比主干 MoE：稠密 FFN（非 MoE）· LayerNorm（非 RMSNorm）· 插值绝对位置码（非 RoPE）· 双向注意力（非因果）—— 标准 ViT 配方</text>
+
+  <!-- 出口 -->
+  <rect x="70" y="1518" width="640" height="88" rx="10" fill="#fff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="390" y="1542" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">⑦ post_layernorm(1152)</text>
+  <text x="390" y="1564" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ last_hidden_state (1024, 1152) —— ViT 的真正输出</text>
+  <text x="390" y="1586" text-anchor="middle" font-size="10.5" fill="#52606d">逐 patch 的语义特征，空间结构仍按行主序排列（32 行 × 32 列）</text>
+
+  <rect x="740" y="1518" width="430" height="88" rx="10" fill="#fff" stroke="#94a3b8" stroke-dasharray="6,4"/>
+  <text x="955" y="1542" text-anchor="middle" font-size="11.5" font-weight="600" fill="#52606d">（附）MAP pooling head：存在但未使用</text>
+  <text x="955" y="1564" text-anchor="middle" font-size="10.5" fill="#52606d">probe 向量 + MultiheadAttention 池化出 (1, 1152)</text>
+  <text x="955" y="1586" text-anchor="middle" font-size="10.5" fill="#52606d">每次前向都会算，但下游只取 last_hidden_state ——纯浪费</text>
+
+  <!-- ═══════════ Aligner ═══════════ -->
+  <rect x="40" y="1670" width="740" height="170" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2" stroke-dasharray="8,5"/>
+  <text x="410" y="1698" text-anchor="middle" font-size="14" font-weight="800" fill="#7c3aed">vision_aligner = LightProjector（mlp_gelu, depth=2）· ≈21.5M 参数</text>
+
+  <rect x="70" y="1718" width="680" height="100" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="410" y="1742" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7c3aed">⑧ 两层 MLP：把「SigLIP2 语义空间」翻译到「主干 4096 维词空间」</text>
+  <text x="410" y="1764" text-anchor="middle" font-size="10.5" fill="#52606d">Linear(1152 → 4096) ⇒ (1024, 4096)　→　GELU　→　Linear(4096 → 4096) ⇒ (1024, 4096)</text>
+  <text x="410" y="1786" text-anchor="middle" font-size="10.5" fill="#52606d">无 LayerNorm、无残差、逐 token 独立变换（token 之间不交互）</text>
+  <text x="410" y="1808" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ 最终输出 (1024, 4096)「视觉词」，dtype 跟随主干 bf16</text>
+
+  <!-- 去向 -->
+  <rect x="820" y="1670" width="380" height="170" rx="14" fill="#fbfdff" stroke="#2563eb" stroke-width="2"/>
+  <text x="1010" y="1698" text-anchor="middle" font-size="13" font-weight="800" fill="#2563eb">去向：scatter 进统一序列</text>
+  <text x="1010" y="1724" text-anchor="middle" font-size="10.5" fill="#52606d">参考图 joint 段：…&lt;img&gt;×4096(VAE)</text>
+  <text x="1010" y="1744" text-anchor="middle" font-size="10.5" fill="#52606d">&lt;joint_img_sep&gt; &lt;img&gt;×1024(ViT) &lt;eoi&gt;</text>
+  <text x="1010" y="1766" text-anchor="middle" font-size="10.5" fill="#52606d">1024 个坑位被本模块输出原位覆盖</text>
+  <text x="1010" y="1788" text-anchor="middle" font-size="10.5" fill="#52606d">attn_type=joint_full：VAE+ViT 整段双向互见</text>
+  <text x="1010" y="1810" text-anchor="middle" font-size="10.5" fill="#52606d">2D RoPE 按 spatial_shapes 铺网格坐标</text>
+
+  <!-- ═══════════ 箭头 ═══════════ -->
+  <line x1="620" y1="120" x2="620" y2="158" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <line x1="235" y1="296" x2="235" y2="314" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M400,354 L418,354" fill="none" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M585,392 L585,400 L410,400 L410,410" fill="none" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M410,616 L410,660 L620,660 L620,678" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="700" y="662" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">(1024, 768) + spatial_shapes + mask</text>
+  <line x1="620" y1="840" x2="620" y2="862" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="390" y1="1496" x2="390" y2="1516" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="475" y="1510" text-anchor="middle" font-size="10.5" fill="#52606d">27 层之后</text>
+  <path d="M390,1606 L390,1650 L410,1650 L410,1668" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="480" y="1648" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">(1024, 1152)</text>
+  <line x1="780" y1="1768" x2="818" y2="1768" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="800" y="1750" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">(1024, 4096)</text>
+
+  <!-- 图例 -->
+  <text x="620" y="1910" text-anchor="middle" font-size="11" fill="#52606d">形状总账（1024² 示例）：(3,1024,1024) 原图 → resize (3,512,512) → patch 化 (1024,768) → 嵌入 (1024,1152) → 27 层不变形 → LN 出 (1024,1152) → aligner (1024,4096)</text>
+  <text x="620" y="1936" text-anchor="middle" font-size="11" fill="#52606d">参数总账：patch 嵌入 0.9M + 位置码 0.3M + 27 层 × 15.2M ≈ 411M + pooling head（未用）≈ so400m 之名 · aligner 21.5M</text>
+  <text x="620" y="1962" text-anchor="middle" font-size="11" fill="#52606d">不变量：无论输入图多大多长，本模块输出恒为 (1024, 4096)；非方图时真实 token 少于 1024，尾部为 pad token</text>
+</svg>
+<div class="cap">ViT 通路完整数据流。NaFlex 让任意比例的图都被「顶格」编码为 ≈1024 个 patch；SigLIP2 27 层内形状恒定 (1024, 1152)；aligner 只做维度翻译不做 token 交互。</div>
+</div>
+
+<h2>二、疑点解析（阅读中随时追加）</h2>
+
+<div class="card">
+<b>疑点 ①：SigLIP2 输入 1024 个 token、输出还是 1024 个 token——27 层 Transformer 不是应该"逐个预测下一个 token"吗？这是预测了未来的 1024 个 token 吗？</b>
+<p><b>不是预测。</b>Transformer 有两种截然不同的用法，"逐个预测下一个 token"只属于其中的<b>解码器</b>用法；SigLIP2 是<b>编码器</b>，它不生成任何新 token：</p>
+<table>
+  <tr><th></th><th>解码器（GPT / 本模型 80B 主干的 gen_text 模式）</th><th>编码器（BERT / ViT / SigLIP2）</th></tr>
+  <tr><td><b>注意力</b></td><td>因果 mask，只能看左边</td><td><b>双向</b>，每个 token 看所有 token</td></tr>
+  <tr><td><b>任务</b></td><td>逐个预测下一个 token</td><td><b>改写每个 token 自己的表示</b></td></tr>
+  <tr><td><b>输出头</b></td><td>lm_head → 词表 softmax → 采样出离散 token</td><td><b>没有词表头</b>，输出就是连续向量</td></tr>
+  <tr><td><b>输入输出关系</b></td><td>错一位（输入第 1..n 个，预测第 2..n+1 个）</td><td><b>一一对应</b>（第 i 个输出对应第 i 个输入）</td></tr>
+  <tr><td><b>前向次数</b></td><td>自回归循环，每生成一个 token 前向一次</td><td>一次前向出全部结果</td></tr>
+</table>
+<ul style="margin-top:10px">
+  <li>所以 (1024, 1152) → 27 层 → (1024, 1152) 的正确理解：<b>始终是同一批 1024 个 token，没有新增、没有位移</b>，第 i 个输出向量严格对应第 i 个输入 patch（空间位置不变，仍是行主序 32×32 网格）。</li>
+  <li>27 层做的是「<b>精炼</b>」而非「生成」：进门时第 i 个向量只知道自己那 16×16 像素块（纯局部信息）；每过一层双向注意力就吸收一次全图上下文；出门时同一位置的向量已变成"我这块是猫耳朵，属于画面中央那只橘猫"式的全局语义描述——<b>位置没变，内涵变了</b>。</li>
+  <li>它没有预测能力的三个证据：无因果 mask（能看见"未来"，预测即作弊）、无词表分类头（输出是连续向量不是离散 token）、无自回归循环。</li>
+  <li>类比：编码器像<b>翻译官</b>——1024 句"像素方言"逐句翻成"语义普通话"，句数不变；解码器像<b>说书人</b>——一句接一句往下编。SigLIP2 的角色是给主干「备料」，真正逐 token 预测的只有 80B 主干的文本出口。</li>
+  <li>SigLIP2 原始训练目标是图文对比学习（sigmoid contrastive），学的就是「输出好的语义表示」，与语言建模无关；在本模型中权重冻结，纯当特征提取器。</li>
+  <li>伏笔：80B 主干处理图像 token 时（gen_image 模式）其实也切换成了「编码器式」用法——图像段内部双向注意力、出口不走词表头而走 UNetUp 出速度场。剖析主干时再展开。</li>
+</ul>
+</div>
+
+<div class="card">
+<b>疑点 ②：GPT 里选词的 softmax 只在最后一层之后——那中间层输出的是 [batch, 1, hidden] 吗？</b>
+<p><b>分阶段看，两种形状都存在：</b></p>
+<table>
+  <tr><th>阶段</th><th>每层进出形状</th><th>说明</th></tr>
+  <tr><td>decode（逐 token 生成，配 KV cache）</td><td><b>[B, 1, hidden]</b></td><td>只喂刚生成的 1 个 token；它的 Q 新算，K/V = 自己的新 K/V + 从 KV cache 读出的全部历史 → 形状是 1 却看得到全部上文</td></tr>
+  <tr><td>prefill（首次处理整段 prompt）</td><td>[B, L, hidden]</td><td>所有位置并行；lm_head 出 [B, L, vocab] 后<b>只取最后一个位置</b>的 logits 选词，其余位置的价值是把 KV cache 填满</td></tr>
+  <tr><td>训练</td><td>[B, L, hidden]</td><td>L 个位置的 logits 全都用：第 i 位拟合第 i+1 个真实 token，一次前向 = L 个预测任务（解码器训练效率高的根源）</td></tr>
+</table>
+<ul style="margin-top:10px">
+  <li><b>两个 softmax 别混淆</b>：中间层没有「词表 softmax」，但每层注意力内部都有「注意力 softmax」——它作用在 (B, heads, L_q, L_kv) 的分数矩阵上，算的是注意力权重分配，与选词无关；选词的 softmax 全网只有 lm_head 之后一处，作用在 vocab 维上。</li>
+  <li><b>中间层进出永远是 hidden 维连续向量、形状不变</b>——第 i 个位置的向量逐层被精炼，这一点和编码器完全一样。解码器 vs 编码器的中间层数学形式几乎相同，真正的差别只有：mask 方向（因果 vs 双向）+ 最后一层之后干什么（接词表头预测 vs 直接当特征输出）。</li>
+  <li>对应本模型的 decode 步：gen_text 每步 forward [B, 1, 4096]（标准 GPT 式）；gen_image 每步 forward [B, 1+4096, 4096]（timestep token + 画布 token 一起回炉）——「批量版 decode 步」，出口不走词表头而走 UNetUp。</li>
+</ul>
+</div>
+
+<h2>三、细节与坑（值得记住的边角）</h2>
+
+<div class="card callout-warn">
+<ul>
+  <li><b>序列坑位恒为 1024</b>：tokenizer 按 <code>max_num_patches</code> 预留 1024 个 <code>&lt;img&gt;</code>，非方图时尾部 pad patch 的输出向量<b>也会被 scatter 进序列</b>（ViT 内部 mask 只挡「被注意」，不删行）。主干里这些 pad token 是可被看见的低信息 token。</li>
+  <li><b>位置码容量 vs 实际长度</b>：可学习位置码只有 16×16=256 个（<code>num_patches=256</code>），推理时总要插值放大到 ~32×32 用——「256 学、1024 用」是 naflex 的设计常态。</li>
+  <li><b>pooling head 白算</b>：<code>vision_use_head</code> 未配置 → 默认 True，MAP 池化头每次前向都执行，但 <code>_forward_vision_encoder</code> 只取 <code>last_hidden_state</code>，pooler_output 直接丢弃。</li>
+  <li><b>joint_full 注意力</b>：checkpoint 配置 <code>cond_token_attn_type="joint_full"</code>——参考图的 [VAE 4096 + sep + ViT 1024] 作为<b>一个整体</b>开双向注意力方块（比 "full" 更大范围：两路 token 互见）。</li>
+  <li><b>2D RoPE 坐标</b>：ViT 段在主干里按 <code>spatial_shapes</code> 铺 2D 网格坐标（与 VAE 段同一套居中对齐公式）；非方图时 1008 真实 + 16 pad 的 pad 部分坐标顺延成对角线（文本式），属无伤大雅的实现细节。</li>
+  <li><b>本模块与 Qwen2.5-VL 视觉塔的对比</b>：SigLIP2 无窗口注意力、无 2×2 token 合并、无 M-RoPE——是更「朴素」的 ViT；代价是 token 数固定 1024 不随图大小变化。</li>
+</ul>
+</div>
+
+</main>
+<script defer src="annotator.js"></script>
+</body>
+</html>

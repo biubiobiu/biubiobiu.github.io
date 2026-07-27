@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>进阶操作 on biubiobiu&#39;s Blog</title>
+    <link>https://biubiobiu.github.io/zh-cn/tags/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/</link>
+    <description>Recent content in 进阶操作 on biubiobiu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Everything is mine</copyright>
+    <lastBuildDate>Wed, 08 Sep 2021 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/index.xml" rel="self" type="application/rss+xml" /><item>
+      <title>进阶操作</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Wed, 08 Sep 2021 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/</guid>
+      <description>一、环境变量 1、临时环境变量 操作 说明 os.environ[&#39;WORKON_HOME&#39;]=&amp;quot;变量&amp;quot; 设置环境变量 os.environ[&#39;CUDA_VISIBLE_DEVICES&#39;]=&amp;quot;1&amp;quot; 设置显卡设备 os.environ.get(&#39;WORKON_HOME&#39;) 获取环境变量-方法1 os.getenv(&#39;path&#39;) 获取环境变量-方法2-推荐 del os.environ[&#39;WORKON_HOME&#39;] 删除环境变量 os.environ[&#39;HOMEPATH&#39;] 当前用户主目录 os.environ[&#39;TEMP&#39;] 临时目录路径 os.environ[&#39;PATHEXT&#39;] 可以执行文件 os.environ[&#39;SYSTEMROOT&#39;] 系统主目录 os.environ[&#39;LOGONSERVER&#39;] 机器名 os.environ[&#39;PROMPT&#39;] 设置提示符 2、永久环境变量 操作 说明 功能 path = r&amp;quot;路径&amp;quot;
+command = r&amp;quot;setx WORK1 %s /m&amp;quot;%path
+os.system() /m 表示系统变量，不加/m表示用户变量 3、内部变量 操作 说明 __doc__ 获取文件的注释 __file__ 获取当前文件的路径 __name__ 获取导入文件的路径加文件名称。当前文件，其值为__main__
+import 一个模块或者一个函数时，在该模块文件中__name__的值是模块名
+执行一个模块时，__name__ 的值是__main__ __package__ 获取导入文件的路径。当前文件，其值为 None __cached__ __builtins__ 内置函数在这里 实例：获取该执行文件的绝对路径：os.path.dirname(os.path.abspath(__file__))
+二、yield 带有yield函数在python中被称为generator。以菲波那切数列为例，介绍一下，yield的功能：
+输出菲波那切数列list
+缺点：返回list，运行时占用的内存随着参数max的增大而增大，如果要控制内存，最好不要用list来存储中间结果，而是通过iterable对象来迭代。 def fab(max): n, a, b = 0, 0, 1 L = [] while n &amp;lt; max: L.</description>
+    </item>
+    
+    
+  </channel>
+</rss>

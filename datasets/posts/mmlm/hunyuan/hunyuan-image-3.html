@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HunyuanImage-3.0-Instruct 网络结构深度解析</title>
+<style>
+  :root {
+    --ink: #1f2933; --ink-soft: #52606d; --line: #e4e7eb; --bg: #f8f9fb; --card: #ffffff;
+    --accent: #2563eb; --accent-soft: #eff6ff; --green: #059669; --green-soft: #ecfdf5;
+    --amber: #b45309; --amber-soft: #fffbeb; --purple: #7c3aed; --purple-soft: #f5f3ff;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.75; }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 26px; margin: 8px 0 4px; }
+  h2 { font-size: 20px; margin: 36px 0 8px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px; margin: 14px 0; }
+  .callout-key { border-left: 4px solid var(--green); background: var(--green-soft); }
+  .callout-todo { border-left: 4px solid var(--amber); background: var(--amber-soft); color: var(--ink-soft); }
+  code { background: #eef1f4; padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  a { color: var(--accent); }
+  .fig { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; overflow-x: auto; }
+  .fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .fig .cap { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+  .src { color: var(--ink-soft); font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>HunyuanImage-3.0-Instruct 网络结构深度解析</h1>
+<div class="meta">统一自回归多模态模型：一个 80B（激活 13B）MoE Transformer 同时当「语言模型」和「扩散模型」· 贯穿示例：文本指令（可带 1 张参考图）→ 1024×1024 生成图 · 依据推理代码 <code>hunyuan_image_3/</code> 与官方 checkpoint config 整理</div>
+
+<div class="card callout-key">
+  <b>读图主线</b>：所有条件都变成 <b>token 塞进同一条序列</b>——文本查表、参考图兵分两路（ViT 给语义、VAE 给像素）、噪声画布经 UNetDown 变 token、时间步也占一个 token 位。80B MoE 主干对这条序列做一次前向：文本位置走 <code>lm_head</code> 出文字，图像位置走 UNetUp 出「修改方向」v̂，循环 50 步后 VAE Decoder 一次性译回像素。主干里<b>没有 AdaLN、没有 cross-attention</b>——条件注入完全是 LLM 式的 in-context；时间步的「调制」只藏在出入口的 UNetDown / UNetUp 里。
+</div>
+
+<h2>一、全流程总览图</h2>
+
+<div class="fig">
+<svg viewBox="0 0 1240 1980" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC',sans-serif">
+  <defs>
+    <marker id="g"  markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#52606d"/></marker>
+    <marker id="gb" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#2563eb"/></marker>
+    <marker id="gp" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#7c3aed"/></marker>
+    <marker id="gg" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#059669"/></marker>
+    <marker id="ga" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#b45309"/></marker>
+  </defs>
+
+  <text x="620" y="30" text-anchor="middle" font-size="17" font-weight="800">HunyuanImage-3.0：从「指令 + 参考图」到「成品图」的完整旅程</text>
+
+  <!-- ═══════════ 输入区 ═══════════ -->
+  <rect x="60" y="56" width="320" height="64" rx="10" fill="#fff" stroke="#1f2933" stroke-width="1.5"/>
+  <text x="220" y="83" text-anchor="middle" font-size="13" font-weight="700">用户指令（+ 系统提示 / CoT）</text>
+  <text x="220" y="104" text-anchor="middle" font-size="12" fill="#52606d">「把这只猫改成宇航员风格」</text>
+
+  <rect x="700" y="56" width="300" height="64" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="850" y="83" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3aed">参考图（可选，可多张）</text>
+  <text x="850" y="104" text-anchor="middle" font-size="11" fill="#52606d">cond_image_type = vae_vit：同图走两条路 ↓</text>
+
+  <!-- ═══════════ 文本通路 ═══════════ -->
+  <rect x="40" y="170" width="360" height="200" rx="14" fill="#fbfdff" stroke="#2563eb" stroke-width="2"/>
+  <text x="220" y="198" text-anchor="middle" font-size="14" font-weight="800" fill="#2563eb">文本通路 —— 查表即得</text>
+
+  <rect x="70" y="216" width="300" height="60" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="220" y="238" text-anchor="middle" font-size="11.5" font-weight="600">① HunyuanImage3TokenizerFast 切词</text>
+  <text x="220" y="258" text-anchor="middle" font-size="10.5" fill="#52606d">词表 133,120，含 &lt;boi&gt;&lt;eoi&gt;&lt;img&gt;&lt;timestep&gt; 等特殊 token</text>
+
+  <rect x="70" y="294" width="300" height="60" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="220" y="316" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">② wte 查 embedding 表</text>
+  <text x="220" y="336" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ (L_txt, 4096)</text>
+
+  <!-- ═══════════ ViT 通路 ═══════════ -->
+  <rect x="430" y="170" width="380" height="300" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="620" y="198" text-anchor="middle" font-size="14" font-weight="800" fill="#7c3aed">参考图·路① ViT ❄ —— 语义（这是什么）</text>
+
+  <rect x="460" y="216" width="320" height="58" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="620" y="238" text-anchor="middle" font-size="11.5" font-weight="600">① NaFlex 预处理：切 16×16 像素 patch</text>
+  <text x="620" y="258" text-anchor="middle" font-size="10.5" fill="#52606d">变长保比例，pad 至 max_num_patches ⇒ (N_vit, 768)</text>
+
+  <rect x="460" y="290" width="320" height="76" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="620" y="312" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">② SigLIP2-so400m 视觉塔（27 层，d=1152）</text>
+  <text x="620" y="332" text-anchor="middle" font-size="10.5" fill="#52606d">Linear patch 嵌入 + 双线性插值位置码 + 双向注意力</text>
+  <text x="620" y="352" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ (N_vit, 1152)</text>
+
+  <rect x="460" y="382" width="320" height="70" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-dasharray="4,3"/>
+  <text x="620" y="404" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7c3aed">③ vision_aligner：2 层 MLP（mlp_gelu）</text>
+  <text x="620" y="424" text-anchor="middle" font-size="10.5" fill="#52606d">Linear 1152→4096 → GELU → Linear 4096→4096</text>
+  <text x="620" y="444" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ (N_vit, 4096)「视觉词」</text>
+
+  <!-- ═══════════ VAE 通路 ═══════════ -->
+  <rect x="840" y="170" width="360" height="300" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="1020" y="198" text-anchor="middle" font-size="14" font-weight="800" fill="#7c3aed">参考图·路② VAE ❄ —— 像素（长什么样）</text>
+
+  <rect x="870" y="216" width="300" height="58" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="1020" y="238" text-anchor="middle" font-size="11.5" font-weight="600">① resize/crop 对齐分辨率组（base 1024）</text>
+  <text x="1020" y="258" text-anchor="middle" font-size="10.5" fill="#52606d">1024×1024×3，值域 [-1, 1]</text>
+
+  <rect x="870" y="290" width="300" height="76" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="1020" y="312" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">② AutoencoderKLConv3D.encode</text>
+  <text x="1020" y="332" text-anchor="middle" font-size="10.5" fill="#52606d">3D 卷积（图像当 T=1 视频），16× 空间下采样</text>
+  <text x="1020" y="352" text-anchor="middle" font-size="10.5" fill="#52606d">采样 + ×scaling 0.5627 ⇒ latent (32, 64, 64)</text>
+
+  <rect x="870" y="382" width="300" height="70" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-dasharray="4,3"/>
+  <text x="1020" y="404" text-anchor="middle" font-size="10.5" fill="#52606d">干净素材，固定 t=0 → 走下方同一个 UNetDown 入口</text>
+  <text x="1020" y="424" text-anchor="middle" font-size="10.5" fill="#52606d">缺 ViT → 读不懂「这只猫」；缺 VAE → 花色对不上</text>
+  <text x="1020" y="444" text-anchor="middle" font-size="10.5" fill="#52606d">两段 token 在序列里以 &lt;joint_img_sep&gt; 相隔</text>
+
+  <!-- ═══════════ 采样准备 ═══════════ -->
+  <rect x="40" y="510" width="500" height="250" rx="14" fill="#fffdf7" stroke="#b45309" stroke-width="2"/>
+  <text x="290" y="538" text-anchor="middle" font-size="14" font-weight="800" fill="#b45309">采样准备 —— 画布与进度表</text>
+
+  <rect x="70" y="556" width="440" height="58" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="290" y="578" text-anchor="middle" font-size="11.5" font-weight="600">随机高斯噪声 = 初始画布 (1, 32, 64, 64)</text>
+  <text x="290" y="598" text-anchor="middle" font-size="10.5" fill="#52606d">1024² ÷ 16 = 64×64 = 4096 个 latent 像素（bf16）</text>
+
+  <rect x="70" y="630" width="440" height="112" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="290" y="652" text-anchor="middle" font-size="11.5" font-weight="600">FlowMatchDiscreteScheduler 排 50 个停靠站</text>
+  <text x="290" y="672" text-anchor="middle" font-size="10.5" fill="#52606d">σ: 1 → 0，SD3 式 shift 移站；t = σ×1000；Euler 求解</text>
+  <text x="290" y="692" text-anchor="middle" font-size="10.5" fill="#52606d">TimestepEmbedder：t → 正弦 256 维 → MLP → (1, 4096)</text>
+  <text x="290" y="712" text-anchor="middle" font-size="10.5" fill="#b45309">一鱼三吃：timestep_emb 进序列占 token 位 ·</text>
+  <text x="290" y="730" text-anchor="middle" font-size="10.5" fill="#b45309">time_embed 调制 UNetDown · time_embed_2 调制 UNetUp</text>
+
+  <!-- ═══════════ UNetDown 入口投影 ═══════════ -->
+  <rect x="580" y="510" width="620" height="250" rx="14" fill="#fffdf7" stroke="#b45309" stroke-width="2"/>
+  <text x="890" y="538" text-anchor="middle" font-size="14" font-weight="800" fill="#b45309">latent 入口投影：patch_embed = UNetDown（共用）</text>
+
+  <rect x="610" y="556" width="560" height="78" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="890" y="578" text-anchor="middle" font-size="11.5" font-weight="600">Conv3×3 (32→1024) → ResBlock (1024→4096)，patch_size=1 不下采样</text>
+  <text x="890" y="598" text-anchor="middle" font-size="10.5" fill="#52606d">ResBlock 内 Adaptive GroupNorm：GN(h)·(1+scale)+shift，scale/shift 由 t 生成</text>
+  <text x="890" y="618" text-anchor="middle" font-size="10.5" fill="#52606d">rearrange 'b c h w → b (h w) c' ⇒ 每个 latent 像素一个 token</text>
+
+  <rect x="610" y="650" width="270" height="92" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+  <text x="745" y="672" text-anchor="middle" font-size="11.5" font-weight="600" fill="#b45309">噪声画布（当前 t）</text>
+  <text x="745" y="692" text-anchor="middle" font-size="10.5" fill="#52606d">(1,32,64,64) + time_embed(t)</text>
+  <text x="745" y="712" text-anchor="middle" font-size="10.5" font-weight="600" fill="#b45309">⇒ (4096, 4096) 画布 token</text>
+  <text x="745" y="730" text-anchor="middle" font-size="10.5" fill="#52606d">每个去噪步重算一次</text>
+
+  <rect x="900" y="650" width="270" height="92" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="1035" y="672" text-anchor="middle" font-size="11.5" font-weight="600" fill="#7c3aed">参考图 latent（t=0）</text>
+  <text x="1035" y="692" text-anchor="middle" font-size="10.5" fill="#52606d">(1,32,64,64) + time_embed(0)</text>
+  <text x="1035" y="712" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ (4096, 4096) 素材 token</text>
+  <text x="1035" y="730" text-anchor="middle" font-size="10.5" fill="#52606d">只算一次，之后躺在 KV cache 里</text>
+
+  <!-- ═══════════ 序列组装 ═══════════ -->
+  <rect x="40" y="800" width="1160" height="240" rx="14" fill="#fbfdff" stroke="#2563eb" stroke-width="2"/>
+  <text x="620" y="828" text-anchor="middle" font-size="14" font-weight="800" fill="#2563eb">统一序列组装 —— 挖坑填空（scatter 覆盖占位符）</text>
+
+  <rect x="70" y="846" width="1100" height="56" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="620" y="868" text-anchor="middle" font-size="11" font-family="Menlo,Consolas,monospace">&lt;bos&gt; …指令文本… &lt;boi&gt;&lt;img_size&gt;&lt;img_ratio&gt;&lt;timestep&gt; &lt;img&gt;×4096(参考VAE) &lt;joint_img_sep&gt; &lt;img&gt;×N_vit(参考ViT) &lt;eoi&gt; …文本… &lt;boi&gt;&lt;img_size&gt;&lt;img_ratio&gt;&lt;timestep&gt; &lt;img&gt;×4096(生成) &lt;eoi&gt;</text>
+  <text x="620" y="888" text-anchor="middle" font-size="10.5" fill="#52606d">所有 &lt;img&gt; / &lt;timestep&gt; 占位符先查表占坑，再被上方三路 embedding 按 mask scatter 原位覆盖</text>
+
+  <rect x="70" y="918" width="540" height="104" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="340" y="940" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">注意力掩码：混合因果</text>
+  <text x="340" y="960" text-anchor="middle" font-size="10.5" fill="#52606d">文本 token：因果（只看左边）</text>
+  <text x="340" y="980" text-anchor="middle" font-size="10.5" fill="#52606d">每段图像 token 内部：双向 full attention（方块置 True）</text>
+  <text x="340" y="1000" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ 4D bool mask (B, 1, L, L)</text>
+
+  <rect x="640" y="918" width="530" height="104" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="905" y="940" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">统一 2D RoPE（文本图像同一套坐标系）</text>
+  <text x="905" y="960" text-anchor="middle" font-size="10.5" fill="#52606d">文本第 n 个 token → 坐标 (n, n)（对角线前进）</text>
+  <text x="905" y="980" text-anchor="middle" font-size="10.5" fill="#52606d">图像段 → 以 β_y=L+(wh−h)/2, β_x=L+(wh−w)/2 起步的 h×w 网格</text>
+  <text x="905" y="1000" text-anchor="middle" font-size="10.5" fill="#52606d">head_dim 128 维：一半频率给 y、一半给 x（kexue.fm/archives/10352）</text>
+
+  <!-- ═══════════ 主干 ═══════════ -->
+  <rect x="40" y="1080" width="1160" height="240" rx="14" fill="#f7fdfa" stroke="#059669" stroke-width="2.5"/>
+  <text x="620" y="1110" text-anchor="middle" font-size="14.5" font-weight="800" fill="#059669">80B MoE 主干（激活 13B）—— 唯一的大脑，文本 / 图像共用同一套权重</text>
+
+  <rect x="70" y="1130" width="1100" height="120" rx="10" fill="#fff" stroke="#059669" stroke-width="2"/>
+  <text x="620" y="1154" text-anchor="middle" font-size="12.5" font-weight="700" fill="#059669">× 32 层 Decoder Block（Pre-RMSNorm，无 AdaLN、无 cross-attn）</text>
+  <text x="620" y="1178" text-anchor="middle" font-size="10.5" fill="#52606d">注意力：融合 QKV → GQA（Q 32 头 / KV 8 头 · head_dim 128）→ 2D RoPE → QK-RMSNorm → SDPA → o_proj</text>
+  <text x="620" y="1200" text-anchor="middle" font-size="10.5" fill="#52606d">MoE FFN：fp32 门控 softmax → top-8 / 64 个路由专家 + 1 个共享专家恒开 · 每专家 SwiGLU 4096→3072→4096</text>
+  <text x="620" y="1222" text-anchor="middle" font-size="10.5" fill="#52606d">每层输入输出形状不变 (B, L, 4096) —— 画布→文本（读需求）、画布→参考图（搬素材）在同一次注意力里完成</text>
+
+  <text x="620" y="1290" text-anchor="middle" font-size="11" fill="#52606d">参数账：64 专家 × 32 层 ≈ 77B + 共享专家/注意力/词表 ≈ 3B = 80B 总量；激活 = 8+1 专家 ≈ 11B + 注意力等 ≈ 13B ✓</text>
+
+  <!-- ═══════════ 双出口 ═══════════ -->
+  <rect x="70" y="1360" width="480" height="130" rx="10" fill="#fbfdff" stroke="#2563eb" stroke-width="2"/>
+  <text x="310" y="1386" text-anchor="middle" font-size="12.5" font-weight="700" fill="#2563eb">出口 A：文本位置（gen_text 模式）</text>
+  <text x="310" y="1408" text-anchor="middle" font-size="10.5" fill="#52606d">ln_f (RMSNorm) → lm_head ⇒ logits (B, L, 133120)</text>
+  <text x="310" y="1428" text-anchor="middle" font-size="10.5" fill="#52606d">自回归采样：CoT think / recaption 改写提示词</text>
+  <text x="310" y="1448" text-anchor="middle" font-size="10.5" fill="#52606d">还能生成 &lt;img_ratio_*&gt; token 自动决定画幅比例</text>
+  <text x="310" y="1468" text-anchor="middle" font-size="10.5" fill="#2563eb">生成的 CoT 文本会拼回上下文，再进入 gen_image 模式</text>
+
+  <rect x="620" y="1360" width="580" height="130" rx="10" fill="#fff" stroke="#94a3b8"/>
+  <text x="910" y="1386" text-anchor="middle" font-size="12.5" font-weight="700">出口 B：图像位置（gen_image 模式）</text>
+  <text x="910" y="1408" text-anchor="middle" font-size="10.5" fill="#52606d">摘出 4096 个画布 token 的 hidden → final_layer = UNetUp</text>
+  <text x="910" y="1428" text-anchor="middle" font-size="10.5" fill="#52606d">ResBlock AdaGN(time_embed_2(t)) → Conv3×3 (4096→…→32) → 反 rearrange</text>
+  <text x="910" y="1450" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">⇒ v̂ (1, 32, 64, 64)：本步「修改方向」——不是图！</text>
+  <text x="910" y="1470" text-anchor="middle" font-size="10.5" fill="#52606d">CFG：正/负序列拼 batch×2，v̂ = v_负 + scale×(v_正 − v_负)</text>
+
+  <!-- Euler 步 + 循环 -->
+  <rect x="620" y="1520" width="580" height="64" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="910" y="1546" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">Euler 走一步：x ← x + v̂·(σ_next − σ)，画布向成品靠近一小格</text>
+  <text x="910" y="1566" text-anchor="middle" font-size="10.5" fill="#52606d">首步 prefill 全序列存 KV；第 2 步起只回炉 [&lt;timestep&gt; + 4096 画布 token]，KV 原位覆盖</text>
+
+  <path d="M1200,1552 L1226,1552 L1226,696 L1174,696" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7,5" marker-end="url(#gb)"/>
+  <text x="1218" y="1120" font-size="10.5" fill="#2563eb" transform="rotate(90 1218 1120)">未满 50 步：新画布 + 下一个 t 回到 UNetDown（prompt/参考图 KV 不重算）</text>
+
+  <!-- 50步走完 -->
+  <rect x="70" y="1620" width="480" height="64" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+  <text x="310" y="1646" text-anchor="middle" font-size="12" font-weight="700" fill="#059669">50 步走完：干净 latent x₀ (1, 32, 64, 64)</text>
+  <text x="310" y="1668" text-anchor="middle" font-size="10.5" fill="#52606d">÷ scaling 0.5627 → unsqueeze 出 T=1 维 ⇒ (1, 32, 1, 64, 64)</text>
+
+  <!-- VAE Decoder -->
+  <rect x="70" y="1720" width="480" height="72" rx="10" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="310" y="1746" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c3aed">3D VAE Decoder ❄（全程仅调用这一次）</text>
+  <text x="310" y="1768" text-anchor="middle" font-size="10.5" fill="#52606d">mid attn → 4 级 DCAE 上采样 16× → (3, 1, 1024, 1024)</text>
+
+  <rect x="640" y="1720" width="300" height="72" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2.5"/>
+  <text x="790" y="1750" text-anchor="middle" font-size="13.5" font-weight="800" fill="#059669">✓ 最终图片 1024×1024</text>
+  <text x="790" y="1772" text-anchor="middle" font-size="10.5" fill="#52606d">[-1,1] → [0,1] → PIL 保存</text>
+
+  <!-- ═══════════ 箭头 ═══════════ -->
+  <!-- 输入 → 各通路 -->
+  <line x1="220" y1="120" x2="220" y2="168" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <path d="M790,120 L680,150 L640,168" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <text x="672" y="146" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">路① 给语义</text>
+  <path d="M910,120 L990,150 L1010,168" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <text x="1010" y="146" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">路② 给像素</text>
+
+  <!-- VAE latent → UNetDown -->
+  <path d="M1020,470 L1020,648" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="1078" y="496" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">(32, 64, 64) · t=0</text>
+
+  <!-- 噪声 → UNetDown -->
+  <path d="M510,586 L560,586 L560,690 L608,690" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#ga)"/>
+  <text x="560" y="666" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">画布</text>
+
+  <!-- 文本 → 序列组装 -->
+  <path d="M220,370 L220,798" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gb)"/>
+  <text x="168" y="600" text-anchor="middle" font-size="10.5" fill="#2563eb" font-weight="600">(L_txt, 4096)</text>
+
+  <!-- ViT → 序列组装 -->
+  <path d="M620,470 L620,490 L400,490 L400,780 L560,780 L560,798" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="452" y="770" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">(N_vit, 4096)</text>
+
+  <!-- UNetDown → 序列组装 -->
+  <path d="M745,742 L745,798" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#ga)"/>
+  <path d="M1035,742 L1035,798" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="812" y="770" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">(4096, 4096)</text>
+
+  <!-- timestep_emb → 序列组装 -->
+  <path d="M290,742 L290,798" fill="none" stroke="#b45309" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#ga)"/>
+  <text x="332" y="770" text-anchor="middle" font-size="10.5" fill="#b45309">timestep_emb 占 1 坑</text>
+
+  <!-- 组装 → 主干 -->
+  <line x1="620" y1="1040" x2="620" y2="1078" stroke="#52606d" stroke-width="2" marker-end="url(#g)"/>
+  <text x="700" y="1062" text-anchor="middle" font-size="10.5" fill="#52606d" font-weight="600">(B×2(CFG), L, 4096)</text>
+
+  <!-- 主干 → 双出口 -->
+  <path d="M310,1320 L310,1358" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gb)"/>
+  <path d="M910,1320 L910,1358" fill="none" stroke="#52606d" stroke-width="2" marker-end="url(#g)"/>
+
+  <!-- 出口B → Euler -->
+  <line x1="910" y1="1490" x2="910" y2="1518" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+
+  <!-- Euler → 干净latent -->
+  <path d="M620,1552 L310,1552 L310,1618" fill="none" stroke="#059669" stroke-width="1.8" marker-end="url(#gg)"/>
+  <text x="420" y="1600" text-anchor="middle" font-size="10.5" fill="#059669">第 50 步之后 ↓</text>
+
+  <!-- 干净latent → VAE decode → 图 -->
+  <line x1="310" y1="1684" x2="310" y2="1718" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <line x1="550" y1="1756" x2="638" y2="1756" stroke="#059669" stroke-width="2" marker-end="url(#gg)"/>
+
+  <!-- 图例 -->
+  <text x="620" y="1850" text-anchor="middle" font-size="11" fill="#52606d">图例：❄ 冻结（VAE / SigLIP2）· 紫 = 参考图相关 · 橙 = 时间/噪声控制 · 蓝 = 文本/序列/循环 · 绿 = 主干与产出</text>
+  <text x="620" y="1876" text-anchor="middle" font-size="11" fill="#52606d">token 总账（本例，1 张参考图 + 1024² 生成）：文本 L_txt + 参考图 (4096 VAE + N_vit ViT) + 画布 4096 + 特殊 token 若干 · CFG 双序列 batch×2</text>
+  <text x="620" y="1902" text-anchor="middle" font-size="11" fill="#52606d">主干前向：首步 prefill 全序列 1 次，之后每步只算 [1 + 4096] 个 token × 50 步 · VAE Decoder 仅 1 次 · 上限 max_position_embeddings = 22800</text>
+  <text x="620" y="1928" text-anchor="middle" font-size="11" fill="#52606d">模型规格：32 层 · hidden 4096 · GQA 32/8 头 · head_dim 128 · 64 专家 top-8 + 1 共享 · 词表 133120 · VAE latent 32ch 16×↓</text>
+</svg>
+<div class="cap">HunyuanImage-3.0-Instruct 完整数据流。五路输入（文本 / 参考图 ViT / 参考图 VAE / 噪声画布 / 时间步）全部 token 化后 scatter 进同一条序列，80B MoE 主干一体两用：文本位置出文字、图像位置出速度场 v̂，循环 50 步后 VAE 一次译码。</div>
+</div>
+
+<h2>二、核心结论速记</h2>
+
+<div class="card">
+<ul>
+  <li><b>一个主干，两种「头」</b>：文本位置 → <code>ln_f + lm_head</code>（next-token prediction）；图像位置 → <code>final_layer</code>(UNetUp)（flow matching 速度场）。同一次前向可以只走其一（<code>mode="gen_text" / "gen_image"</code>）。<span class="src">modeling_hunyuan_image_3.py:2280-2304</span></li>
+  <li><b>条件注入是 in-context 的</b>：主干 32 层里没有 AdaLN / cross-attention。文本、参考图、时间步全都是序列里的 token。时间步的「调制」只存在于出入口 UNetDown / UNetUp 的 Adaptive GroupNorm 中。<span class="src">modeling:736-756, 1379-1468</span></li>
+  <li><b>占位符 + scatter 的组装方式</b>：tokenizer 先铺好 <code>&lt;img&gt;×N</code> 和 <code>&lt;timestep&gt;</code> 占位，forward 开头用 <code>instantiate_vae_image_tokens / instantiate_vit_image_tokens / instantiate_continuous_tokens</code> 按 mask 原位覆盖。<span class="src">modeling:2170-2202</span></li>
+  <li><b>混合注意力掩码</b>：文本因果、图像段内双向——用一个 4D bool mask 实现，图像 slice 的方块整体置 True。<span class="src">modeling:2859-2884</span></li>
+  <li><b>统一 2D RoPE</b>：文本走对角线 (n,n)，图像段以 β_y=L+(wh−h)/2、β_x=L+(wh−w)/2 为起点铺 2D 网格（居中对齐设计，参考苏剑林方案）。<span class="src">modeling:403-484</span></li>
+  <li><b>扩散采样复用 LLM 推理基建</b>：首步 prefill 整条序列并缓存 KV；之后每个去噪步只前向 <code>[&lt;timestep&gt;] + 画布 token</code>，position_ids 固定，KV 原位覆盖（<code>HunyuanStaticCache.index_copy_</code>）。<span class="src">modeling:2931-3002, 895-970</span></li>
+  <li><b>参考图 = VAE(t=0) + ViT 双路 joint</b>：VAE 路给像素级素材（可被"搬运"），ViT 路给语义；条件 latent 与噪声画布共用同一个 UNetDown，只是时间步不同（t=0 表示干净）。<span class="src">modeling:2426-2454, 1806-1895</span></li>
+  <li><b>MoE 细节</b>：门控 Linear 固定 fp32，softmax 后 top-8 归一化加权；1 个共享专家恒开与路由结果相加（<code>use_mixed_mlp_moe</code>）；每专家 SwiGLU 4096→3072。<span class="src">modeling:1092-1254</span></li>
+  <li><b>Instruct 特有流程</b>：先 gen_text 出 CoT（think / recaption 改写），可自动生成 <code>&lt;img_ratio_*&gt;</code> 决定画幅，再把 CoT 文本拼回上下文进入 gen_image。蒸馏版另有 <code>&lt;guidance&gt;</code>（CFG 蒸馏）与 <code>&lt;timestep_r&gt;</code>（MeanFlow）token。<span class="src">modeling:3236-3403</span></li>
+</ul>
+</div>
+
+<h2>三、深挖专题（持续追加）</h2>
+
+<div class="card">
+  <ul>
+    <li>✅ <a href="/zh-cn/posts/hunyuan-image-3-vit/">专题 ①：ViT 通路（NaFlex 预处理 → SigLIP2 → 2 层 MLP Aligner）</a> —— 任意尺寸图 → 恒定 (1024, 4096) 视觉词</li>
+    <li>✅ <a href="/zh-cn/posts/hunyuan-image-3-vae/">专题 ②：VAE 通路（3D 卷积 KL-VAE，f16c32）</a> —— 像素 ⇄ latent，1.26B 非对称编解码器 + DCAE 上下采样</li>
+    <li>✅ <a href="/zh-cn/posts/hunyuan-image-3-backbone/">专题 ③：主干网络（80B MoE Transformer）</a> —— 四路输入拼接、时间步调制、50 步去噪循环三大机制</li>
+    <li>✅ <a href="/zh-cn/posts/hunyuan-image-3-flow-matching/">专题 ④：流匹配与时间步 t（理论篇）</a> —— flow matching 推导、σ/噪声浓度、t 调制两种哲学（vs Qwen）、50 步演化</li>
+  </ul>
+</div>
+
+<div class="card callout-todo">
+  待补充候选：② 3D VAE（DCAE 上下采样 / shortcut 设计）· ③ UNetDown / UNetUp 出入口投影 · ④ 统一序列组装与注意力掩码 · ⑤ 2D RoPE 的频率分配与推导 · ⑥ MoE 路由与 topkgating 实现 · ⑦ gen_image 逐步推理的张量流细账（first_step vs 后续步）· ⑧ TaylorCache 采样加速 · ⑨ 蒸馏版（CFG-distill / MeanFlow）差异。
+</div>
+
+</main>
+<script defer src="annotator.js"></script>
+</body>
+</html>

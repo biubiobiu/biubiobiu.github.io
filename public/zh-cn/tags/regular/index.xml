@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>regular on biubiobiu&#39;s Blog</title>
+    <link>https://biubiobiu.github.io/zh-cn/tags/regular/</link>
+    <description>Recent content in regular on biubiobiu&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>Everything is mine</copyright>
+    <lastBuildDate>Tue, 01 Aug 2023 06:00:20 +0800</lastBuildDate><atom:link href="https://biubiobiu.github.io/zh-cn/tags/regular/index.xml" rel="self" type="application/rss+xml" /><item>
+      <title>数据类型</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</link>
+      <pubDate>Tue, 01 Aug 2023 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</guid>
+      <description>一、数组array 【语法】：
+array(val1, val2, val3, ...) 【建表】
+create table temp.array_demo( meiti array&amp;lt;string&amp;gt; comment &amp;#39;&amp;#39; ) row format delimited fields terminated by &amp;#39;\t&amp;#39; -- (字段与字段之间的分隔符) lines terminated by &amp;#39;\n&amp;#39; () collection items terminated by &amp;#39;,&amp;#39; -- (必须使用, 一个字段中各个item的分割符) lacation &amp;#39;hdfs 路径&amp;#39; 【查询方法和函数】
+-- 在字段类型为array中查找是否包含某元素 array_contains() -- 数组名[index]：查询 二、map 函数 说明 size(Map) map的长度 map_keys(Map) map中的所有key，返回array map_values(Map) map 中所有的value，返回array 【构建Map】 组装数据：to_json, str_to_map str_to_map(concat_ws(&amp;quot;,&amp;quot;, collect_set(concat_ws(&amp;rsquo;:&amp;rsquo;, date_key, price_value)))) 【构建Map】 聚合：combine；聚合去重：combine_unique combine(map1, map2, map3, &amp;hellip;) 【构建Map】 hive 自带方法 map(&amp;ldquo;key1&amp;rdquo;, value1, &amp;ldquo;key2&amp;rdquo;, value2) named_struct(&amp;ldquo;cnt&amp;rdquo;, 100, &amp;ldquo;uds&amp;rdquo;, array(2, 3, 4)) </description>
+    </item>
+    
+    <item>
+      <title>正则匹配</title>
+      <link>https://biubiobiu.github.io/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/</link>
+      <pubDate>Tue, 01 Aug 2023 06:00:20 +0800</pubDate>
+      
+      <guid>https://biubiobiu.github.io/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/</guid>
+      <description>一、常用的两个函数 1、regexp_extract 【语法】：regexp_extract(string subject, string pattern, int index) 【返回】：string 【说明】：将字符串subject按照pattern正则表达式的规则拆分，返回index指定的字符 pattern中 &amp;lsquo;()()()()&amp;rsquo; index 表示输出第index个括号的正则表达式 0-表示与之匹配的整个字符串 1-表示第一个括号里面的 2-表示第二个括号里面的
+例如：
+select regexp_extract(&amp;lsquo;x=a3&amp;amp;x=18abc&amp;amp;x=2&amp;amp;y=3&amp;amp;x=4&amp;rsquo;,&amp;lsquo;x=([0-9]+)([a-z]+)&amp;rsquo;,0); &amp;mdash; x=18abc
+select regexp_extract(&amp;lsquo;x=a3&amp;amp;x=18abc&amp;amp;x=2&amp;amp;y=3&amp;amp;x=4&amp;rsquo;,&amp;lsquo;x=([0-9]+)([a-z]+)&amp;rsquo;,2); &amp;mdash; abc
+2、regexp_replace 【语法】：regexp_replace(string A, string B, string C) 【返回】：string 【说明】：将字符串A中的符号java正则表达式B的部分提换为C，
+二、正则匹配项 操作 解释说明 功能 Java正则 &amp;ldquo;.&amp;rdquo; 任意单个字符 &amp;ldquo;&amp;rdquo; 匹配前面的字符0次或多次 &amp;ldquo;+&amp;rdquo; 匹配前面的字符1次或多次[] &amp;ldquo;?&amp;rdquo; 匹配前面的字符0次或1次 &amp;ldquo;\d&amp;rdquo; 等于 [0-9]，使用的时候写成&amp;rsquo;\d&amp;rsquo; &amp;ldquo;\D&amp;rdquo; 等于 [^0-9]，使用的时候写成&amp;rsquo;\D&amp;rsquo; 非数字符 &amp;lsquo;\W&amp;rsquo; 匹配汉字 &amp;lsquo;\w*&amp;rsquo; 匹配字母、下划线、数字 regexp_replace(&amp;rsquo;&amp;rsquo;, &amp;lsquo;([^\u4E00-\u9FA5a-zA-Z0-9]+)&amp;rsquo;, &amp;lsquo;&amp;rsquo;) 匹配：中文、英文、数字 \s+ \s+: 匹配多个空格 例如：this\s+is\s+test 匹配单词this后面的\s+可以匹配多个空格；之后匹配is；再之后\s+匹配多个空格再加上text字符串 ^ 定义了以什么开始 例如：^\d+(.</description>
+    </item>
+    
+    
+  </channel>
+</rss>
