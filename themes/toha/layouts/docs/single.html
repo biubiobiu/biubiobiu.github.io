@@ -1,0 +1,118 @@
+{{ define "header" }}
+<meta name="description" content="{{ if .Description }}{{ .Description }}{{ else }}{{ .Title }}{{ end }}" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css"
+/>
+<link rel="stylesheet" href="{{ "/css/layouts/single.css" | relURL }}?v=20260727-3"/>
+<link rel="stylesheet" href="{{ "/css/layouts/docs.css" | relURL }}"/>
+<link rel="stylesheet" href="{{ "/css/navigators/sidebar.css" | relURL }}?v=20260727-1"/>
+<link rel="stylesheet" href="{{ "/css/layouts/post-sidebar-resizer.css" | relURL }}?v=20260727-3"/>
+{{ end }}
+
+{{ define "navbar" }}
+  {{ partial "navigators/navbar-2.html" . }}
+{{ end }}
+
+{{ define "sidebar" }}
+  <section class="sidebar-section post-sidebar-resizable" id="sidebar-section">
+    <div class="sidebar-holder">
+      <div class="post-sidebar-toolbar">
+        <button
+          class="post-sidebar-toggle"
+          id="post-sidebar-toggle"
+          type="button"
+          aria-controls="post-sidebar-content"
+          aria-expanded="true"
+          aria-label="收起左侧目录"
+        >
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
+          <span>收起目录</span>
+        </button>
+      </div>
+      <div class="sidebar post-sidebar-content" id="post-sidebar-content">
+        <form class="mx-auto" method="get" action="{{ "search" | relLangURL }}">
+          <input type="text" name="keyword" value="" placeholder="{{ i18n "search" }}" data-search="" id="search-box" />
+        </form>
+        <div class="sidebar-tree">
+          <ul class="tree" id="tree">
+            <li id="list-heading"><a href="{{ "/docs" | relLangURL }}" data-filter="all">{{ i18n "docs" }}</a></li>
+            <div class="subtree">
+              {{ partial "navigators/sidebar.html" (dict "menuName" "docs" "menuItems" site.Menus.docs "ctx" .) }}
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button
+      class="post-sidebar-resizer"
+      id="post-sidebar-resizer"
+      type="button"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="调整左侧目录宽度"
+      aria-valuemin="220"
+      aria-valuemax="520"
+      aria-valuenow="320"
+    ></button>
+  </section>
+{{ end }}
+
+{{ define "content" }}
+<section class="content-section" id="content-section">
+  <div class="content">
+    <main class="container p-0 read-area docs-read-area">
+      <header class="docs-page-header">
+        <h1>{{ .Title }}</h1>
+        {{ with .Description }}<p>{{ . }}</p>{{ end }}
+      </header>
+      <article class="post-content docs-content" id="post-content">
+        {{ .Content }}
+      </article>
+    </main>
+  </div>
+  <a id="scroll-to-top" href="#" aria-label="返回顶部"><i class="fas fa-chevron-circle-up"></i></a>
+</section>
+{{ end }}
+
+{{ define "toc" }}
+  <section class="toc-section post-toc-collapsible" id="toc-section">
+    {{ if and site.Params.enableTOC ( .Params.enableTOC | default true ) }}
+    <div class="toc-holder">
+      <div class="post-toc-toolbar">
+        <h5 class="text-center pl-3">{{ i18n "toc_heading" }}</h5>
+        <button
+          class="post-toc-toggle"
+          id="post-toc-toggle"
+          type="button"
+          aria-controls="post-toc-content"
+          aria-expanded="true"
+          aria-label="收起文章目录"
+        >
+          <span>收起目录</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <hr class="post-toc-divider">
+      <div class="toc post-toc-content" id="post-toc-content">
+        {{ .TableOfContents }}
+      </div>
+    </div>
+    {{ end }}
+  </section>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+<script src="{{ "/js/single.js" | relURL }}"></script>
+<script src="{{ "/js/post-sidebar-resizer.js" | relURL }}?v=20260727-3"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+{{ if .Params.math }}
+  {{ partial "math.html" . }}
+{{ end }}
+{{ if .Params.mermaid }}
+  {{ partial "mermaid.html" . }}
+{{ end }}
+{{ end }}

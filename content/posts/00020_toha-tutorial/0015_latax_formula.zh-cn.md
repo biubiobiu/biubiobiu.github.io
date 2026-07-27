@@ -1,6 +1,6 @@
 ---
 title: "Katex公式"
-date: 2021-06-08T06:00:20+06:00
+date: 2021-06-08T06:00:20+08:00
 menu:
   sidebar:
     name: Katex公式
@@ -14,6 +14,8 @@ tags: ["Latex","公式"]
 categories: ["Basic"]
 math: true
 hero: datasets/toha/moon.jpg
+aliases:
+  - /zh-cn/posts/00020_toha-tutorial/0015_latax_formula/
 ---
 
 <a href="https://katex.org/docs/supported.html" target="blank">官方文档</a>  

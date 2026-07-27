@@ -1,6 +1,7 @@
 ---
 title: "简介"
-date: 2022-05-09T06:00:20+06:00
+slug: video-understanding-overview
+date: 2022-05-09T06:00:20+08:00
 menu:
   sidebar:
     name: 简介
@@ -13,6 +14,8 @@ author:
 tags: ["video","summary"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00500_video/vidio_summary/
 ---
 
 ## 一、简介
@@ -29,6 +32,5 @@ It is coming soon.
 
 
 ### 4、
-
 
 

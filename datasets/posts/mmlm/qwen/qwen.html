@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qwen-Image-Edit 全流程总览图</title>
+<style>
+  :root {
+    --ink: #1f2933; --ink-soft: #52606d; --line: #e4e7eb; --bg: #f8f9fb; --card: #ffffff;
+    --accent: #2563eb; --accent-soft: #eff6ff; --green: #059669; --green-soft: #ecfdf5;
+    --amber: #b45309; --amber-soft: #fffbeb; --purple: #7c3aed; --purple-soft: #f5f3ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.75; }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 26px; margin: 8px 0 4px; }
+  .meta { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 22px; margin: 14px 0; }
+  .callout-key { border-left: 4px solid var(--green); background: var(--green-soft); }
+  code { background: #eef1f4; padding: 1px 6px; border-radius: 4px; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+  a { color: var(--accent); }
+  .fig { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; overflow-x: auto; }
+  .fig svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .fig .cap { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 8px; }
+  ul { padding-left: 22px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Qwen-Image-Edit-2511 全流程总览图</h1>
+<div class="meta">一张图串起 Text Encoder（含 ViT）、VAE、DiT（40 步循环 + 四输入组装）· 贯穿示例：两张参考图 + 「生成这两个人的合影」→ 1024×1024 合影</div>
+
+<div class="card callout-key">
+  <b>读图主线</b>：参考图<b>兵分两路</b>（低清走 ViT 给语义、高清走 VAE 给像素）→ 与指令一起在 Text Encoder 里融合成需求文档 → DiT 带着四个输入循环 40 步，每步预测一个「修改方向」→ 干净 latent 最后由 VAE Decoder 一次性翻译成像素。蓝❄ = 冻结，绿🔥 = 训练时唯一更新的部分。
+</div>
+
+<div class="fig">
+<svg viewBox="0 0 1200 1560" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC',sans-serif">
+  <defs>
+    <marker id="g" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#52606d"/></marker>
+    <marker id="gb" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#2563eb"/></marker>
+    <marker id="gp" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#7c3aed"/></marker>
+    <marker id="gg" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#059669"/></marker>
+    <marker id="ga" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#b45309"/></marker>
+  </defs>
+
+  <text x="600" y="30" text-anchor="middle" font-size="17" font-weight="800">Qwen-Image-Edit：从「指令 + 参考图」到「成品图」的完整旅程</text>
+
+  <!-- ═══════════ 输入区 ═══════════ -->
+  <rect x="60" y="56" width="340" height="64" rx="10" fill="#fff" stroke="#1f2933" stroke-width="1.5"/>
+  <text x="230" y="83" text-anchor="middle" font-size="13" font-weight="700">用户指令</text>
+  <text x="230" y="104" text-anchor="middle" font-size="12" fill="#52606d">「生成这两个人的合影」</text>
+
+  <rect x="560" y="56" width="250" height="64" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="685" y="83" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3aed">参考图 1（人物 A）</text>
+  <text x="685" y="104" text-anchor="middle" font-size="11" fill="#52606d">同一张图将走两条路 ↓</text>
+
+  <rect x="850" y="56" width="250" height="64" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="975" y="83" text-anchor="middle" font-size="13" font-weight="700" fill="#7c3aed">参考图 2（人物 B）</text>
+  <text x="975" y="104" text-anchor="middle" font-size="11" fill="#52606d">同一张图将走两条路 ↓</text>
+
+  <!-- ═══════════ Text Encoder 容器 ═══════════ -->
+  <rect x="40" y="200" width="560" height="516" rx="14" fill="#fbfdff" stroke="#2563eb" stroke-width="2"/>
+  <text x="320" y="228" text-anchor="middle" font-size="14" font-weight="800" fill="#2563eb">Text Encoder：Qwen2.5-VL-7B ❄ 冻结 —— 语义通路（听懂要干什么）</text>
+
+  <rect x="70" y="244" width="500" height="56" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="320" y="266" text-anchor="middle" font-size="11.5" font-weight="600">① Chat 模板包装</text>
+  <text x="320" y="286" text-anchor="middle" font-size="10.5" fill="#52606d">system 引导词 + Picture 1: ⟨占位符⟩ Picture 2: ⟨占位符⟩ + 指令（每图只占 1 个占位符）</text>
+
+  <rect x="70" y="326" width="235" height="90" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="187" y="348" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">② 切词 + 查 embedding 表</text>
+  <text x="187" y="368" text-anchor="middle" font-size="10" fill="#52606d">占位符复制成 196 个坑位/图</text>
+  <text x="187" y="386" text-anchor="middle" font-size="10" fill="#52606d">⇒ (1, 482, 3584)</text>
+  <text x="187" y="404" text-anchor="middle" font-size="10" fill="#52606d">其中 392 个位置是空坑 ▢</text>
+
+  <rect x="335" y="326" width="235" height="164" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="452" y="348" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">③ ViT 视觉塔（32 层）</text>
+  <text x="452" y="370" text-anchor="middle" font-size="10" fill="#52606d">缩放 ~384² → 对齐 392²</text>
+  <text x="452" y="388" text-anchor="middle" font-size="10" fill="#52606d">切 14×14 像素 patch → 784 块(1280维)</text>
+  <text x="452" y="406" text-anchor="middle" font-size="10" fill="#52606d">窗口注意力 112px 为主</text>
+  <text x="452" y="424" text-anchor="middle" font-size="10" fill="#52606d">第 7/15/23/31 层全局注意力</text>
+  <text x="452" y="442" text-anchor="middle" font-size="10" fill="#52606d">出口 2×2 合并 + MLP 投到 3584</text>
+  <text x="452" y="464" text-anchor="middle" font-size="10.5" font-weight="600" fill="#7c3aed">⇒ 每图 (196, 3584)「视觉词」</text>
+
+  <rect x="70" y="440" width="235" height="76" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+  <text x="187" y="462" text-anchor="middle" font-size="11.5" font-weight="600" fill="#b45309">④ 挖坑填空 ★</text>
+  <text x="187" y="482" text-anchor="middle" font-size="10" fill="#52606d">ViT 输出按位覆盖 392 个坑</text>
+  <text x="187" y="500" text-anchor="middle" font-size="10" fill="#52606d">⇒ 图文交错序列 (1, 482, 3584)</text>
+
+  <rect x="70" y="544" width="500" height="72" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <text x="320" y="566" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">⑤ 28 层语言主干（GQA · SwiGLU · M-RoPE 三维坐标）</text>
+  <text x="320" y="586" text-anchor="middle" font-size="10.5" fill="#52606d">文字与视觉 token 逐层互相注意力——「合影」吸收两张图的长相信息</text>
+  <text x="320" y="604" text-anchor="middle" font-size="10.5" fill="#52606d">每层输出 (1, 482, 3584) 形状不变，内容越来越「懂上下文」</text>
+
+  <rect x="70" y="640" width="500" height="56" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="320" y="662" text-anchor="middle" font-size="11.5" font-weight="600" fill="#059669">⑥ 取最后一层 hidden states（不生成文字），丢模板前缀 64 个</text>
+  <text x="320" y="682" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ prompt_emb (1, 418, 3584) ——「需求文档」完成</text>
+
+  <!-- TE 内部箭头 -->
+  <line x1="187" y1="300" x2="187" y2="324" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="187" y1="416" x2="187" y2="438" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M335,478 L307,478" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <path d="M187,516 L187,530 L320,530 L320,542" fill="none" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="320" y1="616" x2="320" y2="638" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+
+  <!-- ═══════════ VAE Encoder 容器 ═══════════ -->
+  <rect x="640" y="200" width="520" height="240" rx="14" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="900" y="228" text-anchor="middle" font-size="14" font-weight="800" fill="#7c3aed">VAE Encoder ❄ 冻结 —— 像素通路（保住长什么样）</text>
+
+  <rect x="670" y="246" width="460" height="72" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="900" y="270" text-anchor="middle" font-size="11.5" font-weight="600">参考图保持高清 ~1024×1024 → 3D 卷积 Encoder，8× 空间下采样</text>
+  <text x="900" y="290" text-anchor="middle" font-size="10.5" fill="#52606d">1024×1024×3 像素 → 逐通道标准化 ⇒ <tspan font-weight="700">每图 latent (16, 128, 128)</tspan></text>
+  <text x="900" y="308" text-anchor="middle" font-size="10.5" fill="#52606d">干净、全程不加噪 —— 这是「素材原件」</text>
+
+  <rect x="670" y="342" width="460" height="72" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-dasharray="4,3"/>
+  <text x="900" y="366" text-anchor="middle" font-size="10.5" fill="#52606d">与 ViT 通路互补：ViT 给「这是谁、在干嘛」（语义，196 token/图）</text>
+  <text x="900" y="386" text-anchor="middle" font-size="10.5" fill="#52606d">VAE 给「每一块皮肤发丝长什么样」（像素，之后变 4096 token/图）</text>
+  <text x="900" y="406" text-anchor="middle" font-size="10.5" fill="#52606d">缺 ViT → 看不懂指令里的「这两个人」；缺 VAE → 合影里换了张脸</text>
+
+  <!-- ═══════════ 采样准备容器 ═══════════ -->
+  <rect x="640" y="470" width="520" height="246" rx="14" fill="#fffdf7" stroke="#b45309" stroke-width="2"/>
+  <text x="900" y="498" text-anchor="middle" font-size="14" font-weight="800" fill="#b45309">采样准备 —— 画布与进度表</text>
+
+  <rect x="670" y="514" width="460" height="64" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="900" y="538" text-anchor="middle" font-size="11.5" font-weight="600">随机高斯噪声 = 初始画布 (1, 16, 128, 128)</text>
+  <text x="900" y="558" text-anchor="middle" font-size="10.5" fill="#52606d">26 万个随机数，零信息 —— 每次抽的不同，所以同一指令能出不同的图</text>
+
+  <rect x="670" y="600" width="460" height="96" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="900" y="622" text-anchor="middle" font-size="11.5" font-weight="600">调度器排好 40 个停靠站：σ 从 1 → 0（t = σ×1000）</text>
+  <text x="900" y="642" text-anchor="middle" font-size="10.5" fill="#52606d">按分辨率指数 shift（1024² 时 μ≈0.69），高噪声区站点更密</text>
+  <text x="900" y="662" text-anchor="middle" font-size="10.5" fill="#52606d">每站：t → 正弦编码(256 维「指纹」) → MLP ⇒ temb (1, 3072)</text>
+  <text x="900" y="682" text-anchor="middle" font-size="10.5" fill="#b45309">temb 不进 token 序列，专走「调制」通道 ↓</text>
+
+  <!-- ═══════════ DiT 容器 ═══════════ -->
+  <rect x="40" y="756" width="1120" height="590" rx="14" fill="#f7fdfa" stroke="#059669" stroke-width="2.5"/>
+  <text x="600" y="786" text-anchor="middle" font-size="14.5" font-weight="800" fill="#059669">DiT · 20B 🔥 唯一被训练的部分 —— 以下流程循环 40 步，每步一次（CFG 下正/负提示各前向一遍）</text>
+
+  <!-- 四输入组装 -->
+  <rect x="70" y="806" width="330" height="80" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="235" y="828" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">文本流（输入③：需求文档）</text>
+  <text x="235" y="848" text-anchor="middle" font-size="10.5" fill="#52606d">prompt_emb → RMSNorm → txt_in(3584→3072)</text>
+  <text x="235" y="868" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ 418 个 token</text>
+
+  <rect x="430" y="806" width="440" height="80" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="650" y="828" text-anchor="middle" font-size="11.5" font-weight="600" fill="#059669">图像流（输入①画布 + 输入④素材）</text>
+  <text x="650" y="848" text-anchor="middle" font-size="10.5" fill="#52606d">[带噪画布 | 参考图1 | 参考图2] 各 2×2 patch → img_in(64→3072)</text>
+  <text x="650" y="868" text-anchor="middle" font-size="10.5" fill="#52606d">⇒ 4096+4096+4096 = 12288 token（RoPE 帧号 0 / 1 / 2 区分）</text>
+
+  <rect x="900" y="806" width="230" height="80" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+  <text x="1015" y="828" text-anchor="middle" font-size="11.5" font-weight="600" fill="#b45309">时间（输入②：进度）</text>
+  <text x="1015" y="848" text-anchor="middle" font-size="10.5" fill="#52606d">temb → 每层调制旋钮</text>
+  <text x="1015" y="868" text-anchor="middle" font-size="10.5" fill="#52606d">画布用 t 版 / 参考图用 t=0 版</text>
+
+  <!-- 60层 -->
+  <rect x="70" y="920" width="1060" height="118" rx="10" fill="#fff" stroke="#059669" stroke-width="2"/>
+  <text x="600" y="944" text-anchor="middle" font-size="12.5" font-weight="700" fill="#059669">× 60 层双流 Transformer Block（两条流参数各一套，只在注意力交汇）</text>
+  <text x="600" y="968" text-anchor="middle" font-size="10.5" fill="#b45309">调制 AdaLN：LayerNorm(x)·(1+scale)+shift，子层输出 ×gate —— t 的「广播喇叭」，逐层调整工作模式</text>
+  <text x="600" y="990" text-anchor="middle" font-size="10.5" fill="#52606d">联合注意力：418+12288 = 12706 个 token 全员互见 —— 画布→文本（读需求）、画布→参考图（搬脸）、画布→画布（自洽）一次算完</text>
+  <text x="600" y="1012" text-anchor="middle" font-size="10.5" fill="#52606d">FFN 3072→12288→3072 · 3D RoPE：(帧,高,宽) 三维坐标，「画布(0,30,40)」与「参1(1,30,40)」同位跨帧对照</text>
+
+  <!-- 出口 -->
+  <rect x="70" y="1072" width="620" height="96" rx="8" fill="#fff" stroke="#94a3b8"/>
+  <text x="380" y="1096" text-anchor="middle" font-size="11.5" font-weight="600">出口：norm_out(temb 最后一次调制) → proj_out(3072→64)</text>
+  <text x="380" y="1118" text-anchor="middle" font-size="10.5" fill="#52606d">→ 只切画布前 4096 个 token（参考图/文本只读不产出）→ 反 patch 化</text>
+  <text x="380" y="1140" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">⇒ v̂ (1,16,128,128)：本步「修改方向」——不是图！</text>
+
+  <rect x="720" y="1072" width="410" height="96" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="925" y="1096" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2563eb">Euler 走一步：x ← x + v̂·(σ_next − σ)</text>
+  <text x="925" y="1118" text-anchor="middle" font-size="10.5" fill="#52606d">CFG：v̂ = v_空 + 4.0×(v_正 − v_空)，强化对指令的服从</text>
+  <text x="925" y="1140" text-anchor="middle" font-size="10.5" fill="#52606d">画布向成品靠近一小格</text>
+
+  <!-- 循环回路 -->
+  <path d="M925,1168 L925,1220 L1150,1220 L1150,846 L1132,846" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7,5" marker-end="url(#gb)"/>
+  <text x="1043" y="1210" text-anchor="middle" font-size="10.5" fill="#2563eb">未满 40 步：带新画布 + 下一个 t 回到组装区</text>
+  <text x="1168" y="1030" font-size="10.5" fill="#2563eb" transform="rotate(90 1168 1030)">t: 990 → 973 → … → 20（40 个停靠站）</text>
+
+  <!-- 40步走完 -->
+  <rect x="70" y="1230" width="620" height="64" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+  <text x="380" y="1256" text-anchor="middle" font-size="12" font-weight="700" fill="#059669">40 步走完：干净 latent x₀ (1, 16, 128, 128)</text>
+  <text x="380" y="1278" text-anchor="middle" font-size="10.5" fill="#52606d">σ≈0，DiT 全部工作结束 —— 但它仍然不是像素</text>
+
+  <!-- DiT 内部箭头 -->
+  <path d="M235,886 L235,904 L600,904 L600,918" fill="none" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M650,886 L650,904" fill="none" stroke="#52606d" stroke-width="1.5"/>
+  <path d="M1015,886 L1015,904 L600,904" fill="none" stroke="#b45309" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="380" y1="1038" x2="380" y2="1070" stroke="#52606d" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="690" y1="1120" x2="718" y2="1120" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <line x1="380" y1="1168" x2="380" y2="1228" stroke="#059669" stroke-width="1.8" marker-end="url(#gg)"/>
+  <text x="300" y="1200" text-anchor="middle" font-size="10.5" fill="#059669">第 40 步之后 ↓</text>
+
+  <!-- ═══════════ 输出区 ═══════════ -->
+  <rect x="430" y="1390" width="330" height="72" rx="10" fill="#fdfbff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="595" y="1416" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7c3aed">VAE Decoder ❄（全程仅调用这一次）</text>
+  <text x="595" y="1438" text-anchor="middle" font-size="10.5" fill="#52606d">反标准化 → 三次 2× 上采样 → (3, 1024, 1024)</text>
+
+  <rect x="830" y="1390" width="300" height="72" rx="10" fill="#ecfdf5" stroke="#059669" stroke-width="2.5"/>
+  <text x="980" y="1420" text-anchor="middle" font-size="13.5" font-weight="800" fill="#059669">✓ 最终图片：两人的合影</text>
+  <text x="980" y="1442" text-anchor="middle" font-size="10.5" fill="#52606d">1024×1024，值域 [-1,1] → PIL 保存</text>
+
+  <path d="M380,1294 L380,1426 L428,1426" fill="none" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <line x1="760" y1="1426" x2="828" y2="1426" stroke="#059669" stroke-width="2" marker-end="url(#gg)"/>
+
+  <!-- ═══════════ 跨区大箭头 ═══════════ -->
+  <!-- 指令 → TE -->
+  <line x1="230" y1="120" x2="230" y2="242" stroke="#52606d" stroke-width="1.8" marker-end="url(#g)"/>
+  <text x="180" y="180" text-anchor="middle" font-size="10.5" fill="#52606d">原样进模板</text>
+
+  <!-- 参考图 → ViT（低清） -->
+  <path d="M660,120 L610,160 L500,160 L470,324" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <path d="M900,120 L880,160 L520,160" fill="none" stroke="#7c3aed" stroke-width="1.8"/>
+  <text x="570" y="150" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">路①低清 ~384²（给语义）</text>
+
+  <!-- 参考图 → VAE（高清） -->
+  <path d="M710,120 L740,180 L830,244" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <path d="M1000,120 L980,180 L940,244" fill="none" stroke="#7c3aed" stroke-width="1.8" marker-end="url(#gp)"/>
+  <text x="1010" y="176" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">路②高清 ~1024²（给像素）</text>
+
+  <!-- TE 输出 → DiT 文本流 -->
+  <path d="M320,696 L320,740 L235,740 L235,804" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gb)"/>
+  <text x="255" y="762" text-anchor="middle" font-size="10.5" fill="#2563eb" font-weight="600">(1, 418, 3584)</text>
+
+  <!-- VAE latents → DiT 图像流 -->
+  <path d="M760,440 L760,730 L700,730 L700,804" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#gp)"/>
+  <text x="792" y="740" text-anchor="middle" font-size="10.5" fill="#7c3aed" font-weight="600">2 × (16,128,128)</text>
+
+  <!-- 噪声 → DiT 图像流 -->
+  <path d="M670,546 L620,546 L620,730 L580,730 L580,804" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#ga)"/>
+  <text x="592" y="712" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">画布（第 1 步 = 纯噪声）</text>
+
+  <!-- 调度器 → temb -->
+  <path d="M1015,696 L1015,804" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#ga)"/>
+  <text x="1062" y="742" text-anchor="middle" font-size="10.5" fill="#b45309" font-weight="600">每步一个 temb</text>
+
+  <!-- 图例 -->
+  <text x="600" y="1520" text-anchor="middle" font-size="11" fill="#52606d">图例：❄ 冻结（VAE / Text Encoder，训练时一动不动）· 🔥 训练（DiT，LoRA 加在这里）· 紫 = 参考图相关 · 橙 = 时间/噪声控制 · 蓝 = 文本/循环</text>
+  <text x="600" y="1544" text-anchor="middle" font-size="11" fill="#52606d">token 总账（本例）：Text Encoder 内 482 · DiT 联合注意力 12706（文本 418 + 画布 4096 + 参考图 8192）· DiT 共前向 40×2 = 80 次，VAE Decoder 仅 1 次</text>
+</svg>
+<div class="cap">Qwen-Image-Edit-2511 完整数据流。参考图兵分两路（ViT 语义 / VAE 像素），四个输入在 DiT 汇合并循环 40 步，最终由 VAE Decoder 一次性译回像素。</div>
+</div>
+
+</main>
+<script defer src="annotator.js"></script>
+</body>
+</html>

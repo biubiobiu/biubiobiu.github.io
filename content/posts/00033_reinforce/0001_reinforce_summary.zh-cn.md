@@ -1,5 +1,6 @@
 ---
 title: "综述"
+slug: reinforce-overview
 date: 2023-08-05T12:30:40+08:00
 menu:
   sidebar:
@@ -15,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00033_reinforce/0001_reinforce_summary/
 ---
 
 ## 一、简介
@@ -34,4 +37,3 @@ graph LR;
 {{< /mermaid >}}
 
 ## 二、
-

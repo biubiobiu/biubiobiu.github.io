@@ -1,6 +1,6 @@
 ---
 title: "区域块-实例"
-date: 2021-06-08T06:00:20+06:00
+date: 2021-06-08T06:00:20+08:00
 menu:
   sidebar:
     name: 区域块-实例
@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00020_toha-tutorial/0020_shortcodes_samples/
 ---
 
 :money_mouth_face:

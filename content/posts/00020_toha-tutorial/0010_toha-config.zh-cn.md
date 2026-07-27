@@ -1,6 +1,6 @@
 ---
 title: "Toha的配置"
-date: 2020-06-08T06:00:20+06:00
+date: 2020-06-08T06:00:20+08:00
 menu:
   sidebar:
     name: Toha的配置
@@ -12,6 +12,8 @@ author:
   image: /images/author/john.png
 tags: ["Toha","配置"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00020_toha-tutorial/0010_toha-config/
 ---
 ## 一、启动
 

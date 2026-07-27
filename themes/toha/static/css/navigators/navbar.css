@@ -300,3 +300,98 @@
 /* iPhone 5 or before */
 @media only screen and (max-width: 320px) {
 }
+
+/* A distinct pastel theme for every primary navigation item. */
+.final-navbar .primary-nav-link {
+  --nav-hover-bg: #dbeafe;
+  --nav-active-bg: #bfdbfe;
+  --nav-hover-text: #1d4ed8;
+  --nav-active-text: #1e40af;
+  --nav-accent: #3b82f6;
+
+  margin: 0 1px;
+  padding-right: 0.6rem !important;
+  padding-left: 0.6rem !important;
+  border-radius: 6px 6px 0 0;
+}
+
+.final-navbar .nav-home {
+  --nav-hover-bg: #ede9fe;
+  --nav-active-bg: #ddd6fe;
+  --nav-hover-text: #6d28d9;
+  --nav-active-text: #5b21b6;
+  --nav-accent: #8b5cf6;
+}
+
+.final-navbar .nav-about {
+  --nav-hover-bg: #fee2e2;
+  --nav-active-bg: #fecaca;
+  --nav-hover-text: #b91c1c;
+  --nav-active-text: #991b1b;
+  --nav-accent: #ef4444;
+}
+
+.final-navbar .nav-skills {
+  --nav-hover-bg: #ffedd5;
+  --nav-active-bg: #fed7aa;
+  --nav-hover-text: #c2410c;
+  --nav-active-text: #9a3412;
+  --nav-accent: #f97316;
+}
+
+.final-navbar .nav-recent-posts {
+  --nav-hover-bg: #fef3c7;
+  --nav-active-bg: #fde68a;
+  --nav-hover-text: #a16207;
+  --nav-active-text: #854d0e;
+  --nav-accent: #eab308;
+}
+
+.final-navbar .nav-posts {
+  --nav-hover-bg: #dcfce7;
+  --nav-active-bg: #bbf7d0;
+  --nav-hover-text: #15803d;
+  --nav-active-text: #166534;
+  --nav-accent: #22c55e;
+}
+
+.final-navbar .nav-notes {
+  --nav-hover-bg: #ccfbf1;
+  --nav-active-bg: #99f6e4;
+  --nav-hover-text: #0f766e;
+  --nav-active-text: #115e59;
+  --nav-accent: #14b8a6;
+}
+
+.final-navbar .nav-docs {
+  --nav-hover-bg: #dbeafe;
+  --nav-active-bg: #bfdbfe;
+  --nav-hover-text: #1d4ed8;
+  --nav-active-text: #1e40af;
+  --nav-accent: #3b82f6;
+}
+
+.final-navbar .primary-nav-link:hover,
+.final-navbar .primary-nav-link:focus {
+  color: var(--nav-hover-text) !important;
+  border-bottom: 2px solid var(--nav-accent) !important;
+  background: var(--nav-hover-bg) !important;
+  transform: translateY(-1px);
+}
+
+.final-navbar .primary-nav-link.active,
+.final-navbar .primary-nav-link.active:hover,
+.final-navbar .primary-nav-link.active:focus {
+  color: var(--nav-active-text) !important;
+  border-bottom: 2px solid var(--nav-accent) !important;
+  background: var(--nav-active-bg) !important;
+  box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.08);
+  transform: none;
+}
+
+.final-navbar .primary-nav-link:active {
+  color: var(--nav-active-text) !important;
+  border-bottom-color: var(--nav-accent) !important;
+  background: var(--nav-active-bg) !important;
+  transform: translateY(0);
+}

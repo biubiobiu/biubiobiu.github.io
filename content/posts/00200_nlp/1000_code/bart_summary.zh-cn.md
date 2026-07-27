@@ -1,6 +1,6 @@
 ---
 title: "code解析"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: code解析
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["Transformer"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/1000_code/bart_summary/
 ---
 
 

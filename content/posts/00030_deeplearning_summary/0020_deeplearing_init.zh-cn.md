@@ -16,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00030_deeplearning_summary/0020_deeplearing_init/
 ---
 
 ## 一、初始化

@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0010_tf_compat_summary/
 ---
 
 

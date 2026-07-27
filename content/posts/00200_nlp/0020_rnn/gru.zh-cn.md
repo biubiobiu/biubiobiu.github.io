@@ -1,6 +1,6 @@
 ---
 title: "GRU网络"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: GRU网络
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["循环神经网络", "GRU"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0020_rnn/gru/
 ---
 
 

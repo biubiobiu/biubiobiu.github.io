@@ -1,6 +1,6 @@
 ---
 title: "contrastive learning"
-date: 2022-05-09T06:00:20+06:00
+date: 2022-05-09T06:00:20+08:00
 menu:
   sidebar:
     name: contrastive learning
@@ -13,6 +13,8 @@ author:
 tags: ["backbone","contrastive learning"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00100_cv/0020_contrastive_learning/contrastive_learning/
 ---
 
 从2019年中~2020年中，对比学习火了一段时间，到ViT出来后，大量的研究这才投身于ViT。

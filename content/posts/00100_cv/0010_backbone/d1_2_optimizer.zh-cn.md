@@ -1,6 +1,6 @@
 ---
 title: "optimizer"
-date: 2021-09-09T06:00:20+06:00
+date: 2021-09-09T06:00:20+08:00
 menu:
   sidebar:
     name: optimizer
@@ -13,6 +13,8 @@ author:
 tags: ["optimizer"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00100_cv/0010_backbone/d1_2_optimizer/
 ---
 
 在深度学习中，通过最小化损失函数使得训练误差最小化，由于损失函数一般都会比较复杂，很难直接求解析解，而是需要基于数值方法的优化算法找到近似解，即：数值解。在局域数值方法的优化算法中，损失函数就是目标函数(Objective Function)，

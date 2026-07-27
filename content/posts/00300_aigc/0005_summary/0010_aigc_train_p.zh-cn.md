@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0005_summary/0010_aigc_train_p/
 ---
 
 目前训练超大规模语言模型主要有两条技术路线：

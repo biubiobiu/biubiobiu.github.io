@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0035_python/0010_build_env/0020_cuda_env/
 ---
 
 ## 一、简介

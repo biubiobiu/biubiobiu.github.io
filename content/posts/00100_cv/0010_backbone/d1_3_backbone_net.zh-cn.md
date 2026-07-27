@@ -1,6 +1,6 @@
 ---
 title: "backbone net"
-date: 2021-09-09T06:00:20+06:00
+date: 2021-09-09T06:00:20+08:00
 menu:
   sidebar:
     name: backbone net
@@ -13,6 +13,8 @@ author:
 tags: ["backbone","卷积神经网络"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00100_cv/0010_backbone/d1_3_backbone_net/
 ---
 
 卷积神经网络的发展历程：  

@@ -1,3 +1,21 @@
+{{/* Keep the same primary navigation on list and content pages. */}}
+{{ $blogEnabled := site.Params.features.blog.enable | default false }}
+{{ $notesEnabled := site.Params.features.notes.enable | default false }}
+{{ if site.Params.enableBlogPost }}
+  {{ $blogEnabled = true }}
+{{ end }}
+
+{{ $sections := site.Data.sections }}
+{{ if (index site.Data site.Language.Lang).sections }}
+  {{ $sections = (index site.Data site.Language.Lang).sections }}
+{{ end }}
+
+{{ $customMenus := site.Params.customMenus }}
+{{ if (index site.Data site.Language.Lang).site.customMenus }}
+  {{ $customMenus = (index site.Data site.Language.Lang).site.customMenus }}
+{{ end }}
+{{ $currentSection := .Section }}
+
 {{/* by default, don't use any logo */}}
 {{ $mainLogo := "" }}
 {{ $invertedLogo := "" }}
@@ -44,6 +62,42 @@
 
     <div class="collapse navbar-collapse lang-selector" id="top-nav-items">
       <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link primary-nav-link nav-home" href="{{ "" | relLangURL }}">{{ i18n "home" }}</a>
+        </li>
+        {{ if $sections }}
+          {{ range sort $sections "section.weight" }}
+            {{ if and (.section.enable) (.section.showOnNavbar) }}
+              <li class="nav-item">
+                <a class="nav-link primary-nav-link nav-{{ partial "helpers/get-section-id.html" . }}" href="{{ "" | relLangURL }}#{{ partial "helpers/get-section-id.html" . }}">{{ .section.name }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+        {{ end }}
+
+        {{ $shouldAddSeparator := partial "helpers/add-navbar-separator.html" . }}
+        {{ if $shouldAddSeparator }}
+          <div class="dropdown-divider" id="top-navbar-divider"></div>
+        {{ end }}
+
+        {{ if $blogEnabled }}
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-posts{{ if eq .Section "posts" }} active{{ end }}" id="blog-link" href="{{ "/posts" | relLangURL }}">{{ i18n "posts" }}</a>
+          </li>
+        {{ end }}
+        {{ if $notesEnabled }}
+          <li class="nav-item">
+            <a class="nav-link primary-nav-link nav-notes{{ if eq .Section "notes" }} active{{ end }}" id="note-link" href="{{ "/notes" | relLangURL }}">{{ i18n "notes" }}</a>
+          </li>
+        {{ end }}
+        {{ range $customMenus }}
+          {{ if not .hideFromNavbar }}
+            <li class="nav-item">
+              <a class="nav-link primary-nav-link{{ if in .url "/docs" }} nav-docs{{ end }}{{ if eq $currentSection "docs" }} active{{ end }}" href="{{ .url }}">{{ .name }}</a>
+            </li>
+          {{ end }}
+        {{ end }}
+
       {{ if .IsTranslated }}
         {{ partial "navigators/lang-selector-2.html" . }}
       {{ end }}

@@ -1,6 +1,7 @@
 baseURL: https://biubiobiu.github.io
 
 copyright: Everything is mine
+timeZone: Asia/Shanghai
 defaultContentLanguage: zh-cn
 defaultContentLanguageInSubdir: true
 
@@ -41,6 +42,11 @@ outputs:
     - HTML
     - RSS
     - JSON
+
+# Keep public post URLs independent from the content directory hierarchy.
+permalinks:
+  posts: /posts/:slug/
+  docs: /docs/:slug/
 
 # Enable Google Analytics
 # googleAnalytics: UA-122321624-2
@@ -159,7 +165,7 @@ params:
     template: footer.html
     # Show/hide navigation in the footer. Default is "true".
     navigation:
-      enable: true
+      enable: false
     # Show/hide "Contact Me" section in the footer. Default is "true".
     contactMe:
       enable: true

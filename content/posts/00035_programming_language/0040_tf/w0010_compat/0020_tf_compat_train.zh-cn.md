@@ -1,5 +1,6 @@
 ---
 title: "模型训练"
+slug: tensorflow-model-training
 date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
@@ -15,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0040_tf/w0010_compat/0020_tf_compat_train/
 ---
 
 ### 一、tf.layers
@@ -126,5 +129,4 @@ def define_optimizer(learning_rate,loss):
 |:---|:---|:---|
 |tf.summary.scalar()|例如：</br>tf.summary.scalar('loss', loss)|记录标量值|
 |tf.summary.Filewirter()|可以关联不同的路径，这样可以可视化不同阶段的数据情况||
-
 

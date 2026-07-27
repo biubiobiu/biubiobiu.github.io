@@ -1,6 +1,6 @@
 ---
 title: "编解码架构"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 编解码架构
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["循环神经网络", "编码器-解码器 架构"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0020_rnn/encode_decode/
 ---
 
 ## 一、编码器-解码器 架构

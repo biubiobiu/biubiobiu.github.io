@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0070_hive/0020_hive/0010_hive_build/
 ---
 
 ## 一、数据库操作

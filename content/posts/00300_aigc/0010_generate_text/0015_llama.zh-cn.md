@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0010_generate_text/0015_llama/
 ---
 
 <a href="https://zhuanlan.zhihu.com/p/648030318" target="bland">LLaMa2 翻译</a>

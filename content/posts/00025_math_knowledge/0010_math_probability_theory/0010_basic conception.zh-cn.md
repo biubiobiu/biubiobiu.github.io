@@ -1,5 +1,6 @@
 ---
 title: "基本概念"
+slug: probability-basics
 date: 2023-08-01T06:00:20+08:00
 menu:
   sidebar:
@@ -15,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00025_math_knowledge/0010_math_probability_theory/0010_basic-conception/
 ---
 
 ## 一、基本概念
@@ -48,4 +51,3 @@ $$
 {{< /alert >}}
 
 ## 二、
-

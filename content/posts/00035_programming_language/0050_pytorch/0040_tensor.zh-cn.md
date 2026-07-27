@@ -1,6 +1,6 @@
 ---
 title: "Tensor和变量"
-date: 2022-04-08T06:00:20+06:00
+date: 2022-04-08T06:00:20+08:00
 menu:
   sidebar:
     name: Tensor和变量
@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0050_pytorch/0040_tensor/
 ---
 
 > **Tensor**

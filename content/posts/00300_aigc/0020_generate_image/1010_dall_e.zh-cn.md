@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","DALL-E"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1010_dall_e/
 ---
 
 ## 一、简介

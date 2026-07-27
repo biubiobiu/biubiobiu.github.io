@@ -1,6 +1,7 @@
 ---
 title: "简介"
-date: 2021-09-08T06:00:20+06:00
+slug: pytorch-overview
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 简介
@@ -13,6 +14,8 @@ author:
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0050_pytorch/0010_torch_summary/
 ---
 
 <a href="https://pytorch.org/docs/stable/index.html" target="blank">官方文档</a>  

@@ -1,6 +1,6 @@
 ---
 title: "ELECTRA综述"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: ELECTRA综述
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["ELECTRA"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0200_electra/electra_summary/
 ---
 
 

@@ -1,5 +1,6 @@
 ---
 title: "综述"
+slug: image-generation-overview
 date: 2023-08-05T12:30:40+08:00
 menu:
   sidebar:
@@ -13,6 +14,8 @@ author:
 tags: ["AIGC","图像生成"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1000_summary/
 ---
 
 ## 扩散模型
@@ -86,6 +89,5 @@ Stable Diffusion 扩散模型的原理是：先添加噪声后降噪。即：给
 ### 9、Imagen
 2022年11月<br>
 优先开源，效果好于DALL-E
-
 
 

@@ -15,9 +15,16 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00020_toha-tutorial/0013_markdown-tutorial/
 ---
 
 ## 一、小技巧
+<font style="background: linear-gradient(to top, transparent 0%, #00f2b3 0%, #fff2b3 40%, transparent 40%, transparent 100%) !important;">颜色</font>
+
+<font style="background: linear-gradient(to top, #00f2b3 0%, #fff2b3 40%) !important;">颜色</font>
+
+<font style="background: linear-gradient(to top, #00f2b3 0%, #fff2b3 40%, transparent 60%) !important;">颜色</font>
 
 <a href="https://www.w3school.com.cn/tags/index.asp" target="blank">可以使用html的标签</a>  
 markdown中常用的html标签：  
@@ -422,7 +429,7 @@ $$\alpha = \frac a b$$
 
 ```python
 title: "Mermaid Support"
-date: 2022-03-14T06:15:35+06:00
+date: 2022-03-14T06:15:35+08:00
 menu:
   sidebar:
     name: Mermaid

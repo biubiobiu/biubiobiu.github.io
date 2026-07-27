@@ -1,6 +1,6 @@
 ---
 title: 神经网络画图篇
-date: 2021-09-09T06:00:20+06:00
+date: 2021-09-09T06:00:20+08:00
 menu:
   sidebar:
     name: 神经网络画图篇
@@ -11,6 +11,8 @@ author:
   name: biubiobiu
   image: /images/author/john.png
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00030_deeplearning_summary/0100_draw_map_for_dl/
 ---
 
 ## 一、简介

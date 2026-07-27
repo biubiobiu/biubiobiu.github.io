@@ -1,6 +1,6 @@
 ---
 title: "Markdown Samples"
-date: 2020-06-08T08:06:25+06:00
+date: 2020-06-08T08:06:25+08:00
 description: Markdown rendering samples
 menu:
   sidebar:
@@ -9,6 +9,8 @@ menu:
     parent: toha-tutorial
     weight: 30
 math: true
+aliases:
+  - /en/posts/00020_toha-tutorial/0030_markdown-tutorial/
 ---
 
 

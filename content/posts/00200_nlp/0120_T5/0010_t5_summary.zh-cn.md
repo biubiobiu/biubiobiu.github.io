@@ -15,6 +15,8 @@ tags: ["T5"]
 categories: ["Basic"]
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00200_nlp/0120_t5/0010_t5_summary/
 ---
 
 ## 一、简介

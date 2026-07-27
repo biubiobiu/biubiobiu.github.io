@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0035_python/0050_sdk_lib/0110_opencv/
 ---
 
 **安装问题**：在环境里安装OpenCV后，在pycharm上没有命令提示。这个可能是OpenCV版本的问题。<br>

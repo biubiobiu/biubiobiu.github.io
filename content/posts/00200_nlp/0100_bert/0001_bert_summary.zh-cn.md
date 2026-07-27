@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["BERT"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0100_bert/0001_bert_summary/
 ---
 
 

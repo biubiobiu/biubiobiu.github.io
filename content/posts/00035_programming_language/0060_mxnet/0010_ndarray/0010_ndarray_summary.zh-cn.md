@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0060_mxnet/0010_ndarray/0010_ndarray_summary/
 ---
 
 ## 一、查阅文档

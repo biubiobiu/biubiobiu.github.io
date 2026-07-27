@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0010_generate_text/0040_falcon/
 ---
 
 ## 一、简介

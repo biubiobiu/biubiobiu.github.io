@@ -15,6 +15,8 @@ tags: ["GPT-1"]
 categories: ["Basic"]
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00200_nlp/0080_gpt/0020_gpt1_detail/
 ---
 
 ## 一、GPT-1的结构

@@ -16,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00030_deeplearning_summary/0015_deeplearning_norm/
 ---
 
 ## 一、Normlization介绍

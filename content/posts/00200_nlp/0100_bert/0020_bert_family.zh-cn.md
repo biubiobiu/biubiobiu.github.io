@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["BERT", "Family"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0100_bert/0020_bert_family/
 ---
 
 <p align="center"><img src="/datasets/posts/nlp/bert_family_0.png" width=100% height=100%></p>

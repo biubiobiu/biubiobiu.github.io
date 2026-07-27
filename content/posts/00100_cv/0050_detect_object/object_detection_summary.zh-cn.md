@@ -1,6 +1,7 @@
 ---
 title: "简介"
-date: 2021-09-08T06:00:20+06:00
+slug: object-detection-overview
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 简介
@@ -14,6 +15,8 @@ math: true
 mermaid: true
 tags: ["目标检测", "CV"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00100_cv/0050_detect_object/object_detection_summary/
 ---
 
 ## 一、简介
@@ -65,5 +68,4 @@ RetinaNet 原始论文为发表于 2017 ICCV <a href="https://arxiv.org/abs/1708
 
 ### 12、YOLO V4
 <a href="https://arxiv.org/abs/2004.10934" target="blank">《YOLOv4: Optimal Speed and Accuracy of Object Detection》</a>(2020) 
-
 

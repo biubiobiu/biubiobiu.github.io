@@ -119,6 +119,9 @@ other = "查看证书"
 [notes]
 other = "笔记"
 
+[docs]
+other = "文档"
+
 [disclaimer_text]
 other = "免责声明"
 

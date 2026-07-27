@@ -1,5 +1,6 @@
 ---
 title: "基础操作"
+slug: python-basics
 date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
@@ -15,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0020_basic_operator/
 ---
 
 ## 一、数据类型与操作
@@ -127,4 +130,3 @@ class ElectricCar(Car):
         print("")
 
 ```
-

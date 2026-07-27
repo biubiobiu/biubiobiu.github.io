@@ -1,0 +1,66 @@
+{{- $src := .Get "src" -}}
+{{- if not $src -}}
+  {{- errorf "embed-html shortcode requires a src parameter: %s" .Position -}}
+{{- end -}}
+
+{{- $title := .Get "title" | default "嵌入式文章内容" -}}
+{{- $source := readFile $src -}}
+{{- $frameID := printf "embedded-html-%s-%d" (md5 $src) .Ordinal -}}
+
+<div class="embedded-html">
+  <iframe
+    id="{{ $frameID }}"
+    class="embedded-html-frame"
+    title="{{ $title }}"
+    srcdoc="{{ $source }}"
+    loading="lazy"
+  ></iframe>
+</div>
+
+<style>
+  .embedded-html {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .embedded-html-frame {
+    display: block;
+    width: 100%;
+    min-height: 720px;
+    border: 0;
+    background: #f8f9fb;
+  }
+</style>
+
+<script>
+  (function () {
+    var frame = document.getElementById("{{ $frameID }}");
+    if (!frame) {
+      return;
+    }
+
+    function resizeFrame() {
+      if (!frame.contentDocument) {
+        return;
+      }
+      var documentElement = frame.contentDocument.documentElement;
+      var body = frame.contentDocument.body;
+      var height = Math.max(
+        documentElement ? documentElement.scrollHeight : 0,
+        body ? body.scrollHeight : 0
+      );
+      if (height > 0) {
+        frame.style.height = height + "px";
+      }
+    }
+
+    frame.addEventListener("load", function () {
+      resizeFrame();
+      if (window.ResizeObserver && frame.contentDocument && frame.contentDocument.body) {
+        var observer = new ResizeObserver(resizeFrame);
+        observer.observe(frame.contentDocument.body);
+      }
+    });
+    window.addEventListener("resize", resizeFrame);
+  })();
+</script>

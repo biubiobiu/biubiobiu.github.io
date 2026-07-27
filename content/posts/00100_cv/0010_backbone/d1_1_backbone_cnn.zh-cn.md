@@ -1,6 +1,6 @@
 ---
 title: "CNN"
-date: 2021-09-09T06:00:20+06:00
+date: 2021-09-09T06:00:20+08:00
 menu:
   sidebar:
     name: CNN
@@ -13,6 +13,8 @@ author:
 tags: ["卷积","cnn"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00100_cv/0010_backbone/d1_1_backbone_cnn/
 ---
 
 

@@ -1,6 +1,6 @@
 ---
 title: "animal matting"
-date: 2021-09-09T06:00:20+06:00
+date: 2021-09-09T06:00:20+08:00
 menu:
   sidebar:
     name: animal matting
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["matting", "CV"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00100_cv/0060_image-matting/image-matting-animal/
 ---
 
 ## Image Matting

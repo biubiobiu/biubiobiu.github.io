@@ -1,6 +1,7 @@
 ---
 title: "简介"
-date: 2021-09-08T06:00:20+06:00
+slug: semantic-segmentation-overview
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: 简介
@@ -13,6 +14,8 @@ author:
 math: true
 tags: ["语义分割", "CV"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00100_cv/0055_semantic_segmentation/object_detection_summary/
 ---
 
 ## 一、简介
@@ -69,4 +72,3 @@ deeplab v3+的创新点：
 
 ### 3、DANet
 <a href="https://arxiv.org/abs/2004.01547" target="blank">《Context Prior for Scene Segmentation》</a>(2020) 
-

@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00025_math_knowledge/0010_math_probability_theory/0020_distribution_of_variables/
 ---
 
 ## 一、一维随机变量

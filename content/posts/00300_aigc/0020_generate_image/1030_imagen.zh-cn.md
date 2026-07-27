@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","Imagen"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1030_imagen/
 ---
 
 ## 一、简介

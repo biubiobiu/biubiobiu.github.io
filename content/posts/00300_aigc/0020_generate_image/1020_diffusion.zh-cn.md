@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","Diffusion"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1020_diffusion/
 ---
 
 ## 一、简介

@@ -13,7 +13,7 @@ description: Portfolio and personal blog of John Doe.
 # they will be separated by a divider from the main menus.
 customMenus:
 - name: Docs
-  url: https://toha-guides.netlify.app/posts/
+  url: /en/docs/
 
 # Specify OpenGraph Headers
 openGraph:

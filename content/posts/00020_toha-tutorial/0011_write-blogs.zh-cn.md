@@ -1,6 +1,6 @@
 ---
 title: "撰写文章"
-date: 2020-06-08T06:00:20+06:00
+date: 2020-06-08T06:00:20+08:00
 menu:
   sidebar:
     name: 撰写文章
@@ -12,6 +12,8 @@ author:
   image: /images/author/john.png
 tags: ["博文路径"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00020_toha-tutorial/0011_write-blogs/
 ---
 
 ## 一、创建类别
@@ -31,7 +33,7 @@ title: Posts
 ``` markdown
 ---
 title: "Analytics and Comments"
-date: 2020-06-08T06:00:23+06:00
+date: 2020-06-08T06:00:23+08:00
 hero: /images/posts/writing-posts/analytics.svg
 description: Adding analytics and disquss comment in hugo 
 theme Toha
@@ -82,7 +84,7 @@ menu:
 ```markdown
 ---
 title: "Deploy site in Github Pages"
-date: 2020-06-08T06:00:20+06:00
+date: 2020-06-08T06:00:20+08:00
 hero: /images/posts/writing-posts/git.svg
 menu:
   sidebar:

@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","Midjourney"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1025_midjourney/
 ---
 
 ## 一、简介

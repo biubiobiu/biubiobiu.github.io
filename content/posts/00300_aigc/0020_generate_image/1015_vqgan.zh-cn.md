@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","VQGAN"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1015_vqgan/
 ---
 
 ## 一、简介

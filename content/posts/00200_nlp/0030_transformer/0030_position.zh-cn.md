@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00200_nlp/0030_transformer/0030_position/
 ---
 
 ## 位置编码

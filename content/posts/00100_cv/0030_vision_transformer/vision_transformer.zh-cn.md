@@ -1,6 +1,6 @@
 ---
 title: "vision transformer"
-date: 2022-05-09T06:00:20+06:00
+date: 2022-05-09T06:00:20+08:00
 menu:
   sidebar:
     name: vision transformer
@@ -13,6 +13,8 @@ author:
 tags: ["backbone","vision transformer"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00100_cv/0030_vision_transformer/vision_transformer/
 ---
 
 

@@ -16,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00030_deeplearning_summary/0010_deeplearning_problem/
 ---
 
 ## 一、激活函数

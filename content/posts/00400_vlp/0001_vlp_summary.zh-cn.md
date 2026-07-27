@@ -1,5 +1,6 @@
 ---
 title: "简介"
+slug: multimodal-overview
 date: 2022-05-09T06:00:20+08:00
 menu:
   sidebar:
@@ -13,6 +14,8 @@ author:
 tags: ["vlp","summary"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00400_vlp/0001_vlp_summary/
 ---
 
 ## 一、简介
@@ -71,6 +74,5 @@ Open AI 在2021年1月份发布的<a href="https://openai.com/blog/dall-e/" targ
 ### 3、KOSMOS-1
 
 <a href="https://arxiv.org/abs/2302.14045" target="blank">《Language Is Not All You Need: Aligning Perception with Language Models》</a> 代码：<a href="https://github.com/microsoft/unilm" target="blank">github</a> 中介绍了一个多模态大型语言模型(MLLM)——KOSMOS-1。它可以感知一般模态、遵循指令(即零样本学习)以及在上下文中学习(即少样本学习)。研究目标：使感知与LLM保持一致，如此一来模型能够看到(see)和说话(talk)。研究者按照 <a href="https://arxiv.org/abs/2206.06336" target="blank">《Language models are general-purpose interfaces》</a> 的方式从头开始训练KOSMOS-1。
-
 
 

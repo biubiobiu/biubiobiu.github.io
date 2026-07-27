@@ -1,6 +1,6 @@
 ---
 title: "Word Embedding综述"
-date: 2021-09-08T06:00:20+06:00
+date: 2021-09-08T06:00:20+08:00
 menu:
   sidebar:
     name: Word Embedding综述
@@ -13,6 +13,8 @@ author:
 math: true
 tags: ["word embedding"]
 categories: ["Basic"]
+aliases:
+  - /zh-cn/posts/00200_nlp/0010_word_embedding/word_embedding_summary/
 ---
 
 <p align="center"><img src="/datasets/posts/nlp/word_embeding.png" width=80% height=80%></p>

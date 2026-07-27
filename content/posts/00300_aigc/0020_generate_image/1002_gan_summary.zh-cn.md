@@ -13,6 +13,8 @@ author:
 tags: ["AIGC","GAN"]
 categories: ["Basic"]
 math: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0020_generate_image/1002_gan_summary/
 ---
 
 ## 一、简介

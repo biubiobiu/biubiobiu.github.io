@@ -15,6 +15,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00035_programming_language/0035_python/0020_internal_lib/0010_encode_mode/
 ---
 
 ## 一、字符编码

@@ -1,5 +1,6 @@
 ---
 title: "综述"
+slug: aigc-overview
 date: 2023-08-05T12:30:40+08:00
 menu:
   sidebar:
@@ -15,6 +16,8 @@ categories: ["Basic"]
 math: true
 mermaid: true
 enableEmoji: true
+aliases:
+  - /zh-cn/posts/00300_aigc/0005_summary/0001_aigc_summary/
 ---
 
 <p align="center"><img src="/datasets/posts/nlp/evolutionary_tree.png" width="100%" height="100%"></p>

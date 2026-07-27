@@ -21,7 +21,7 @@
                     referrer: document.referrer,
                     screen: screen.width + "x" + screen.height,
                     user: "{{ .id }}",
-                    utcoffset: "1",
+                    utcoffset: "8",
                     }),
 		    {{ with .referrerPolicy }}
 			    { referrerPolicy: "{{ . }}" }
