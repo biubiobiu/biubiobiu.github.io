@@ -1,3 +1,5 @@
 resources/*
 .idea/*
 .DS_Store
+.hugo_build.lock
+0600_com_list*
