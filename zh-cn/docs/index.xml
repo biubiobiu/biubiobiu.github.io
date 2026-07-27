@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>文档 on biubiobiu's Blog</title><link>https://biubiobiu.github.io/zh-cn/docs/</link><description>Recent content in 文档 on biubiobiu's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Everything is mine</copyright><atom:link href="https://biubiobiu.github.io/zh-cn/docs/index.xml" rel="self" type="application/rss+xml"/><item><title>文档写作说明</title><link>https://biubiobiu.github.io/zh-cn/docs/writing-docs/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://biubiobiu.github.io/zh-cn/docs/writing-docs/</guid><description>文档与博文的区别 文档页面专注于内容本身，不显示博文的封面、头像、作者、发布日期、Tags 和分享按钮。
+文档仍然保留以下能力：
+左侧文档目录 Markdown 正文 右侧页内目录 代码高亮 数学公式和 Mermaid 图表 左侧目录缩放、收起与展开 右侧目录收起与展开 新增一篇文档 在 content/docs/ 下创建一个 Markdown 文件，例如：
+content/docs/qwen-deployment.zh-cn.md 文件头部使用下面的通用格式：
+--- title: Qwen 部署手册 description: Qwen 服务的安装、配置和部署过程。 slug: qwen-deployment weight: 20 menu: docs: name: Qwen 部署手册 identifier: docs-qwen-deployment weight: 20 enableTOC: true --- Front Matter 结束后即可直接编写 Markdown 正文。
+字段说明 title 页面显示的文档标题。
+description 文档简介，会显示在文档首页列表和文档标题下方。
+slug 公开 URL 使用的名称，与真实文件名和文件夹结构解耦。
+menu.docs 控制文档在左侧目录中的名称、层级和顺序。
+weight 数字越小，文档在列表和目录中的位置越靠前。</description></item></channel></rss>

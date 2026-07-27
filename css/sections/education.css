@@ -38,7 +38,7 @@
   position: absolute;
   left: 1rem;
   top: 0;
-  background-color: #248aaa;
+  background-color: #87cefa;
   height: 100%;
   width: 2px;
 }
@@ -53,7 +53,7 @@
 }
 
 .education-section .icon-holder {
-  background-color: #248aaa;
+  background-color: #87cefa;
   border-radius: 50%;
   height: 2rem;
   width: 2rem;
@@ -73,7 +73,7 @@
   height: 2px;
   /* width: 100%; */
   margin-right: -1px;
-  background-color: #248aaa;
+  background-color: #87cefa;
 }
 
 .education-section .degree-info {

@@ -1,0 +1,366 @@
+<!doctype html><html><head><title>模型训练</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="ie=edge"><link rel=stylesheet href=/css/bootstrap.min.css><link rel=stylesheet href="/css/layouts/main.css?v=20260727-5"><link rel=stylesheet href="/css/navigators/navbar.css?v=20260727-7"><link rel=stylesheet href=/css/plyr.css><link rel=stylesheet href=/css/flag-icon.min.css><link rel=stylesheet href=/fontawesome/css/all.min.css><link rel=stylesheet href=/css/colortheme/colortheme.css><link rel=icon type=image/png href=/images/site/favicon_hu0d88336a9cbd3e68c7714efae786b0a9_38044_42x0_resize_box_2.png><meta property="og:title" content="模型训练"><meta property="og:description" content="一、数据预处理 import torch from torch.utils.data import Dataset, DataLoader, TensorDataset from torch.autograd import Variable import numpy as np class MyDataset(Dataset): &#34;&#34;&#34; 下载数据、初始化数据，都可以在这里完成 &#34;&#34;&#34; def __init__(self): xy = np.loadtxt('../dataSet/diabetes.csv.gz', delimiter=',', dtype=np.float32) # 使用numpy读取数据 self.x_data = torch.from_numpy(xy[:, 0:-1]) self.y_data = torch.from_numpy(xy[:, [-1]]) self.len = xy.shape[0] def __getitem__(self, index): return self.x_data[index], self.y_data[index] def __len__(self): return self.len # 创建Dataset对象 dataset = MyDataset() # 创建DataLoadder对象 dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=2) # 循环DataLoader对象 num_epoches = 100 for epoch in range(num_epoches) for img, label in dataloader: # 将数据从dataloader中读取出来，一次读取的样本数为32个 # class torch."><meta property="og:type" content="article"><meta property="og:url" content="https://biubiobiu.github.io/zh-cn/posts/pytorch-model-training/"><meta property="article:published_time" content="2022-04-08T06:00:20+08:00"><meta property="article:modified_time" content="2022-04-08T06:00:20+08:00"><meta name=description content="模型训练"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css><link rel=stylesheet href="/css/layouts/single.css?v=20260727-3"><link rel=stylesheet href="/css/navigators/sidebar.css?v=20260727-1"><link rel=stylesheet href=/css/style.css><link rel=stylesheet href="/css/layouts/post-sidebar-resizer.css?v=20260727-3"></head><body data-spy=scroll data-target=#TableOfContents data-offset=80><div class="container-fluid bg-dimmed wrapper"><nav class="navbar navbar-expand-xl top-navbar final-navbar shadow"><div class=container><button class="navbar-toggler navbar-light" id=sidebar-toggler type=button onclick=toggleSidebar()>
+<span class=navbar-toggler-icon></span></button>
+<a class=navbar-brand href=/zh-cn><img src=/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_2.png alt=Logo>
+biubiobiu's Blog</a>
+<button class="navbar-toggler navbar-light" id=toc-toggler type=button onclick=toggleTOC()>
+<span class=navbar-toggler-icon></span></button><div class="collapse navbar-collapse lang-selector" id=top-nav-items><ul class="navbar-nav ml-auto"><li class=nav-item><a class="nav-link primary-nav-link nav-home" href=/zh-cn>主页</a></li><li class=nav-item><a class="nav-link primary-nav-link nav-about" href=/zh-cn#about>关于</a></li><li class=nav-item><a class="nav-link primary-nav-link nav-skills" href=/zh-cn#skills>技能</a></li><li class=nav-item><a class="nav-link primary-nav-link nav-recent-posts" href=/zh-cn#recent-posts>最新博客</a></li><div class=dropdown-divider id=top-navbar-divider></div><li class=nav-item><a class="nav-link primary-nav-link nav-posts active" id=blog-link href=/zh-cn/posts>博文</a></li><li class=nav-item><a class="nav-link primary-nav-link nav-notes" id=note-link href=/zh-cn/notes>笔记</a></li><li class=nav-item><a class="nav-link primary-nav-link nav-docs" href=/zh-cn/docs/>文档</a></li><li class="nav-item dropdown"><div id=theme-initialization style=display:none default-theme=system></div><a class="nav-link dropdown-toggle" href=# id=themeSelector role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false><img id=navbar-theme-icon-svg src=/icons/moon-svgrepo-com.svg width=20></a><div class="dropdown-menu dropdown-menu-icons-only" aria-labelledby=themeSelector><a class="dropdown-item nav-link" href=# onclick=enableLightTheme()><img class=menu-icon-center src=/icons/sun-svgrepo-com.svg width=20></a>
+<a class="dropdown-item nav-link" href=# onclick=enableDarkTheme()><img class=menu-icon-center src=/icons/moon-svgrepo-com.svg width=20></a>
+<a class="dropdown-item nav-link" href=# onclick=useSystemTheme()><img class=menu-icon-center src=/icons/computer-svgrepo-com.svg width=20></a></div></li></ul></div></div><img src=/images/site/main-logo_hu245540b1d52c0d501ae7bc0752a15caf_34633_42x0_resize_box_2.png class=d-none id=main-logo alt=Logo>
+<img src=/images/site/inverted-logo_hu547c3206082786c1d32d36034e2a655a_40863_42x0_resize_box_2.png class=d-none id=inverted-logo alt="Inverted Logo"></nav><section class="sidebar-section post-sidebar-resizable" id=sidebar-section><div class=sidebar-holder><div class=post-sidebar-toolbar><button class=post-sidebar-toggle id=post-sidebar-toggle type=button aria-controls=post-sidebar-content aria-expanded=true aria-label=收起左侧目录>
+<i class="fas fa-chevron-left" aria-hidden=true></i><span>收起目录</span></button></div><div class="sidebar post-sidebar-content" id=post-sidebar-content><form class=mx-auto method=get action=/zh-cn/search><input type=text name=keyword placeholder=搜索 data-search id=search-box></form><div class=sidebar-tree><ul class=tree id=tree><li id=list-heading><a href=/zh-cn/posts data-filter=all>博文</a></li><div class=subtree><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/toha-tutorial/>Toha教程</a><ul><li><a href=/zh-cn/posts/toha%E7%9A%84%E9%85%8D%E7%BD%AE/ title=Toha的配置>Toha的配置</a></li><li><a href=/zh-cn/posts/%E6%92%B0%E5%86%99%E6%96%87%E7%AB%A0/ title=撰写文章>撰写文章</a></li><li><a href=/zh-cn/posts/markdown%E5%85%A5%E9%97%A8/ title=MarkDown入门>MarkDown入门</a></li><li><a href=/zh-cn/posts/katex%E5%85%AC%E5%BC%8F/ title=Katex公式>Katex公式</a></li><li><a href=/zh-cn/posts/%E5%8C%BA%E5%9F%9F%E5%9D%97-%E5%AE%9E%E4%BE%8B/ title=区域块-实例>区域块-实例</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/math/>数学知识</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/math-probability/>概率论</a><ul><li><a href=/zh-cn/posts/probability-basics/ title=基本概念>基本概念</a></li><li><a href=/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E5%8F%8A%E5%85%B6%E5%88%86%E5%B8%83/ title=随机变量及其分布>随机变量及其分布</a></li><li><a href=/zh-cn/posts/%E5%A4%A7%E6%95%B0%E5%AE%9A%E5%BE%8B/ title=大数定律>大数定律</a></li><li><a href=/zh-cn/posts/%E6%A0%B7%E6%9C%AC%E5%8F%8A%E6%8A%BD%E6%A0%B7%E5%88%86%E5%B8%83/ title=样本及抽样分布>样本及抽样分布</a></li><li><a href=/zh-cn/posts/%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C/ title=假设检验>假设检验</a></li><li><a href=/zh-cn/posts/%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E5%8F%8A%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/ title=方差分析及回归分析>方差分析及回归分析</a></li><li><a href=/zh-cn/posts/%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/ title=随机过程>随机过程</a></li><li><a href=/zh-cn/posts/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E9%93%BE/ title=马尔科夫链>马尔科夫链</a></li><li><a href=/zh-cn/posts/%E5%B9%B3%E7%A8%B3%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B/ title=平稳随机过程>平稳随机过程</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/math-convex/>凸优化</a><ul><li><a href=/zh-cn/posts/convex-optimization-basics/ title=基本概念>基本概念</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/deep-learning/>深度学习</a><ul><li><a href=/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%BC%80%E7%AF%87/ title=深度学习开篇>深度学习开篇</a></li><li><a href=/zh-cn/posts/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-%E7%BB%93%E6%9E%84/ title=深度学习-结构>深度学习-结构</a></li><li><a href=/zh-cn/posts/%E5%BD%92%E4%B8%80%E5%8C%96/ title=归一化>归一化</a></li><li><a href=/zh-cn/posts/%E5%88%9D%E5%A7%8B%E5%8C%96/ title=初始化>初始化</a></li><li><a href=/zh-cn/posts/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%94%BB%E5%9B%BE%E7%AF%87/ title=神经网络画图篇>神经网络画图篇</a></li><li><a href=/zh-cn/posts/cam/ title=CAM>CAM</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/reinforcement-learning/>强化学习</a><ul><li><a href=/zh-cn/posts/reinforce-overview/ title=综述>综述</a></li></ul></li><li><i class="fas fa-minus-circle"></i><a class=active href=/zh-cn/topics/programming/>编程语言</a><ul class=active><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/python/>Python</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/python-env/>env</a><ul><li><a href=/zh-cn/posts/py-env/ title=py-env>py-env</a></li><li><a href=/zh-cn/posts/cuda/ title=cuda>cuda</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/python-internal/>Internal</a><ul><li><a href=/zh-cn/posts/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81/ title=字符编码>字符编码</a></li><li><a href=/zh-cn/posts/python-basics/ title=基础操作>基础操作</a></li><li><a href=/zh-cn/posts/%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97/ title=内置模块>内置模块</a></li><li><a href=/zh-cn/posts/%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C/ title=进阶操作>进阶操作</a></li><li><a href=/zh-cn/posts/%E5%BC%82%E5%B8%B8/ title=异常>异常</a></li><li><a href=/zh-cn/posts/%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96/ title=文件读取>文件读取</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/python-sdk/>SDK</a><ul><li><a href=/zh-cn/posts/%E5%B9%B6%E8%A1%8C%E6%93%8D%E4%BD%9C/ title=并行操作>并行操作</a></li><li><a href=/zh-cn/posts/importlib%E5%8C%85/ title=importlib>importlib</a></li><li><a href=/zh-cn/posts/ipdb%E5%8C%85/ title=ipdb>ipdb</a></li><li><a href=/zh-cn/posts/%E6%AD%A3%E5%88%99/ title=正则-re>正则-re</a></li><li><a href=/zh-cn/posts/%E5%A0%86-heapq/ title=堆-heapq>堆-heapq</a></li><li><a href=/zh-cn/posts/requests/ title=requests>requests</a></li><li><a href=/zh-cn/posts/logging/ title=logging>logging</a></li><li><a href=/zh-cn/posts/argparse/ title=argparse>argparse</a></li><li><a href=/zh-cn/posts/pil/ title=PIL>PIL</a></li><li><a href=/zh-cn/posts/opencv/ title=OpenCV>OpenCV</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/tensorflow/>TensorFlow</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/tensorflow-compat/>兼容1.x</a><ul><li><a href=/zh-cn/posts/%E9%9D%99%E6%80%81%E5%9B%BE/ title=静态图>静态图</a></li><li><a href=/zh-cn/posts/tensorflow-model-training/ title=模型训练>模型训练</a></li></ul></li></ul></li><li><i class="fas fa-minus-circle"></i><a class=active href=/zh-cn/topics/pytorch/>PyTorch</a><ul class=active><li><a href=/zh-cn/posts/pytorch-overview/ title=简介>简介</a></li><li><a href=/zh-cn/posts/pytorch-basics/ title=基础操作>基础操作</a></li><li><a href=/zh-cn/posts/%E6%95%B0%E5%AD%A6%E8%AE%A1%E7%AE%97/ title=数学计算>数学计算</a></li><li><a href=/zh-cn/posts/tensor%E5%92%8C%E5%8F%98%E9%87%8F/ title=Tensor和变量>Tensor和变量</a></li><li><a class=active href=/zh-cn/posts/pytorch-model-training/ title=模型训练>模型训练</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/mxnet/>MxNet</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/mxnet-ndarray/>NdArray</a><ul><li><a href=/zh-cn/posts/ndarray%E4%BD%BF%E7%94%A8/ title=NdArray使用>NdArray使用</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/database/>数据库</a><ul><li><a href=/zh-cn/posts/mysql/ title=MySQL>MySQL</a></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/hive/>Hive</a><ul><li><a href=/zh-cn/posts/%E5%88%9B%E5%BB%BA%E5%BA%93/%E8%A1%A8/ title=创建库/表>创建库/表</a></li><li><a href=/zh-cn/posts/%E5%B8%B8%E8%A7%81%E5%87%BD%E6%95%B0/ title=常见函数>常见函数</a></li><li><a href=/zh-cn/posts/%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/ title=常用操作>常用操作</a></li><li><a href=/zh-cn/posts/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/ title=数据类型>数据类型</a></li><li><a href=/zh-cn/posts/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/ title=正则匹配>正则匹配</a></li></ul></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv/>CV</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-backbone/>基础</a><ul><li><a href=/zh-cn/posts/cnn/ title=CNN>CNN</a></li><li><a href=/zh-cn/posts/optimizer/ title=optimizer>optimizer</a></li><li><a href=/zh-cn/posts/backbone-net/ title="backbone net">backbone net</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-contrastive-learning/>对比学习</a><ul><li><a href=/zh-cn/posts/contrastive-learning/ title="contrastive learning">contrastive learning</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-vision-transformer/>ViT</a><ul><li><a href=/zh-cn/posts/vision-transformer/ title="vision transformer">vision transformer</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-image-detect/>目标检测</a><ul><li><a href=/zh-cn/posts/object-detection-overview/ title=简介>简介</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-image-segment/>语义分割</a><ul><li><a href=/zh-cn/posts/semantic-segmentation-overview/ title=简介>简介</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/cv-image-matting/>抠图</a><ul><li><a href=/zh-cn/posts/%E6%8A%A0%E5%9B%BE%E7%BB%BC%E8%BF%B0/ title=抠图综述>抠图综述</a></li><li><a href=/zh-cn/posts/animal-matting/ title="animal matting">animal matting</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/nlp/>NLP</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/word-embedding/>Word Embedding</a><ul><li><a href=/zh-cn/posts/word-embedding%E7%BB%BC%E8%BF%B0/ title="Word Embedding综述">Word Embedding综述</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/rnn/>RNN</a><ul><li><a href=/zh-cn/posts/rnn%E7%BB%BC%E8%BF%B0/ title=RNN综述>RNN综述</a></li><li><a href=/zh-cn/posts/gru%E7%BD%91%E7%BB%9C/ title=GRU网络>GRU网络</a></li><li><a href=/zh-cn/posts/lstm%E7%BD%91%E7%BB%9C/ title=LSTM网络>LSTM网络</a></li><li><a href=/zh-cn/posts/%E7%BC%96%E8%A7%A3%E7%A0%81%E6%9E%B6%E6%9E%84/ title=编解码架构>编解码架构</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/transformer/>Transformer</a><ul><li><a href=/zh-cn/posts/attention/ title=Attention>Attention</a></li><li><a href=/zh-cn/posts/transformer/ title=Transformer>Transformer</a></li><li><a href=/zh-cn/posts/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81/ title=位置编码>位置编码</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/gpt/>GPT</a><ul><li><a href=/zh-cn/posts/gpt%E7%BB%BC%E8%BF%B0/ title=GPT综述>GPT综述</a></li><li><a href=/zh-cn/posts/gpt-1/ title=GPT-1>GPT-1</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/bert/>Bert</a><ul><li><a href=/zh-cn/posts/bert%E7%BB%BC%E8%BF%B0/ title=Bert综述>Bert综述</a></li><li><a href=/zh-cn/posts/bert%E5%AE%B6%E6%97%8F/ title=Bert家族>Bert家族</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/t5/>T5</a><ul><li><a href=/zh-cn/posts/t5%E7%BB%BC%E8%BF%B0/ title=T5综述>T5综述</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/bart/>BART</a><ul><li><a href=/zh-cn/posts/bart%E7%BB%BC%E8%BF%B0/ title=BART综述>BART综述</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/electra/>ELECTRA</a><ul><li><a href=/zh-cn/posts/electra%E7%BB%BC%E8%BF%B0/ title=ELECTRA综述>ELECTRA综述</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/code/>CODE</a><ul><li><a href=/zh-cn/posts/code%E8%A7%A3%E6%9E%90/ title=code解析>code解析</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/aigc/>AIGC</a><ul><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/aigc-summary/>AIGC综述</a><ul><li><a href=/zh-cn/posts/aigc-overview/ title=综述>综述</a></li><li><a href=/zh-cn/posts/llm-%E6%95%B0%E6%8D%AE%E9%9B%86/ title=LLM-数据集>LLM-数据集</a></li><li><a href=/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E7%AD%96%E7%95%A5/ title=模型应用策略>模型应用策略</a></li><li><a href=/zh-cn/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E6%A1%86%E6%9E%B6/ title=大模型训练框架>大模型训练框架</a></li><li><a href=/zh-cn/posts/%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83/ title=混合精度训练>混合精度训练</a></li><li><a href=/zh-cn/posts/%E6%A8%A1%E5%9E%8B%E5%B0%8F%E5%9E%8B%E5%8C%96/ title=模型小型化>模型小型化</a></li><li><a href=/zh-cn/posts/%E7%94%9F%E6%88%90%E5%BC%8F-%E9%97%AE%E9%A2%98/ title=生成式-问题>生成式-问题</a></li><li><a href=/zh-cn/posts/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B-%E8%AF%84%E4%BC%B0/ title=生成模型-评估>生成模型-评估</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/aigc-text/>文本生成</a><ul><li><a href=/zh-cn/posts/gpt/ title=GPT>GPT</a></li><li><a href=/zh-cn/posts/llama/ title=LLaMa>LLaMa</a></li><li><a href=/zh-cn/posts/palm/ title=PaLM>PaLM</a></li><li><a href=/zh-cn/posts/chatglm/ title=ChatGLM>ChatGLM</a></li><li><a href=/zh-cn/posts/claude/ title=Claude>Claude</a></li><li><a href=/zh-cn/posts/cohere/ title=Cohere>Cohere</a></li><li><a href=/zh-cn/posts/falcon/ title=Falcon>Falcon</a></li><li><a href=/zh-cn/posts/vicuna/ title=Vicuna>Vicuna</a></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/aigc-image/>图像生成</a><ul><li><a href=/zh-cn/posts/image-generation-overview/ title=综述>综述</a></li><li><a href=/zh-cn/posts/gan/ title=GAN>GAN</a></li><li><a href=/zh-cn/posts/can/ title=CAN>CAN</a></li><li><a href=/zh-cn/posts/dall-e/ title=DALL-E>DALL-E</a></li><li><a href=/zh-cn/posts/vqgan/ title=VQGAN>VQGAN</a></li><li><a href=/zh-cn/posts/diffusion/ title=Diffusion>Diffusion</a></li><li><a href=/zh-cn/posts/midjourney/ title=Midjourney>Midjourney</a></li><li><a href=/zh-cn/posts/imagen/ title=Imagen>Imagen</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/vlp/>多模态</a><ul><li><a href=/zh-cn/posts/multimodal-overview/ title=简介>简介</a></li><li><a href=/zh-cn/posts/clip/ title=CLIP>CLIP</a></li><li><a href=/zh-cn/posts/mllm/ title=MLLM>MLLM</a></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/qwen/>Qwen</a><ul><li><a href=/zh-cn/posts/qwen-image-edit/ title=总览图>总览图</a></li></ul></li></ul></li><li><i class="fas fa-plus-circle"></i><a href=/zh-cn/topics/video/>视频理解</a><ul><li><a href=/zh-cn/posts/video-understanding-overview/ title=简介>简介</a></li></ul></li></div></ul></div></div></div><button class=post-sidebar-resizer id=post-sidebar-resizer type=button role=separator aria-orientation=vertical aria-label=调整左侧目录宽度 aria-valuemin=220 aria-valuemax=520 aria-valuenow=320></button></section><section class=content-section id=content-section><div class=content><div class="container p-0 read-area"><div class="hero-area col-sm-12" id=hero-area style=background-image:url(/images/default-hero.jpg)></div><div class=page-content><div class="author-profile ml-auto align-self-lg-center"><img class=rounded-circle src=/images/author/john_hu7f9991f5b5d471ecdfc6cff3db1a9fe6_6397_120x120_fit_box_2.png alt="Author Image"><h5 class=author-name>biubiobiu</h5><p>April 8, 2022</p></div><div class=title><h1>模型训练</h1></div><div class=taxonomy-terms><ul><li class=rounded><a href=/zh-cn/tags/torch class="btn, btn-sm">torch</a></li><li class=rounded><a href=/zh-cn/tags/%E8%AE%AD%E7%BB%83 class="btn, btn-sm">训练</a></li><li class=rounded><a href=/zh-cn/tags/%E6%A8%A1%E5%9E%8B class="btn, btn-sm">模型</a></li></ul></div><div class=post-content id=post-content><h2 id=一数据预处理>一、数据预处理</h2><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> torch
+<span style=color:#f92672>from</span> torch.utils.data <span style=color:#f92672>import</span> Dataset, DataLoader, TensorDataset
+<span style=color:#f92672>from</span> torch.autograd <span style=color:#f92672>import</span> Variable
+<span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>MyDataset</span>(Dataset):
+    <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>    下载数据、初始化数据，都可以在这里完成
+</span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
+    <span style=color:#66d9ef>def</span> __init__(self):
+        xy <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>loadtxt(<span style=color:#e6db74>&#39;../dataSet/diabetes.csv.gz&#39;</span>, delimiter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;,&#39;</span>, dtype<span style=color:#f92672>=</span>np<span style=color:#f92672>.</span>float32) <span style=color:#75715e># 使用numpy读取数据</span>
+        self<span style=color:#f92672>.</span>x_data <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>from_numpy(xy[:, <span style=color:#ae81ff>0</span>:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>])
+        self<span style=color:#f92672>.</span>y_data <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>from_numpy(xy[:, [<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]])
+        self<span style=color:#f92672>.</span>len <span style=color:#f92672>=</span> xy<span style=color:#f92672>.</span>shape[<span style=color:#ae81ff>0</span>]
+    
+    <span style=color:#66d9ef>def</span> __getitem__(self, index):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>x_data[index], self<span style=color:#f92672>.</span>y_data[index]
+
+    <span style=color:#66d9ef>def</span> __len__(self):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>len
+
+<span style=color:#75715e># 创建Dataset对象</span>
+dataset <span style=color:#f92672>=</span> MyDataset()
+<span style=color:#75715e># 创建DataLoadder对象</span>
+dataloader <span style=color:#f92672>=</span> DataLoader(dataset,
+                        batch_size<span style=color:#f92672>=</span><span style=color:#ae81ff>32</span>,
+                        shuffle<span style=color:#f92672>=</span>True,
+                        num_workers<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>)
+<span style=color:#75715e># 循环DataLoader对象</span>
+num_epoches <span style=color:#f92672>=</span> <span style=color:#ae81ff>100</span>
+<span style=color:#66d9ef>for</span> epoch <span style=color:#f92672>in</span> range(num_epoches)
+    <span style=color:#66d9ef>for</span> img, label <span style=color:#f92672>in</span> dataloader:
+        <span style=color:#75715e># 将数据从dataloader中读取出来，一次读取的样本数为32个</span>
+
+
+<span style=color:#75715e># class torch.utils.data.DataLoader(dataset,            # 加载数据的数据集</span>
+<span style=color:#75715e>#                                   batch_size=24,      # 每批加载多少个样本</span>
+<span style=color:#75715e>#                                   shuffle=False,      # Ture：每个epoch对数据打乱</span>
+<span style=color:#75715e>#                                   sampler=None,       # 定义从数据集中提取样本的策略，返回一个样本</span>
+<span style=color:#75715e>#                                   batch_sampler=None, #</span>
+<span style=color:#75715e>#                                   num_workers=12,     # 0：表示数据将在主进程中加载,12表示开12个进程</span>
+<span style=color:#75715e>#                                   collate_fn=, </span>
+<span style=color:#75715e>#                                   pin_memory=False, </span>
+<span style=color:#75715e>#                                   drop_last=False, </span>
+<span style=color:#75715e>#                                   timeout=0, </span>
+<span style=color:#75715e>#                                   worker_init_fn=None)</span>
+
+</code></pre></div><blockquote><p>DataLoader 中：</p><ol><li>其中: <code>__getitem__()</code>的含义：<br>如果在类中定义了<code>__getitem__()</code>方法，那么类的实例对象P就可以实现P[key]取值。当实例对象P[key]运算时，就会调用类中的<code>__getitem__()</code>方法</li><li>其中：<code>__iter__()</code>的含义：<br>每次迭代，都会执行<code>__iter__()</code>，返回的值放在data_r中。每次迭代返回的是一个batch的数据。</li></ol></blockquote><table><thead><tr><th style=text-align:left>torchvision的包</th><th></th></tr></thead><tbody><tr><td style=text-align:left>torchvision.datasets</td><td></td></tr><tr><td style=text-align:left>torchvision.models</td><td style=text-align:left>包含了常用的网络结构，并提供了预训练模型</td></tr><tr><td style=text-align:left>torchvision.transforms</td><td style=text-align:left>提供了一般的图像转换操作类</td></tr></tbody></table><blockquote><p><font color=#a020f0>torchvision.transforms</font>：提供了一般的图像转换操作类：</p><ol><li><input checked disabled type=checkbox> <font color=#a020f0>torchvision.transforms.ToTensor()</font><br>功能：<br>输入的Tensor数据类型必须是float32，才有这样的功能：把shape=(H,W,C)像素值范围为[0,255]的PIL.Image或者numpy.ndarrsy，转换为shape=(C,H,W)像素值范围为[0.0,1.0]的torch.FloatTensor</li><li><input checked disabled type=checkbox> <font color=#a020f0>torchvision.transforms.Normmalize(mean, std)</font><br>功能：<br>mean=(R,G,B), std=(R,G,B), 公式channel=(channel-mean)/std进行规范化</li><li><input checked disabled type=checkbox> <font color=#a020f0>torchvision.transforms.RandomCrop(size, padding=0)</font><br>功能：裁剪<br></li><li><input checked disabled type=checkbox> <font color=#a020f0>torchvision.transforms.RandomSizedCrop(size, interpolation=2)</font><br>功能：裁剪<br></li><li><input checked disabled type=checkbox> <font color=#a020f0>torchvision.transforms.Compose()</font><br>功能：把多个transform组合起来使用<br>示例：<br>from torchvision import transforms as transforms<br>transform = transforms.Compose([<br>　　transforms.Resize(96),<br>　　transforms.ToTensor(),<br>　　transforms.Normalize((0.5,0.5,0.5), (0.1,0.1,0.1))<br>])<br>train_dataset = torchvision.datasets.MNIST(root='./data/', train=True, transform=transform, download=True)<br></li></ol></blockquote><h2 id=二模型>二、模型</h2><h3 id=1模型的定义>1、模型的定义</h3><blockquote><p><strong>模型定义</strong></p><ol><li><p>模型定义时：需要进行更新的参数注册为<font color=#a020f0>Parameter</font>，不需要进行更新的参数注册为<font color=#a020f0>buffer</font></p><ol><li>网络中的参数保存成<font color=#00ffa0>OrderedDict</font>形式，这些参数包括2种：nn.Parameter 和 buffer</li><li><font color=#a020f0>torch.nn.register_parameter()</font> 用于注册Parameter实例到当前Module;<br><font color=#a020f0>Module.parameters()</font>函数会返回当前Module中注册的所有Parameter迭代器。<br>创建：<br><ul><li>将模型的成员变量(self.xxx)通过 nn.Parameter()创建，会自动注册到parameters中</li><li>通过nn.Parameter()创建普通的Parameter对象，不作为模型的成员变量，然后将Parameter对象通过register_parameter()进行注册</li></ul></li><li><font color=#a020f0>torch.nn.register_buffer()</font> 用于注册Buffer实例到当前Module中;<br><font color=#a020f0>Module.buffers()</font>函数会返回当前Module中注册的Buffer迭代器</li></ol></li><li><p>模型保存的参数是 Model.state_dict() 返回的<font color=#00ffa0>OrderedDict</font>，包含当前Module中注册的所有Parameter和Buffer</p></li><li><p>模型进行设备移动时，模型中注册的参数(parameter和buffer)会同时进行移动</p></li></ol></blockquote><blockquote><ol><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.Parameter()</font>。<br>功能：将一个不可训练的类型Tensor转换为可训练的类型。并将这个parameter绑定到这个module里。</li></ol></blockquote><blockquote><p><strong>定义MyModel</strong></p><ol><li>必须继承nn.Module这个类，要让pytorch知道这个类是一个Module</li><li>在<code>__init__</code>(self)中，设置好需要的组件</li><li>在forward(self, x)中，用定义好的组建进行组装，像搭建积木一样把网络结果搭建出来。</li></ol></blockquote><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># Model 模块</span>
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Module</span>(object):
+    dump_patches <span style=color:#f92672>=</span> False
+    _version <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+
+    <span style=color:#66d9ef>def</span> __init__(self):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        Initializes internal Module state, shared by both nn.Module and ScriptModule.
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        torch<span style=color:#f92672>.</span>_C<span style=color:#f92672>.</span>_log_api_usage_once(<span style=color:#e6db74>&#34;python.nn_module&#34;</span>)
+
+        self<span style=color:#f92672>.</span>training <span style=color:#f92672>=</span> True
+        self<span style=color:#f92672>.</span>_parameters <span style=color:#f92672>=</span> OrderedDict()                 <span style=color:#75715e># 2.</span>
+        self<span style=color:#f92672>.</span>_buffers <span style=color:#f92672>=</span> OrderedDict()                    <span style=color:#75715e># 1. </span>
+        self<span style=color:#f92672>.</span>_backward_hooks <span style=color:#f92672>=</span> OrderedDict()
+        self<span style=color:#f92672>.</span>_forward_hooks <span style=color:#f92672>=</span> OrderedDict()
+        self<span style=color:#f92672>.</span>_forward_pre_hooks <span style=color:#f92672>=</span> OrderedDict()
+        self<span style=color:#f92672>.</span>_state_dict_hooks <span style=color:#f92672>=</span> OrderedDict()
+        self<span style=color:#f92672>.</span>_load_state_dict_pre_hooks <span style=color:#f92672>=</span> OrderedDict()
+        self<span style=color:#f92672>.</span>_modules <span style=color:#f92672>=</span> OrderedDict()
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>forward</span>(self, <span style=color:#f92672>*</span>input):
+    	<span style=color:#66d9ef>raise</span> <span style=color:#a6e22e>NotImplementedError</span>
+
+    <span style=color:#75715e># 1. add a persistent buffer to the module. </span>
+    <span style=color:#75715e># &gt;&gt;&gt; self.register_buffer(&#39;running_mean&#39;, torch.zeros(num_features))</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>register_buffer</span>(self, name, tensor):
+    	<span style=color:#e6db74>&#39;&#39;&#39;...&#39;&#39;&#39;</span>
+    	self<span style=color:#f92672>.</span>_buffers[name] <span style=color:#f92672>=</span> tensor
+
+    <span style=color:#75715e># 2. add a parameter to the module.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>register_parameter</span>(self, name, param):
+    	<span style=color:#e6db74>&#39;&#39;&#39;...&#39;&#39;&#39;</span>
+    	self<span style=color:#f92672>.</span>_parameters[name] <span style=color:#f92672>=</span> param
+
+    <span style=color:#75715e># 3. add a child module to the current module.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>add_module</span>(self, name, module):
+    	<span style=color:#e6db74>&#39;&#39;&#39;...&#39;&#39;&#39;</span>
+    	self<span style=color:#f92672>.</span>_modules[name] <span style=color:#f92672>=</span> module
+
+    <span style=color:#75715e># Typical use includes initializing the parameters of a model</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>apply</span>(self, fn):
+    	<span style=color:#66d9ef>return</span> self
+    
+    <span style=color:#75715e># Moves all model parameters and buffers to the GPU</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>cuda</span>(self, device<span style=color:#f92672>=</span>None):
+    	<span style=color:#66d9ef>return</span> self
+
+    <span style=color:#75715e># Moves all model parameters and buffers to the CPU</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>cpu</span>(self):
+    	<span style=color:#66d9ef>return</span> self
+
+    <span style=color:#75715e># cast all parameters and buffers to :attr: `dst_type`</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>type</span>(self, dst_type):
+    	<span style=color:#66d9ef>return</span> self
+
+    <span style=color:#75715e># Moves and/or casts the parameters and buffers</span>
+    <span style=color:#75715e># args: device</span>
+    <span style=color:#75715e>#       dtype</span>
+    <span style=color:#75715e>#       tensor</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>to</span>(self, <span style=color:#f92672>*</span>args, <span style=color:#f92672>**</span>kwargs):
+    	<span style=color:#66d9ef>return</span> self
+
+    <span style=color:#75715e># Registers a backward hook on the module</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>register_backward_hook</span>(self, hook):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>register_forward_pre_hook</span>(self, hook):
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>register_forward_hook</span>(self, hook):
+    <span style=color:#75715e># Returns a dictionary containing a whole state of the module.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>state_dict</span>(self, destination<span style=color:#f92672>=</span>None, prefix<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;&#39;</span>, keep_vars<span style=color:#f92672>=</span>False):
+    	
+    <span style=color:#75715e># </span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>load_state_dict</span>(self, state_dict, strict<span style=color:#f92672>=</span>True):
+    <span style=color:#75715e># Returns an iterator over module parameters.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>parameters</span>(self, recurse<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>for</span> name, param <span style=color:#f92672>in</span> self<span style=color:#f92672>.</span>named_parameters(recurse<span style=color:#f92672>=</span>recurse):
+            <span style=color:#66d9ef>yield</span> param
+    <span style=color:#75715e># Returns an iterator over module parameters, yielding both the name of the parameter as well as the parameter itself.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>named_parameters</span>(self, prefix<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;&#39;</span>, recurse<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>yield</span> elem
+    <span style=color:#75715e># Returns an iterator over module buffers.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>buffers</span>(self, recurse<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>for</span> name, buf <span style=color:#f92672>in</span> self<span style=color:#f92672>.</span>named_buffers(recurse<span style=color:#f92672>=</span>recurse):
+            <span style=color:#66d9ef>yield</span> buf
+    <span style=color:#75715e># Returns an iterator over module buffers, yielding both the name of the buffer as well as the buffer itself.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>named_buffers</span>(self, prefix<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;&#39;</span>, recurse<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>yield</span> elem
+    <span style=color:#75715e># Returns an iterator over all modules in the network.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>modules</span>(self):
+    	<span style=color:#66d9ef>for</span> name, module <span style=color:#f92672>in</span> self<span style=color:#f92672>.</span>named_modules():
+            <span style=color:#66d9ef>yield</span> module
+    <span style=color:#75715e># Returns an iterator over all modules in the network, yielding both the name of the module as well as the module itself.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>named_modules</span>(self, memo<span style=color:#f92672>=</span>None, prefix<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;&#39;</span>):
+    	<span style=color:#66d9ef>yield</span> m 
+    <span style=color:#75715e># Sets the module in training mode.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>train</span>(self, mode<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>return</span> self
+    <span style=color:#75715e># Sets the module in evaluation mode.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>eval</span>(self):
+    	<span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>train(False)
+    <span style=color:#75715e># Change if autograd should record operations on parameters in this module.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>requires_grad_</span>(self, requires_grad<span style=color:#f92672>=</span>True):
+    	<span style=color:#66d9ef>return</span> self
+    <span style=color:#75715e># Sets gradients of all model parameters to zero.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>zero_grad</span>(self):
+    <span style=color:#75715e>#</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>_get_name</span>(self):
+    	<span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>__class__<span style=color:#f92672>.</span>__name__
+    <span style=color:#75715e>#</span>
+
+
+</code></pre></div><h3 id=2模型的保存域加载>2、模型的保存域加载</h3><p>这主要有两种方法序列化和恢复模型。</p><ol><li>第一种（推荐）只保存和加载模型参数：<br><strong>保存</strong>：<br>torch.save(<font color=#a020f0>the_model.state_dict()</font>, PATH)<br><strong>读取</strong>：先读取Model的网络定义，在读取模型参数<br>the_model = TheModelClass(*args, **kwargs)<br>the_model.load_state_dict(torch.load(PATH))<br></li></ol><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>model <span style=color:#f92672>=</span> build_model()
+pretrained_dict <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>load(path)
+model<span style=color:#f92672>.</span>load_state_dict(pretrained_dict)
+
+<span style=color:#75715e># ===========需要选参数============= #</span>
+<span style=color:#75715e># 1. 加载模型的参数</span>
+pretrained_dict <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>load(<span style=color:#e6db74>&#39;params.pkl&#39;</span>)
+
+net <span style=color:#f92672>=</span> Net()
+<span style=color:#75715e># 2. 获取已创建net的state_dict</span>
+net_state_dict <span style=color:#f92672>=</span> net<span style=color:#f92672>.</span>state_dict()
+
+<span style=color:#75715e># 3. 将pretrained_dict 里不属于net_state_dict的剔除</span>
+pretrained_dict_1 <span style=color:#f92672>=</span> {k: v  <span style=color:#66d9ef>for</span> k, v <span style=color:#f92672>in</span> pretrained_dict<span style=color:#f92672>.</span>items() <span style=color:#66d9ef>if</span> k <span style=color:#f92672>in</span> net_state_dict}
+
+<span style=color:#75715e># 4. 更新 新模型参数字典</span>
+net_state_dict<span style=color:#f92672>.</span>update(pretrained_dict_1)
+
+<span style=color:#75715e># 5. 将包含预训练模型参数的字典放回到网络中</span>
+net<span style=color:#f92672>.</span>load_state_dict(net_state_dict)
+</code></pre></div><ol start=2><li>第二种保存和加载整个模型：<br><strong>保存</strong>：<br>torch.save(the_model, PATH)<br><strong>读取</strong>：因为保存了整个模型，可以直接加载<br>the_model = torch.load(PATH)<br></li></ol><h3 id=3模型初始化>3、模型初始化</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> torch
+<span style=color:#f92672>import</span> torch.nn <span style=color:#f92672>as</span> nn
+<span style=color:#f92672>import</span> torch.nn.functional <span style=color:#f92672>as</span> F
+
+net <span style=color:#f92672>=</span> BuildModle()
+<span style=color:#66d9ef>for</span> m <span style=color:#f92672>in</span> net<span style=color:#f92672>.</span>modules():
+    m<span style=color:#f92672>.</span>weight<span style=color:#f92672>.</span>data<span style=color:#f92672>.</span>normal_(<span style=color:#ae81ff>0</span>,math<span style=color:#f92672>.</span>sqrt(<span style=color:#ae81ff>2.</span><span style=color:#f92672>/</span>n))
+    m<span style=color:#f92672>.</span>weight<span style=color:#f92672>.</span>data<span style=color:#f92672>.</span>fill_(<span style=color:#ae81ff>1</span>)
+    m<span style=color:#f92672>.</span>bias<span style=color:#f92672>.</span>data<span style=color:#f92672>.</span>zero_()
+
+</code></pre></div><p>初始化的方法：<font color=#a020f0>torch.nn.init</font><br></p><ol><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.xavier_normal_(tensor,)</font></li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.xavier_uniform(tensor,)</font></li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.kaiming_normal_()</font></li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.kaiming_normal_(tensor, a=0, mode=&lsquo;fan_in&rsquo;, nonlinearity=&lsquo;leaky_relu&rsquo;)</font></li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.uniform_(tensor, a=0, b=1)</font>。均匀分布 U(a,b)</li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.normal_(tensor, mean=0, std=1)</font>。正态分布</li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.constant_(tensor, val)</font>。常数</li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.eye_(tensor)</font>。单位矩阵</li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.orthogonal_(tensor, gain=1)</font>。正交初始化</li><li><input checked disabled type=checkbox> <font color=#a020f0>torch.nn.init.sparse_(tensor, sparsity, std=0.01)</font>。从正态分布 N~(0, std)中进行稀疏化。<br>sparsity：每个column稀疏的比例</li></ol><h2 id=三学习率>三、学习率</h2><blockquote><ol><li><input checked disabled type=checkbox> 自定义调整：<br>示例：<font color=#a020f0>torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda, last_epoch=-1)</font>
+参数：<br>optimizer: 优化器<br>lr_lambda: 为 optimizer.param_groups中的每个组计算一个乘法因子<br>last_epoch: 是从last_start开始后已经记录了多少个epoch<br></li><li><input checked disabled type=checkbox> 有序调整-StepLR：<br>示例：<font color=#a020f0>torch.optim.lr_scheduler.StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1)</font>
+参数：<br>optimizer: 优化器<br>step_size(int): 学习率下降间隔数。将学习率调整为 lr*gamma<br>gamma(float): 学习率调整倍数，默认为0.1<br>last_epoch: 是从last_start开始后已经记录了多少个epoch<br></li><li><input checked disabled type=checkbox> 有序调整-MultiStepLR：<br>示例：<font color=#a020f0>torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones, gamma=0.1, last_epoch=-1)</font>
+参数：<br>optimizer: 优化器<br>milestones(list): lr 改变时的epoch数，比如[10,15,20,22,]。将学习率调整为 lr * gamma<br>gamma(float): 学习率调整倍数，默认为0.1<br>last_epoch: 是从last_start开始后已经记录了多少个epoch<br></li><li><input checked disabled type=checkbox> 有序调整-ExponentialLR：<br>示例：<font color=#a020f0>torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma, last_epoch=-1)</font>
+参数：<br>optimizer: 优化器<br>gamma(float): 学习率调整倍数，默认为0.1。 每个epoch都衰减 lr = lr * gamma<br>last_epoch: 是从last_start开始后已经记录了多少个epoch<br></li></ol></blockquote><h2 id=四优化器>四、优化器</h2><table><thead><tr><th style=text-align:left>优化步骤</th><th style=text-align:left>解释</th></tr></thead><tbody><tr><td style=text-align:left>class torch.optim.Optimizer(params, defaults)</td><td style=text-align:left>params: Variable或者dict的iterable。指定了什么参数应当被优化<br>defaults：包含了优化选项默认值的字典</td></tr><tr><td style=text-align:left>load_stat_dict(state_dict)</td><td style=text-align:left>加载optimizer状态<br>state_dict: optimizer的状态。应当是一个调用<br>state_dict()所返回的对象</td></tr><tr><td style=text-align:left>state_dict()</td><td style=text-align:left>以dict返回optimizer的状态。包含两项：<br>1、state：一个保存了当前优化状态的dict<br>2、param_groups：一个包含了全部参数组的dict</td></tr><tr><td style=text-align:left>step(closure)</td><td style=text-align:left>进行单次优化(参数更新)<br>closure(一个函数callable)：一个重新评价模型并返回loss的闭包。</td></tr><tr><td style=text-align:left>zero_grad()</td><td style=text-align:left>清空所有被优化过的Variable的梯度</td></tr></tbody></table><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#75715e># 实例</span>
+optimizer <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>optim<span style=color:#f92672>.</span>SGD(model<span style=color:#f92672>.</span>parameters(), lr<span style=color:#f92672>=</span><span style=color:#ae81ff>0.1</span>, momentum<span style=color:#f92672>=</span><span style=color:#ae81ff>0.9</span>)
+optimizer<span style=color:#f92672>.</span>zero_grad()
+loss_fn(model(input), target)<span style=color:#f92672>.</span>backward()
+optimizer<span style=color:#f92672>.</span>step()
+</code></pre></div><p>参数组(param_groups): 在finetune时，某层定制学习率、某层学习率置零操作中，都会涉及参数组的概念。</p><ol><li>optimizer对参数的管理是基于组的概念，可以为每一组参数配置特定的 lr, momentum, weight_decay等</li><li>参数组在optimizer中表现为一个list(self.param_groups), 其中每个元素是一个dict，表示一个参数及其相应的配置
+dict中包括 params, weight_decay, lr, momentum 等字段。</li></ol><blockquote><p>常用优化器：</p><ol><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.SGD()</font><br>示例：optimizer = torch.optim.SGD(model.parameters(), lr=0.07)<br>参数:<br>params: 待优化参数的iterable或者是定义了参数组的dict<br>lr=1e-5: 学习率<br>momentum=0 ： 动量因子<br>dampening=0 ：动量的抑制因子<br>weight_decay=0：权重衰减<br>nesterov=False：使用nesterov动量</li></ol></blockquote><blockquote><ol start=2><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.Rprop()</font><br>示例：optimizer = torch.optim.Rprop(params, lr=0.01, etas=(0.5, 1.2), step_sizes=(1e-06, 50))<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认：1e-2）<br>etas (Tuple[float, float], 可选): – 一对（etaminus，etaplis）, 它们分别是乘法的增加和减小的因子（默认：0.5，1.2）<br>step_sizes (Tuple[float, float], 可选): – 允许的一对最小和最大的步长（默认：1e-6，50）<br></li></ol></blockquote><blockquote><ol start=3><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.RMSprop()</font><br>示例：optimizer = torch.optim.RMSprop(params, lr=0.01, alpha=0.99, eps=1e-08, weight_decay=0, momentum=0, centered=False)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认：1e-2）<br>momentum (float, 可选): – 动量因子（默认：0）<br>alpha (float, 可选): – 平滑常数（默认：0.99）<br>eps (float, 可选): – 为了增加数值计算的稳定性而加到分母里的项（默认：1e-8）<br>centered (bool, 可选): – 如果为True，计算中心化的RMSProp，并且用它的方差预测值对梯度进行归一化<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><blockquote><ol start=4><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.ASGD()</font><br>示例：optimizer = torch.optim.ASGD(params, lr=0.01, lambd=0.0001, alpha=0.75, t0=1000000.0, weight_decay=0)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认：1e-2）<br>lambd (float, 可选): – 衰减项（默认：1e-4）<br>alpha (float, 可选): – eta更新的指数（默认：0.75）<br>t0 (float, 可选): – 指明在哪一次开始平均化（默认：1e6）<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><blockquote><ol start=5><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.Adamax()</font><br>示例：optimizer = torch.optim.Adamax(params, lr=0.002, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认：2e-3）<br>betas (Tuple[float, float], 可选): – 用于计算梯度以及梯度平方的运行平均值的系数<br>eps (float, 可选): – 为了增加数值计算的稳定性而加到分母里的项（默认：1e-8）<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><blockquote><ol start=6><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.Adam()</font><br>示例：optimizer = torch.optim.Adam(params, lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认：1e-3）<br>betas (Tuple[float, float], 可选): – 用于计算梯度以及梯度平方的运行平均值的系数（默认：0.9，0.999）<br>eps (float, 可选): – 为了增加数值计算的稳定性而加到分母里的项（默认：1e-8）<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><blockquote><ol start=7><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.Adagrad()</font><br>示例：optimizer = torch.optim.Adagrad(params, lr=0.01, lr_decay=0, weight_decay=0)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>lr (float, 可选): – 学习率（默认: 1e-2）<br>lr_decay (float, 可选): – 学习率衰减（默认: 0）<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><blockquote><ol start=8><li><input checked disabled type=checkbox> <font color=#a020f0>torch.optim.Adadelta()</font><br>示例：optimizer = torch.optim.Adadelta(params, lr=1.0, rho=0.9, eps=1e-06, weight_decay=0)<br>参数:<br>params (iterable): – 待优化参数的iterable或者是定义了参数组的dict<br>rho (float, 可选): – 用于计算平方梯度的运行平均值的系数（默认：0.9）<br>eps (float, 可选): – 为了增加数值计算的稳定性而加到分母里的项（默认：1e-6）<br>lr (float, 可选): – 在delta被应用到参数更新之前对它缩放的系数（默认：1.0）<br>weight_decay (float, 可选): – 权重衰减（L2惩罚）（默认: 0）<br></li></ol></blockquote><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python>
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Optimizer</span>(object):
+	<span style=color:#66d9ef>def</span> __init__(self, params, defaults):
+		torch<span style=color:#f92672>.</span>_C<span style=color:#f92672>.</span>_log_api_usage_once(<span style=color:#e6db74>&#34;python.optimizer&#34;</span>)
+	    self<span style=color:#f92672>.</span>defaults <span style=color:#f92672>=</span> defaults
+
+	    self<span style=color:#f92672>.</span>state <span style=color:#f92672>=</span> defaultdict(dict)
+	    self<span style=color:#f92672>.</span>param_groups <span style=color:#f92672>=</span> [] <span style=color:#75715e># 元素: {&#34;params&#34;: [torch.nn.parameter.Parameter, ...]}</span>
+
+	    param_groups <span style=color:#f92672>=</span> list(params)
+	    <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> isinstance(param_groups[<span style=color:#ae81ff>0</span>], dict):
+	        param_groups <span style=color:#f92672>=</span> [{<span style=color:#e6db74>&#39;params&#39;</span>: param_groups}]
+
+	    <span style=color:#66d9ef>for</span> param_group <span style=color:#f92672>in</span> param_groups:
+	        self<span style=color:#f92672>.</span>add_param_group(param_group)
+	<span style=color:#75715e># Returns the state of the optimizer as a :class:`dict`.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>state_dict</span>(self):
+    	<span style=color:#66d9ef>return</span> {
+            <span style=color:#e6db74>&#39;state&#39;</span>: packed_state,
+            <span style=color:#e6db74>&#39;param_groups&#39;</span>: param_groups,
+        }
+    <span style=color:#75715e># Loads the optimizer state.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>load_state_dict</span>(self, state_dict):
+    <span style=color:#75715e># Clears the gradients of all optimized :class:`torch.Tensor`</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>zero_grad</span>(self):
+    <span style=color:#75715e># Performs a single optimization step (parameter update)</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>step</span>(self, closure):
+    	  <span style=color:#66d9ef>raise</span> <span style=color:#a6e22e>NotImplementedError</span>
+    <span style=color:#75715e># Add a param group to the :class:`Optimizer` s `param_groups`.</span>
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>add_param_group</span>(self, param_group):
+
+</code></pre></div><h2 id=五loss>五、loss</h2><p>Loss指的是模型的误差大小，也就是预测值与实际值之间的差距。通常情况下，我们可以使用某种损失函数来计算模型的Loss，以此来指导我们优化模型、提高模型的精度。<br>常见的损失函数有：</p><ol><li>均方误差（MSE）</li><li>交叉熵（Cross Entropy）</li><li>对数损失（Logarithm Loss）</li></ol><h3 id=1均方误差mse>1、均方误差（MSE）</h3><p>均方误差是机器学习领域中最常用的损失函数之一，它计算的是预测值与实际值之间的平均误差。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>mse</span>(y_true, y_pred):
+    <span style=color:#66d9ef>return</span> np<span style=color:#f92672>.</span>mean(np<span style=color:#f92672>.</span>square(y_true <span style=color:#f92672>-</span> y_pred))
+</code></pre></div><h3 id=2交叉熵cross-entropy>2、交叉熵（Cross Entropy）</h3><p>交叉熵用于度量两个概率分布之间的距离，常用于分类问题中的损失函数。交叉熵的值越小，代表模型的预测结果越接近于真实情况。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>cross_entropy</span>(y_true, y_pred):
+    <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>np<span style=color:#f92672>.</span>sum(y_true <span style=color:#f92672>*</span> np<span style=color:#f92672>.</span>log(y_pred))
+</code></pre></div><h3 id=3对数损失logarithm-loss>3、对数损失（Logarithm Loss）</h3><p>对数损失也是分类问题中常用的损失函数，它的计算方式是预测值与实际值之间的对数差的平均值。</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>logarithm_loss</span>(y_true, y_pred):
+    <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span>np<span style=color:#f92672>.</span>mean(np<span style=color:#f92672>.</span>log(y_pred) <span style=color:#f92672>*</span> y_true <span style=color:#f92672>+</span> (<span style=color:#ae81ff>1</span> <span style=color:#f92672>-</span> y_true) <span style=color:#f92672>*</span> np<span style=color:#f92672>.</span>log(<span style=color:#ae81ff>1</span> <span style=color:#f92672>-</span> y_pred))
+</code></pre></div><h2 id=六总结>六、总结</h2><p>整个训练流程如下：</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=color:#f92672>import</span> numpy <span style=color:#f92672>as</span> np
+
+<span style=color:#f92672>import</span> torch
+<span style=color:#f92672>from</span> torch.utils.data <span style=color:#f92672>import</span> Dataset, DataLoader, TensorDataset
+<span style=color:#f92672>from</span> torch.autograd <span style=color:#f92672>import</span> Variable
+
+<span style=color:#f92672>import</span> torch.nn <span style=color:#f92672>as</span> nn
+<span style=color:#f92672>import</span> torch.nn.functional <span style=color:#f92672>as</span> F
+
+<span style=color:#75715e># 数据：自定义</span>
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>MyDataset</span>(Dataset):
+    <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>    下载数据、初始化数据，都可以在这里完成
+</span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
+    <span style=color:#66d9ef>def</span> __init__(self):
+        xy <span style=color:#f92672>=</span> np<span style=color:#f92672>.</span>loadtxt(<span style=color:#e6db74>&#39;../dataSet/diabetes.csv.gz&#39;</span>, delimiter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;,&#39;</span>, dtype<span style=color:#f92672>=</span>np<span style=color:#f92672>.</span>float32) <span style=color:#75715e># 使用numpy读取数据</span>
+        self<span style=color:#f92672>.</span>x_data <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>from_numpy(xy[:, <span style=color:#ae81ff>0</span>:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>])
+        self<span style=color:#f92672>.</span>y_data <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>from_numpy(xy[:, [<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]])
+        self<span style=color:#f92672>.</span>len <span style=color:#f92672>=</span> xy<span style=color:#f92672>.</span>shape[<span style=color:#ae81ff>0</span>]
+    
+    <span style=color:#66d9ef>def</span> __getitem__(self, index):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>x_data[index], self<span style=color:#f92672>.</span>y_data[index]
+
+    <span style=color:#66d9ef>def</span> __len__(self):
+        <span style=color:#66d9ef>return</span> self<span style=color:#f92672>.</span>len
+
+<span style=color:#75715e># 模型：自定义-多层感知机</span>
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>MLP</span>(torch<span style=color:#f92672>.</span>nn<span style=color:#f92672>.</span>Module):
+    <span style=color:#75715e># 默认三层隐藏层，分别有128个 64个 16个神经元</span>
+    <span style=color:#66d9ef>def</span> __init__(self, input_n, output_n, num_layer<span style=color:#f92672>=</span><span style=color:#ae81ff>3</span>, layer_list<span style=color:#f92672>=</span>[<span style=color:#ae81ff>128</span>, <span style=color:#ae81ff>64</span>, <span style=color:#ae81ff>16</span>], dropout<span style=color:#f92672>=</span><span style=color:#ae81ff>0.5</span>):
+        <span style=color:#e6db74>&#34;&#34;&#34;
+</span><span style=color:#e6db74>        :param input_n: int 输入神经元个数
+</span><span style=color:#e6db74>        :param output_n: int 输出神经元个数
+</span><span style=color:#e6db74>        :param num_layer: int 隐藏层层数
+</span><span style=color:#e6db74>        :param layer_list: list(int) 每层隐藏层神经元个数
+</span><span style=color:#e6db74>        :param dropout: float 训练完丢掉多少
+</span><span style=color:#e6db74>        &#34;&#34;&#34;</span>
+        super(MLP, self)<span style=color:#f92672>.</span>__init__()
+
+        <span style=color:#75715e># 输入层</span>
+        self<span style=color:#f92672>.</span>input_layer <span style=color:#f92672>=</span> nn<span style=color:#f92672>.</span>Sequential(
+            nn<span style=color:#f92672>.</span>Linear(input_n, layer_list[<span style=color:#ae81ff>0</span>], bias<span style=color:#f92672>=</span>False),
+            nn<span style=color:#f92672>.</span>ReLU()
+        )
+
+        <span style=color:#75715e># 隐藏层</span>
+        self<span style=color:#f92672>.</span>hidden_layer <span style=color:#f92672>=</span> nn<span style=color:#f92672>.</span>Sequential()
+
+        <span style=color:#66d9ef>for</span> index <span style=color:#f92672>in</span> range(num_layer<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+        	self<span style=color:#f92672>.</span>hidden_layer<span style=color:#f92672>.</span>append(nn<span style=color:#f92672>.</span>Linear(layer_list[index], layer_list[index<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>], bias<span style=color:#f92672>=</span>False))
+        	self<span style=color:#f92672>.</span>hidden_layer<span style=color:#f92672>.</span>append(nn<span style=color:#f92672>.</span>ReLU())
+
+        <span style=color:#75715e># 输出层</span>
+        self<span style=color:#f92672>.</span>output_layer <span style=color:#f92672>=</span> nn<span style=color:#f92672>.</span>Sequential(
+            nn<span style=color:#f92672>.</span>Linear(layer_list[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>], output_n, bias<span style=color:#f92672>=</span>False),
+            nn<span style=color:#f92672>.</span>Softmax(dim<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span>),
+        )
+
+        self<span style=color:#f92672>.</span>dropout <span style=color:#f92672>=</span> nn<span style=color:#f92672>.</span>Dropout(dropout)
+
+    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>forward</span>(self, x):
+        input <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>input_layer(x)
+        hidden <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>hidden_layer(input)
+        hidden <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>dropout(hidden)
+        output <span style=color:#f92672>=</span> self<span style=color:#f92672>.</span>output_layer(hidden)
+        <span style=color:#66d9ef>return</span> output
+
+
+<span style=color:#75715e># 创建Dataset对象</span>
+dataset <span style=color:#f92672>=</span> MyDataset()
+
+<span style=color:#75715e># 创建DataLoadder对象</span>
+dataloader <span style=color:#f92672>=</span> DataLoader(dataset,
+                        batch_size<span style=color:#f92672>=</span><span style=color:#ae81ff>32</span>,
+                        shuffle<span style=color:#f92672>=</span>True,
+                        num_workers<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>)
+
+<span style=color:#75715e># 创建模型结构</span>
+model <span style=color:#f92672>=</span> MLP()
+
+<span style=color:#75715e># 模型初始化</span>
+model<span style=color:#f92672>.</span>load_state_dict(torch<span style=color:#f92672>.</span>load(<span style=color:#e6db74>&#39;model_path&#39;</span>))
+
+model<span style=color:#f92672>.</span>train()
+
+<span style=color:#75715e># 优化器</span>
+optimizer <span style=color:#f92672>=</span> torch<span style=color:#f92672>.</span>optim<span style=color:#f92672>.</span>Adam(model<span style=color:#f92672>.</span>parameters(), lr<span style=color:#f92672>=</span><span style=color:#ae81ff>0.1</span>, momentum<span style=color:#f92672>=</span><span style=color:#ae81ff>0.9</span>)
+
+<span style=color:#75715e># loss目标函数</span>
+<span style=color:#66d9ef>def</span> <span style=color:#a6e22e>loss_fac</span>(output, label):
+	loss <span style=color:#f92672>=</span> cross_entropy(output, label)
+	<span style=color:#66d9ef>return</span> loss
+
+
+<span style=color:#75715e># 循环DataLoader对象</span>
+num_epoches <span style=color:#f92672>=</span> <span style=color:#ae81ff>100</span>
+<span style=color:#66d9ef>for</span> epoch <span style=color:#f92672>in</span> range(num_epoches)
+    <span style=color:#66d9ef>for</span> inputs, labels <span style=color:#f92672>in</span> dataloader:
+        <span style=color:#75715e># 将数据从dataloader中读取出来，一次读取的样本数为32个</span>
+        outputs <span style=color:#f92672>=</span> model(inputs)
+        optimizer<span style=color:#f92672>.</span>zero_grad()
+        loss <span style=color:#f92672>=</span> loss_fac(outputs, inputs)
+        <span style=color:#75715e># 梯度计算</span>
+        loss<span style=color:#f92672>.</span>backward()
+        <span style=color:#75715e># 更新权重</span>
+        optimizer<span style=color:#f92672>.</span>step()
+
+
+    torch<span style=color:#f92672>.</span>save(model<span style=color:#f92672>.</span>state_dict(), <span style=color:#e6db74>&#39;save_path&#39;</span>)
+
+
+</code></pre></div></div><div class="row pl-3 pr-3"><div class="col-md-6 share-buttons"><strong>分享:</strong>
+<a class="btn btn-sm facebook-btn" href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f" target=_blank><i class="fab fa-facebook"></i></a><a class="btn btn-sm twitter-btn" href="https://twitter.com/share?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f&text=%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83&via=biubiobiu%27s%20Blog" target=_blank><i class="fab fa-twitter"></i></a><a class="btn btn-sm reddit-btn" href="https://reddit.com/submit?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f&title=%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83" target=_blank><i class="fab fa-reddit"></i></a><a class="btn btn-sm linkedin-btn" href="https://www.linkedin.com/shareArticle?url=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f&title=%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83" target=_blank><i class="fab fa-linkedin"></i></a><a class="btn btn-sm whatsapp-btn" href="https://api.whatsapp.com/send?text=%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83 https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f" target=_blank><i class="fab fa-whatsapp"></i></a><a class="btn btn-sm email-btn" href="mailto:?subject=%e6%a8%a1%e5%9e%8b%e8%ae%ad%e7%bb%83&body=https%3a%2f%2fbiubiobiu.github.io%2fzh-cn%2fposts%2fpytorch-model-training%2f" target=_blank><i class="fas fa-envelope-open-text"></i></a></div></div><hr><div class="row next-prev-navigator"><div class="col-md-6 previous-article"><a href=/zh-cn/posts/tensor%E5%92%8C%E5%8F%98%E9%87%8F/ title=Tensor和变量 class="btn btn-outline-info"><div><i class="fas fa-chevron-circle-left"></i>上一篇</div><div class=next-prev-text>Tensor和变量</div></a></div><div class="col-md-6 next-article"><a href=/zh-cn/posts/ndarray%E4%BD%BF%E7%94%A8/ title=NdArray使用 class="btn btn-outline-info"><div>下一篇 <i class="fas fa-chevron-circle-right"></i></div><div class=next-prev-text>NdArray使用</div></a></div></div><hr></div></div></div><a id=scroll-to-top class=btn><i class="fas fa-chevron-circle-up"></i></a></section><section class="toc-section post-toc-collapsible" id=toc-section><div class=toc-holder><div class=post-toc-toolbar><h5 class="text-center pl-3">目录</h5><button class=post-toc-toggle id=post-toc-toggle type=button aria-controls=post-toc-content aria-expanded=true aria-label=收起文章目录>
+<span>收起目录</span>
+<i class="fas fa-chevron-right" aria-hidden=true></i></button></div><hr class=post-toc-divider><div class="toc post-toc-content" id=post-toc-content><nav id=TableOfContents><ul><li><a href=#一数据预处理>一、数据预处理</a></li><li><a href=#二模型>二、模型</a><ul><li><a href=#1模型的定义>1、模型的定义</a></li><li><a href=#2模型的保存域加载>2、模型的保存域加载</a></li><li><a href=#3模型初始化>3、模型初始化</a></li></ul></li><li><a href=#三学习率>三、学习率</a></li><li><a href=#四优化器>四、优化器</a></li><li><a href=#五loss>五、loss</a><ul><li><a href=#1均方误差mse>1、均方误差（MSE）</a></li><li><a href=#2交叉熵cross-entropy>2、交叉熵（Cross Entropy）</a></li><li><a href=#3对数损失logarithm-loss>3、对数损失（Logarithm Loss）</a></li></ul></li><li><a href=#六总结>六、总结</a></li></ul></nav></div></div></section></div><footer id=footer class="container-fluid text-center align-content-center footer pb-2"><div class="container pt-5"><div class="row text-left"><div class="col-12 footer-contact"><div class=footer-contact-row><h5 class=footer-contact-title>联系方式:</h5><ul class=footer-contact-list><li><a href=tel:+0123456789><span><i class="fas fa-phone-alt"></i></span><span>电话：+0123456789</span></a></li><li><a href=mailto:bsgshyn8@163.com target=_blank rel=noopener><span><i class="fas fa-envelope"></i></span><span>邮箱：bsgshyn8@163.com</span></a></li></ul></div></div></div></div><hr><div class=container><p id=disclaimer><strong>免责声明:</strong> 这个主题是MIT许可的。因此，您可以将其用于非商业、商业或者私人用途。您可以修改或分发主题，而无须经 作者任何许可。但是，主题作者不对主题的任何问题提供任何保证或承担任何责任。</p></div><hr><div class=container><div class="row text-left"><div class=col-md-4><a id=theme href=https://github.com/hossainemruz/toha target=_blank rel=noopener><img src=/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_2.png alt="Toha Theme Logo">
+Toha</a></div><div class="col-md-4 text-center">© 2021 Copyright.</div><div class="col-md-4 text-right"><a id=hugo href=https://gohugo.io/ target=_blank rel=noopener>Powered by
+<img src=/images/hugo-logo.svg alt="Hugo Logo" height=18></a></div></div></div></footer><script type=text/javascript src=/js/jquery-3.4.1.min.js></script><script type=text/javascript src=/js/popper.min.js></script><script type=text/javascript src=/js/bootstrap.min.js></script><script type=text/javascript src=/js/navbar.js></script><script type=text/javascript src=/js/plyr.js></script><script type=text/javascript src=/js/main.js></script><script type=text/javascript src=/js/darkreader.js></script><script type=text/javascript src=/js/darkmode-darkreader.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js></script><script src=/js/single.js></script><script src="/js/post-sidebar-resizer.js?v=20260727-3"></script><script>hljs.initHighlightingOnLoad();</script><link rel=stylesheet href=/katex/katex.min.css><script type=text/javascript defer src=/katex/katex.min.js></script><script type=text/javascript defer src=/katex/auto-render.min.js onload=renderMathInElement(document.body);></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false});});</script><script src=/js/mermaid-8.14.0.min.js></script><script>mermaid.initialize({startOnLoad:true});</script></body></html>

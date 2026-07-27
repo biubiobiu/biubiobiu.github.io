@@ -1,0 +1,263 @@
+.post-sidebar-toolbar,
+.post-sidebar-resizer,
+.post-toc-toggle {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .sidebar-section.post-sidebar-resizable {
+    --post-sidebar-width: 20%;
+    flex: 0 0 var(--post-sidebar-width);
+    width: var(--post-sidebar-width);
+    min-width: 220px;
+    max-width: min(520px, 38vw);
+    position: relative;
+    transition: none;
+  }
+
+  .post-sidebar-resizable ~ .content-section {
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .post-sidebar-resizable ~ .toc-section {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
+
+  .toc-section.post-toc-collapsible {
+    --post-toc-width: 20%;
+    flex: 0 0 var(--post-toc-width);
+    width: var(--post-toc-width);
+    min-width: 220px;
+    max-width: 360px;
+    transition: none;
+  }
+
+  .post-sidebar-resizable .sidebar-holder {
+    top: 2.5rem;
+    max-width: none;
+    overflow: hidden;
+  }
+
+  .post-sidebar-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 44px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #dfe4ec;
+    background-color: #f9fafc;
+  }
+
+  .post-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    padding: 5px 9px;
+    border: 1px solid #8fc8f7;
+    border-radius: 5px;
+    background: #e7f4ff;
+    color: #1678c2;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .post-sidebar-toggle:hover,
+  .post-sidebar-toggle:focus {
+    border-color: #4ba6ed;
+    background: #cfeaff;
+    color: #0f67aa;
+    outline: none;
+  }
+
+  .post-sidebar-toggle:focus-visible,
+  .post-sidebar-resizer:focus-visible {
+    box-shadow: 0 0 0 3px rgba(75, 166, 237, 0.28);
+  }
+
+  .post-sidebar-content {
+    height: calc(100vh - 44px);
+    overflow: auto;
+  }
+
+  .post-sidebar-resizer {
+    display: block;
+    position: absolute;
+    z-index: 20;
+    top: 2.5rem;
+    right: -5px;
+    width: 10px;
+    height: calc(100vh - 2.5rem);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: col-resize;
+    touch-action: none;
+  }
+
+  .post-sidebar-resizer::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    width: 2px;
+    background: #8fc8f7;
+    transition: background-color 0.15s ease, width 0.15s ease;
+  }
+
+  .post-sidebar-resizer:hover::after,
+  .post-sidebar-resizer:focus::after,
+  body.post-sidebar-is-resizing .post-sidebar-resizer::after {
+    left: 3px;
+    width: 4px;
+    background: #4ba6ed;
+  }
+
+  body.post-sidebar-is-resizing {
+    cursor: col-resize;
+    user-select: none;
+  }
+
+  .sidebar-section.post-sidebar-resizable.is-collapsed {
+    --post-sidebar-width: 0px;
+    flex-basis: 0;
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+  }
+
+  .post-sidebar-resizable.is-collapsed .sidebar-holder {
+    position: fixed;
+    z-index: 100010;
+    top: 50px;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .post-sidebar-resizable.is-collapsed .post-sidebar-toolbar {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-bottom: 0;
+    border-radius: 0 0 8px 0;
+    box-shadow: 0 4px 14px rgba(28, 45, 65, 0.14);
+  }
+
+  .post-sidebar-resizable.is-collapsed .post-sidebar-toggle {
+    width: 34px;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .post-sidebar-resizable.is-collapsed .post-sidebar-toggle span,
+  .post-sidebar-resizable.is-collapsed .post-sidebar-content,
+  .post-sidebar-resizable.is-collapsed .post-sidebar-resizer {
+    display: none;
+  }
+
+  .post-toc-collapsible .toc-holder {
+    margin-right: 0.5rem;
+    overflow: hidden auto;
+  }
+
+  .post-toc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 6px 8px;
+  }
+
+  .post-toc-toolbar h5 {
+    margin: 0;
+    padding-left: 0 !important;
+  }
+
+  .post-toc-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 32px;
+    padding: 5px 9px;
+    border: 1px solid #8fc8f7;
+    border-radius: 5px;
+    background: #e7f4ff;
+    color: #1678c2;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .post-toc-toggle:hover,
+  .post-toc-toggle:focus {
+    border-color: #4ba6ed;
+    background: #cfeaff;
+    color: #0f67aa;
+    outline: none;
+  }
+
+  .post-toc-toggle:focus-visible {
+    box-shadow: 0 0 0 3px rgba(75, 166, 237, 0.28);
+  }
+
+  .toc-section.post-toc-collapsible.is-collapsed {
+    --post-toc-width: 0px;
+    flex-basis: 0;
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+  }
+
+  .post-toc-collapsible.is-collapsed .toc-holder {
+    position: fixed;
+    z-index: 100010;
+    top: 50px;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    margin-right: 0;
+    overflow: hidden;
+    border-radius: 0 0 0 8px;
+    box-shadow: 0 4px 14px rgba(28, 45, 65, 0.14);
+  }
+
+  .post-toc-collapsible.is-collapsed .post-toc-toolbar {
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .post-toc-collapsible.is-collapsed .post-toc-toolbar h5,
+  .post-toc-collapsible.is-collapsed .post-toc-toggle span,
+  .post-toc-collapsible.is-collapsed .post-toc-divider,
+  .post-toc-collapsible.is-collapsed .post-toc-content {
+    display: none;
+  }
+
+  .post-toc-collapsible.is-collapsed .post-toc-toggle {
+    width: 34px;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  body.post-sidebar-collapsed .content-section .read-area,
+  body.post-toc-collapsed .content-section .read-area {
+    width: 100%;
+    max-width: none;
+  }
+}

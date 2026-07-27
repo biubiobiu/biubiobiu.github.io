@@ -77,12 +77,12 @@
 
 .tree li a.active {
   display: inline;
-  color: #2098d1;
+  color: #2563eb;
 }
 
 .tree li a:hover {
   margin-left: 3px;
-  color: #2098d1;
+  color: #1d4ed8;
   transition: all 0.3s ease-out;
 }
 
@@ -154,7 +154,7 @@ ul > ul {
 }
 
 a.focused {
-  color: #2098d1 !important;
+  color: #2563eb !important;
 }
 
 /* ============= Device specific fixes ======= */
