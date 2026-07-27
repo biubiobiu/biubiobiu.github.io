@@ -2,7 +2,7 @@
 title: "VAE 的网络结构详解"
 slug: hunyuan-image-3-vae
 date: 2026-07-27T22:52:00+08:00
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 menu:
   sidebar:
     name: VAE 网络结构详解

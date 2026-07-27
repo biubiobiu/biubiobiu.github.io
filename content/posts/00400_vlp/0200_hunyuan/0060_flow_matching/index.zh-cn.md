@@ -2,7 +2,7 @@
 title: "Flow Matching 详解"
 slug: hunyuan-image-3-flow-matching
 date: 2026-07-27T22:50:00+08:00
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 menu:
   sidebar:
     name: Flow Matching 详解

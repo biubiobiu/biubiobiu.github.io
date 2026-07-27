@@ -2,7 +2,7 @@
 title: "主干网络的结构详解"
 slug: hunyuan-image-3-backbone
 date: 2026-07-27T22:51:00+08:00
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 menu:
   sidebar:
     name: 主干网络结构详解

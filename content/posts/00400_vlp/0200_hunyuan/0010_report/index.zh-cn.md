@@ -2,7 +2,7 @@
 title: "混元技术报告"
 slug: hunyuan-image-3-technical-report
 date: 2026-07-27T22:55:00+08:00
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 menu:
   sidebar:
     name: 混元技术报告

@@ -2,7 +2,7 @@
 title: "混元网络结构总览"
 slug: hunyuan-image-3-overview
 date: 2026-07-27T22:54:00+08:00
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 menu:
   sidebar:
     name: 网络结构总览
