@@ -31,7 +31,7 @@ datasets/
 │           ├── hunyuan-image-3-backbone.html
 │           ├── hunyuan-image-3-flow-matching.html
 │           ├── annotator.js     # 混元专题共享批注脚本
-│           └── hunyuan.png      # 混元专题共享封面
+│           └── hunyuan.jpg      # 混元专题共享封面
 ├── notes/                       # 笔记 HTML
 └── docs/                        # 文档 HTML
 ```
@@ -134,13 +134,13 @@ script="datasets/posts/mmlm/topic/annotator.js"
 同一专题共用一张封面时，只在 `datasets` 中保存一份：
 
 ```text
-datasets/posts/mmlm/hunyuan/hunyuan.png
+datasets/posts/mmlm/hunyuan/hunyuan.jpg
 ```
 
 所有相关博文的 Front Matter 直接引用它：
 
 ```yaml
-hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
 ```
 
 不要把相同图片复制到每个博文文件夹中。
@@ -256,7 +256,7 @@ HTML：datasets/posts/mmlm/qwen/qwen.html
 ```text
 HTML：datasets/posts/mmlm/hunyuan/*.html
 脚本：datasets/posts/mmlm/hunyuan/annotator.js
-封面：datasets/posts/mmlm/hunyuan/hunyuan.png
+封面：datasets/posts/mmlm/hunyuan/hunyuan.jpg
 栏目：/zh-cn/topics/hunyuan/
 ```
 

@@ -7,7 +7,7 @@
 
   {{/*
     Allow multiple posts to share one image stored outside their page bundles,
-    for example: hero: datasets/posts/mmlm/hunyuan/hunyuan.png
+    for example: hero: datasets/posts/mmlm/hunyuan/hunyuan.jpg
   */}}
   {{ if and (not $heroImage) (fileExists .Params.hero) }}
     {{ $heroImage = resources.FromString .Params.hero (readFile .Params.hero) }}
